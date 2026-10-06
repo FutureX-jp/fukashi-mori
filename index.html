@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#071c18">
-<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.11）">
+<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.12）">
 <meta property="og:title" content="フカシの森（試作）">
 <meta property="og:description" content="夜の森を歩く・家を買う・住人と話す　フカシGames の入口の試作">
 <script>window.__earlyErr=[];window.addEventListener('error',function(e){if(window.__earlyErr)window.__earlyErr.push([e.message||((e.target&&e.target.tagName||'')+' '+String(e.target&&(e.target.src||e.target.href)||'').replace(/^.*\//,''))||'load',e.error&&e.error.stack||''])},true)</script>
@@ -115,6 +115,33 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
 #land .note{font-size:12px;color:var(--mint)}
 #land .row{align-self:stretch}
 #land button.sub{color:var(--cream);border-color:var(--line)}
+/* 素潜りの画面（置き場所・形・色はチャッピー 10/6）: 左上=息、上の真ん中=水深、右上=獲物の数、その下=浮上、真ん中=照準と溜めの輪 */
+#dv{position:absolute;inset:0;pointer-events:none}
+#dvb{position:absolute;left:8px;top:8px;width:min(150px,calc(50% - 61px));height:14px;border:2px solid var(--cream);border-radius:999px;background:rgba(7,21,26,.6);overflow:hidden}
+#dvbf{display:block;height:100%;width:100%;background:#9BD94F}
+#dvbt{position:absolute;left:10px;top:26px;font-size:13px;color:var(--cream);text-shadow:0 1px 3px #000,0 0 8px #000;font-variant-numeric:tabular-nums}
+#dvd,#dvc{position:absolute;top:8px;width:90px;height:38px;border-radius:12px;background:rgba(10,24,48,.72);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;font-variant-numeric:tabular-nums}
+#dvd{left:50%;transform:translateX(-50%)}#dvc{right:8px}
+#dvup{position:absolute;right:8px;top:54px;width:100px;height:42px;min-height:0;padding:0;flex:none;background:var(--cream);color:var(--ink);pointer-events:auto;font-size:15px}
+#dvx{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;overflow:visible}
+#dvx .c{fill:none;stroke:#FFF3C7;stroke-width:1.200}#dvx .d{fill:#FFF3C7}#dvx .r{fill:none;stroke:#FFC83D;stroke-width:3;stroke-linecap:round}
+#dvx.aim .c{stroke:#FFC83D;stroke-width:2.200}#dvx.aim .d{fill:#FFC83D}
+#dvx.max{animation:dvmax .2s ease-out}
+@keyframes dvmax{from{transform:scale(1.35)}to{transform:none}}
+#dvm{position:absolute;left:8px;right:8px;top:calc(50% + 34px);text-align:center;font-size:14px;font-weight:700;color:var(--cream);text-shadow:0 1px 4px #000,0 0 10px #000;text-wrap:balance}
+#dvm.gold{color:var(--lantern)}
+#dvg{position:absolute;left:0;right:0;top:24%;text-align:center;padding-inline:14px;text-shadow:0 3px 0 var(--night),0 0 20px rgba(0,0,0,.85)}
+#dvg b{display:block;font-family:var(--display);font-weight:400;font-size:min(30px,7.6vw);line-height:1.25;color:var(--cream);white-space:nowrap}
+#dvg span{display:block;font-size:14px;font-weight:700;color:var(--cream);margin-top:4px}
+#dvg.gold b{color:var(--lantern)}
+#dvv{position:absolute;inset:0;box-shadow:inset 0 0 70px 30px rgba(4,14,28,0)}
+#dv.low #dvv{animation:dvlow 1s ease-in-out infinite}
+#dv.low #dvb{animation:dvblink .5s steps(2) infinite}
+@keyframes dvlow{0%,100%{box-shadow:inset 0 0 70px 30px rgba(4,14,28,.3)}50%{box-shadow:inset 0 0 90px 46px rgba(4,14,28,.85)}}
+@keyframes dvblink{50%{opacity:.35}}
+#dvk{position:absolute;inset:0;background:#02060c;opacity:0;transition:opacity .5s}
+#act.spear{width:84px;height:84px;padding:0;border-radius:50%;font-family:var(--display);font-weight:400;font-size:26px;touch-action:none;bottom:54px}
+@media (prefers-reduced-motion:reduce){#dv.low #dvv,#dv.low #dvb,#dvx.max{animation:none}#dv.low #dvv{box-shadow:inset 0 0 80px 38px rgba(4,14,28,.6)}}
 .grid{position:relative;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(16,1fr);gap:2px;width:min(100%,46dvh);aspect-ratio:1;flex:none}
 .plot{min-height:0;padding:0;border-radius:3px;font-family:var(--display);font-weight:400;font-size:10px;line-height:1;border:0;flex:none;color:var(--night)}
 .plot[data-r="1"]{background:var(--r1)}.plot[data-r="2"]{background:var(--r2)}
@@ -159,6 +186,17 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
       <button id="mmf" type="button" aria-label="ミニマップをひらく" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 6.5l5.5-2 6 2 5.5-2v13l-5.5 2-6-2-5.5 2z M9 4.5v13 M15 6.5v13" fill="none" stroke="#FFEFBF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8.2l3 6.6-3-1.5-3 1.5z" fill="#FFC83D"/></svg></button>
       <button id="cmp" type="button" aria-label="方位磁針（タッチで北向きに戻す）"><svg viewBox="0 0 32 32" aria-hidden="true"><g id="cmpd"><polygon points="16,10.4 19,17 13,17" fill="#E94B3C"/><polygon points="16,26 19,17 13,17" fill="#F5E9C8"/><text id="cmpn" x="16" y="9.4" text-anchor="middle" font-size="8.5" font-weight="700" font-family="Arial,sans-serif" fill="#FFC83D">N</text></g><circle cx="16" cy="17" r="1.5" fill="#0a1830"/></svg></button>
     </div>
+    <div id="dv" hidden>
+      <div id="dvv"></div>
+      <div id="dvb" aria-label="息"><i id="dvbf"></i></div><b id="dvbt"></b>
+      <div id="dvd">水深 0.0m</div>
+      <div id="dvc"><svg viewBox="0 0 24 14" width="22" height="13" aria-hidden="true"><path d="M1 7c3-4.5 9-6 14-3l5-3-1.5 6L20 13l-5-3C10 13 4 11.500 1 7z" fill="#FFF3C7"/><circle cx="6.500" cy="6.200" r="1" fill="#0a1830"/></svg><span><b id="dvcn">0</b>匹</span></div>
+      <button id="dvup" type="button">浮上</button>
+      <svg id="dvx" viewBox="0 0 44 44" aria-hidden="true"><circle class="c" cx="22" cy="22" r="10"/><circle class="d" cx="22" cy="22" r="1.600"/><circle id="dvr" class="r" cx="22" cy="22" r="19" stroke-dasharray="119.400" stroke-dashoffset="119.400" transform="rotate(-90 22 22)"/></svg>
+      <div id="dvm"></div>
+      <div id="dvg" hidden><b></b><span></span></div>
+      <div id="dvk"></div>
+    </div>
     <div id="sheet" hidden></div>
     <div id="land" hidden></div>
   </div>
@@ -171,16 +209,18 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.11';
+var VERSION='v0.12';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
 $('#ver').textContent=VERSION;
 
 /* ---- セーブ（この端末のブラウザにだけ残る。読めなくても動く） ---- */
-var S={coin:30,clear:{pk:0,dil:0},items:{},like:0,wanted:false,jailUntil:0,box:[],plot:{x:4,y:9},res:null,lot:null,res2:null,intro:0,hat:'y'};
+var S={coin:30,clear:{pk:0,dil:0},items:{},like:0,wanted:false,jailUntil:0,box:[],plot:{x:4,y:9},res:null,lot:null,res2:null,intro:0,hat:'y',fish:0};
 try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);for(var k in o)S[k]=o[k]}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var ON_HUB=/(^|\.)github\.io$/.test(location.hostname);
+function pkSync(){if(!ON_HUB)return;try{var n=parseInt(localStorage.getItem('pk_story'),10)||0;if(n>S.clear.pk){S.clear.pk=Math.min(99,n);save()}}catch(e){}}
 function level(){return Math.min(5,1+S.clear.pk+S.clear.dil)}
 function jailLeft(){return Math.max(0,Math.ceil((S.jailUntil-Date.now())/1000))}
 var HATS=[['y','#ffc83d','黄'],['r','#e8503a','赤'],['b','#3f6fd1','青'],['g','#3fbf6a','緑'],['p','#9a5fd6','紫']];
@@ -259,7 +299,7 @@ function warp(u,v){var r=Math.hypot(u,v),k=sm(22,70,r),th=.3*sm(22,150,r),c=Math
 function unwarp(x,z){var u=x,v=z,i,w;for(i=0;i<16;i++){w=warp(u,v);u+=x-w[0];v+=z-w[1]}return [u,v]}
 function angAt(u,v){var a=warp(u-.5,v),b=warp(u+.5,v);return Math.atan2(b[1]-a[1],b[0]-a[0])} /* その場所で、マス目の東がどっちを向いているか */
 function rawH(x,z){var r=Math.hypot(x,z),k=sm(26,64,r);return k*(3.0*Math.sin(x/47+1.3)*Math.cos(z/53)+2.0*Math.sin((x+z)/33+.5)+1.4*Math.cos((x-z)/71))}
-var PONDS=[],WATER=0,WS=0,DEEP=2.7,RIM=2.9; /* WATER=岸の高さ、WS=水面、DEEP=いちばん深い所、RIM=岸から水ぎわまでの平らな幅 */
+var PONDS=[],WATER=0,WS=0,DEEP=2.7,RIM=2.9,DEEP2=6.5,D2A=9.5,D2B=17.5; /* DEEP2=広い所だけ足す深さ、D2A〜D2B=岸から何mで深くなり始めて、何mで底に着くか（v0.12） */ /* WATER=岸の高さ、WS=水面、DEEP=いちばん深い所、RIM=岸から水ぎわまでの平らな幅 */
 /* 池のマスのかたまりの「内側へ何m入ったか」（マス目の座標）。池の外は0 */
 function pondIn(u,v){var cx=Math.floor(u/P+HN),cy=Math.floor(v/P+HN);if(natAt(cx,cy)!=='w')return 0;var d=36,i,j,x0,z0,dx,dz;
   for(j=cy-2;j<=cy+2;j++)for(i=cx-2;i<=cx+2;i++){if(natAt(i,j)==='w')continue;x0=lineX(i);z0=lineX(j);dx=Math.max(x0-u,0,u-(x0+P));dz=Math.max(z0-v,0,v-(z0+P));d=Math.min(d,Math.hypot(dx,dz))}
@@ -270,7 +310,7 @@ function pondIn(u,v){var cx=Math.floor(u/P+HN),cy=Math.floor(v/P+HN);if(natAt(cx
 var BR={i:5,j:13,s:4,AB:3.6,hw:.95,yMid:.625,yEnd:.27,xh:1.42,m:null};
 BR.ok=TOWNDEF.nat[BR.j-1].charAt(BR.i)==='w'&&TOWNDEF.nat[BR.j].charAt(BR.i)==='w';BR.x0=lineX(BR.i);BR.x1=lineX(BR.i+1);BR.z=lineX(BR.j);BR.cx=(BR.x0+BR.x1)/2;
 function wH(i,j){return hasH(i,j)||(BR.ok&&i===BR.i&&j===BR.j)} /* 歩く道すじ用: 道がある、または橋がある */
-function basin(u,v){var d=pondIn(u,v);return d>RIM?DEEP*sm(RIM,RIM+6.5,d):0}
+function basin(u,v){var d=pondIn(u,v);return d>RIM?DEEP*sm(RIM,RIM+6.5,d)+(d>D2A?DEEP2*sm(D2A,D2B,d):0):0}
 (function(){var x,y,p,t=0;for(y=0;y<N;y++)for(x=0;x<N;x++)if(TOWNDEF.nat[y].charAt(x)==='w'){p=warp(lineX(x)+P/2,lineX(y)+P/2);PONDS.push(p);t+=rawH(p[0],p[1])}
   WATER=PONDS.length?t/PONDS.length-.7:0;WS=WATER-.4})();
 function height(x,z){var h=rawH(x,z),f=1,i,d;for(i=0;i<PONDS.length;i++){d=Math.hypot(x-PONDS[i][0],z-PONDS[i][1]);if(d<34)f=Math.min(f,sm(11,34,d))}h=f*h+(1-f)*WATER;if(f<.999){var g=unwarp(x,z);h-=basin(g[0],g[1])}return h}
@@ -373,14 +413,14 @@ function waterTex2(){return canvasTex(256,256,function(g,w,h){var r=rnd(77),i,x,
 function pondMesh(rects){var pos=[],uv=[],cl=[],idx=[],wp=[],wuv=[],n=0;
   rects.forEach(function(r){var nx=12,nz=12,i,j,p,x,z,y,k;
     for(j=0;j<=nz;j++)for(i=0;i<=nx;i++){x=r.x0+(r.x1-r.x0)*i/nx;z=r.z0+(r.z1-r.z0)*j/nz;p=warp(x,z);y=height(p[0],p[1]);pos.push(p[0],y,p[1]);uv.push(x/5,z/5);
-      k=1-.55*Math.min(1,Math.max(0,(WATER-y)/DEEP));cl.push(k*.82,k*.9,k*.86);wp.push(p[0],WS,p[1]);wuv.push(x/11,z/11)}
+      k=1-.55*Math.min(1,Math.max(0,(WATER-y)/DEEP))-.22*Math.min(1,Math.max(0,(WATER-y-DEEP)/DEEP2));cl.push(k*.82,k*.9,k*.86);wp.push(p[0],WS,p[1]);wuv.push(x/11,z/11)}
     for(j=0;j<nz;j++)for(i=0;i<nx;i++){var a=n+j*(nx+1)+i,b=a+1,d=a+nx+1;idx.push(a,d,b,b,d,d+1)}
     n+=(nx+1)*(nz+1)});
   var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));g.setIndex(idx);
   var bt=has('g_path')?imgTex('g_path'):dirtTex();bt.wrapS=bt.wrapT=THREE.MirroredRepeatWrapping;
   var bed=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:bt,vertexColors:true,color:col(0xd8cfc0)}));bed.renderOrder=.05;bed.frustumCulled=false;scene.add(bed);
   var g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(wp,3));g2.setAttribute('uv',new THREE.Float32BufferAttribute(wuv,2));g2.setIndex(idx);
-  G.waterT=waterTex2();var wm=new THREE.Mesh(g2,new THREE.MeshBasicMaterial({map:G.waterT,transparent:true,opacity:.66,depthWrite:false,color:col(0xcfe6f2)}));wm.renderOrder=2.6;wm.frustumCulled=false;scene.add(wm);G.water=wm;
+  G.waterT=waterTex2();var wm=new THREE.Mesh(g2,new THREE.MeshBasicMaterial({map:G.waterT,transparent:true,opacity:.66,depthWrite:false,color:col(0xcfe6f2),side:THREE.DoubleSide}));wm.renderOrder=2.6;wm.frustumCulled=false;scene.add(wm);G.water=wm;
   /* 泡（潜っている時だけ出す） */
   G.bub=[];for(var i=0;i<9;i++){var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:TX.glow||(TX.glow=glowTex()),transparent:true,depthTest:true,depthWrite:false,color:col(0xcdeeff),opacity:.7}));sp.scale.set(.16,.16,1);sp.visible=false;sp.renderOrder=2.4;sp.userData={t:i/9};scene.add(sp);G.bub.push(sp)}}
 /* 池に置く物（v0.10）: 橋・スイレン・鯉・宝箱。絵はチャッピー、置き場所はプログラム */
@@ -390,12 +430,9 @@ function pondLife(){var r=rnd(4242),i,x,z,n=0,g,cells=[];
   for(var j=0;j<N;j++)for(i=0;i<N;i++)if(natAt(i,j)==='w')cells.push([lineX(i)+P/2,lineX(j)+P/2]);
   if(MDL.lily)while(n<9&&cells.length){g=cells[Math.floor(r()*cells.length)];x=g[0]+(r()-.5)*15;z=g[1]+(r()-.5)*15;if(pondIn(x,z)<4.2||(BR.ok&&Math.abs(z-BR.z)<5&&Math.abs(x-BR.cx)<9)){n+=.02;continue}
     mesh3('lily',1.5+r()*.6,x,z,{absY:WS-.03,nocol:1,far:70,yaw:r()*6.28});n++}
-  if(MDL.koi)for(i=0;i<6&&cells.length;i++){g=cells[(i*5+2)%cells.length];var k=mesh3('koi',1,g[0],g[1],{h3:.42+r()*.12,live:1,absY:WS-.9,far:60,yaw:0,tint:0xffffff});k.userData.town=0;
-    KOI.push({sp:k,cx:g[0],cz:g[1],r:3+r()*2.4,a:r()*6.28,v:(.18+r()*.14)*(r()<.5?1:-1),y:WS-.75-r()*.9})}
+  buildFish();
   if(MDL.chest&&natAt(3,11)==='w'){CHEST={x:lineX(3)+9,z:lineX(11)+9};var cs=mesh3('chest',1,CHEST.x,CHEST.z,{h3:.95,far:46,tint:0xffffff});cs.userData.keep=1;
     hits.push({type:'sign',id:'chest',px:CHEST.x,pz:CHEST.z,w:1.4,h:1.1})}}
-function stepKoi(dt){var i,k,x,z,p,x2,z2,p2;for(i=0;i<KOI.length;i++){k=KOI[i];if(!k.sp.visible)continue;k.a+=k.v*dt;x=k.cx+Math.cos(k.a)*k.r;z=k.cz+Math.sin(k.a)*k.r*.8;p=warp(x,z);
-    x2=k.cx+Math.cos(k.a+k.v*.2)*k.r;z2=k.cz+Math.sin(k.a+k.v*.2)*k.r*.8;p2=warp(x2,z2);k.sp.position.set(p[0],k.y+Math.sin(k.a*3)*.08,p[1]);k.sp.rotation.y=Math.atan2(p2[1]-p[1],-(p2[0]-p[0]))}} /* 鯉の絵は頭が -x 向き */
 /* ---- ミニマップと方位磁針（v0.11。10/6 13:39・13:53 主）----
    見た目はチャッピーが決めた: 北が上で固定・主人公は真ん中の矢印（見ている向き）・住人や木は描かない・建物は1色の小さい家の形。
    町ぜんぶを1枚の下絵（MM.base）に描いておき、毎回は主人公のまわり100m角を切り出すだけ（軽い）。土地の持ち主が変わったら下絵を描き直す */
@@ -427,7 +464,7 @@ function mmDraw(){var c=MM.cv,d=Math.min(2,window.devicePixelRatio||1),px=Math.r
   var a=-(CAM.yaw+angAt(me.x,me.z));g.save();g.translate(px/2,px/2);g.rotate(a);
   g.beginPath();g.moveTo(0,0);g.arc(0,0,26*d,-Math.PI/2-.56,-Math.PI/2+.56);g.closePath();g.fillStyle='rgba(255,239,191,.2)';g.fill();
   g.beginPath();g.moveTo(0,-7.5*d);g.lineTo(5.5*d,6*d);g.lineTo(0,3.2*d);g.lineTo(-5.5*d,6*d);g.closePath();g.fillStyle='#FFF3C7';g.fill();g.lineWidth=1.6*d;g.strokeStyle='#07151A';g.lineJoin='round';g.stroke();g.restore()}
-function mmStep(){var show=!ROOM.on&&!intro;if(MM.el.hidden===show)MM.el.hidden=!show;if(!show)return;
+function mmStep(){var show=!ROOM.on&&!intro&&!DV.on;if(MM.el.hidden===show)MM.el.hidden=!show;if(!show)return;
   var deg=Math.round((CAM.yaw+angAt(me.x,me.z))*180/Math.PI*2)/2;if(deg!==MM.deg){MM.deg=deg;MM.dial.setAttribute('transform','rotate('+deg+' 16 17)');MM.nl.setAttribute('transform','rotate('+(-deg)+' 16 6.6)')}
   if(S.mm!==0&&(MM.tick++%6)===0)mmDraw()}
 function north(){CAM.yaw=-angAt(me.x,me.z);CAM.tilt=0;logEv('north')}
@@ -516,9 +553,9 @@ function buildTown(){ if(!ok3d||!R)return;clearTown();town={sp:[]};houseOf={};to
   hits.sort(function(a,b){return b.pz-a.pz});MM.ok=false}
 
 function buildWorld(){
-  TX.t_lot=textTex('売地',{fs:72});TX.t_nosale=textTex('売りません',{fs:52,pill:1,fg:'#b3261e'});TX.t_own=textTex('主の家',{fs:56,pill:1,body:1,bg:'rgba(255,200,61,.97)',fg:'#173a2c'});
+  TX.t_lot=textTex('売地',{fs:72});TX.t_nosale=textTex('売りません',{fs:52,pill:1,fg:'#b3261e'});TX.t_own=textTex('自分の家',{fs:56,pill:1,body:1,bg:'rgba(255,200,61,.97)',fg:'#173a2c'});
   for(var t=1;t<=5;t++)TX['t_tier'+t]=textTex(t+'段',{fs:60,pill:1,fg:'#173a2c'});
-  var ground=new THREE.Mesh((function(){var gg=new THREE.PlaneGeometry(720,720,200,200);gg.rotateX(-Math.PI/2);var pa=gg.attributes.position,vi;for(vi=0;vi<pa.count;vi++){var gxx=pa.getX(vi),gzz=pa.getZ(vi),gy=height(gxx,gzz),gg2=unwarp(gxx,gzz);var gp=pondIn(gg2[0],gg2[1]);pa.setY(vi,gp<=0?gy:(gp<=RIM?gy-.3:gy-.6))}return gg})(),new THREE.MeshBasicMaterial(has('g_grass')?{map:(function(){var g=imgTex('g_grass');g.repeat.set(72,144);return g})(),color:col(0x86a4a2)}:{map:(function(){var g=grassTex();g.repeat.set(72,72);return g})(),color:col(0xbfd0c6)}));ground.renderOrder=0;ground.frustumCulled=false;scene.add(ground);
+  var ground=new THREE.Mesh((function(){var gg=new THREE.PlaneGeometry(720,720,200,200);gg.rotateX(-Math.PI/2);var pa=gg.attributes.position,vi;for(vi=0;vi<pa.count;vi++){var gxx=pa.getX(vi),gzz=pa.getZ(vi),gy=height(gxx,gzz),gg2=unwarp(gxx,gzz);var gp=pondIn(gg2[0],gg2[1]);pa.setY(vi,gp<=0?gy:(gp<=RIM?gy-.3:(gp<=9?gy-.6:gy-2.6)))}return gg})(),new THREE.MeshBasicMaterial(has('g_grass')?{map:(function(){var g=imgTex('g_grass');g.repeat.set(72,144);return g})(),color:col(0x86a4a2)}:{map:(function(){var g=grassTex();g.repeat.set(72,72);return g})(),color:col(0xbfd0c6)}));ground.renderOrder=0;ground.frustumCulled=false;scene.add(ground);
   /* 芝・自然のマス・道・広場・影・明かりの輪（この順に重ねる） */
   G.lawnT={S:lawnTex(1,1),Mh:lawnTex(2,1),Mv:lawnTex(1,2),L:lawnTex(2,2)};G.lawns=[];var tiles=[],waters=[];
   var i,j,a,x,z,r=rnd(20261006),c;
@@ -682,17 +719,145 @@ function stepRoom(dt,t){var s=ROOM.s,jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y
   var sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),nar=W<H*.62?1.17:1,cb=(12.5-CAM.tilt*2.5)*nar,ch=(7.6+CAM.tilt*4)*nar,tx=ROOM.x+(-.13*s)*.55+me.rx*.45,tz=ROOM.z+(.13*s)*.55+me.rz*.45,off=1.9+ROOM.shK*4.2;
   camera.position.set(tx+sy*cb,ROOM.fy+ch,tz+cy*cb);camera.lookAt(tx+sy*off,ROOM.fy+.6,tz+cy*off);camera.updateMatrixWorld();
   if(!sheetOpen&&land.hidden){if(actBtn.hidden){actBtn.textContent='帽子・家具';actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
+/* ---- 素潜り（v0.12。10/6 17:50 主「池に潜った時一人称視点に変えて欲しい　素潜り？とかできればいいな」）----
+   池の底が頭より深くなった所（水面から 1.75m）で、歩きから泳ぎに切り替わる。泳いでいる間は一人称:
+     丸＝見ている向きへ進む（下を向いて前へ＝潜る）／なぞる＝見回す／右下の「銛」＝長押しで溜めて離すと飛ぶ／「浮上」＝水面まで上がる
+   息: 30秒。水面で回復。深いほど早く減る（1秒あたり 1＋深さ÷3.5）。切れると気を失い、持っている獲物を失って水面に戻る
+   獲物: 突いた魚は持っているだけ。水面に顔を出した時に初めてフカになる。頭に当てると値段が 1.2倍（切り上げ）
+   気配: 丸を大きく倒して速く泳ぐほど立つ。魚の種類ごとに逃げ方が違う（下の FISHDEF）
+   数字と名前: 魚の名前・色・全長・値段はチャッピー。息の秒数・減り方・魚の動き・銛の届く距離は Claude（仮） */
+var DV={on:false,y:0,pitch:0,MAX:30,breath:30,SW:4.200,vy:0,jl:0,aura:0,still:0,rise:false,catch:[],charge:-1,cool:0,black:0,hook:null,aim:false,msgT:0,bigT:0,fx:null,tick:0,hintT:0};
+var FISHDEF=[ /* k=絵の名前, n=名前, len=全長m, price=フカ, dmin〜dmax=住む所の水の深さm, v=泳ぐ速さm/秒, mode=動き, cnt=何匹, wc/pc=白い所と模様の色（無ければ元の絵） */
+  {k:'a',n:'池の常連',len:.45,price:5,dmin:.9,dmax:3.2,v:.7,mode:'calm',cnt:6},
+  {k:'b',n:'小金持ち',len:.40,price:10,dmin:1.6,dmax:4.6,v:1.5,mode:'shy',cnt:4,wc:[255,224,130],pc:[232,160,32]},
+  {k:'c',n:'夜ふかし',len:.55,price:15,dmin:2.6,dmax:6.4,v:.6,mode:'curious',cnt:3,wc:[240,240,235],pc:[38,40,52]},
+  {k:'d',n:'池の番人',len:.70,price:25,dmin:5,dmax:8.4,v:1.1,mode:'wary',cnt:2,wc:[205,40,48],pc:[120,12,24]},
+  {k:'e',n:'池の大地主',len:2.0,price:100,dmin:8.5,dmax:9.3,v:.5,mode:'nushi',cnt:1,wc:[34,52,104],pc:[226,176,60]}];
+var FISH=[],PC=[0,0];
+function SPD(){return DV.on?DV.SW:SPEED*(1-(me.wet||0)*.45)}
+/* 鯉の絵の色を塗り替える（帽子の色替えと同じ考え方）: クリーム色の所→wc、オレンジの模様→pc。明るさは元の絵のまま */
+function koiTex(wc,pc){var im=MIM.koi,c=document.createElement('canvas');c.width=im.width;c.height=im.height;var g=c.getContext('2d');g.drawImage(im,0,0);var d=g.getImageData(0,0,c.width,c.height),a=d.data,i,r,gg,b,t,l;
+  for(i=0;i<a.length;i+=4){r=a[i];gg=a[i+1];b=a[i+2];t=r>40?Math.max(0,Math.min(1,((r-b)/r-.3)/.4)):0;l=Math.max(r,gg,b)/255;a[i]=(wc[0]*(1-t)+pc[0]*t)*l;a[i+1]=(wc[1]*(1-t)+pc[1]*t)*l;a[i+2]=(wc[2]*(1-t)+pc[2]*t)*l}
+  g.putImageData(d,0,0);var tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;tx.flipY=false;tx.anisotropy=4;return tx}
+function fishY(f,x,z){var bed=gh(x,z);return Math.min(WS-.45,bed+.4+f.len*.25+(f.D.mode==='nushi'?.5:.55)+Math.sin(f.ph)*.22)}
+function buildFish(){var r=rnd(777),cells=[],i,j,sx=0,sz=0;FISH=[];for(j=0;j<N;j++)for(i=0;i<N;i++)if(natAt(i,j)==='w'){cells.push([lineX(i),lineX(j)]);sx+=lineX(i)+P/2;sz+=lineX(j)+P/2}
+  if(!cells.length||!MDL.koi)return;PC=[sx/cells.length,sz/cells.length];
+  FISHDEF.forEach(function(D){var n=0,tries=0,tex=D.wc?koiTex(D.wc,D.pc):MDL.koi.tex;while(n<D.cnt&&tries++<6000){var c=cells[Math.floor(r()*cells.length)],u=c[0]+r()*P,v=c[1]+r()*P,dep=WS-gh(u,v);if(dep<D.dmin||dep>D.dmax)continue;
+      if(BR.ok&&Math.abs(v-BR.z)<6&&Math.abs(u-BR.cx)<10)continue;
+      var len=D.len*(.94+r()*.12),hh=len/MDL.koi.w,sp=mesh3('koi',1,u,v,{h3:hh,live:1,absY:WS-1,far:D.mode==='nushi'?40:46,yaw:0,tint:0xffffff,map:tex});sp.userData.keep=1;
+      var f={D:D,sp:sp,len:len,hh:hh,hx:u,hz:v,x:u,z:v,y:0,a:r()*6.28,st:'swim',t:0,tx:u,tz:v,tt:0,re:0,ph:r()*6.28,red:0,fa:0};f.y=fishY(f,u,v);FISH.push(f);n++}})}
+function stepFish(dt,t){var i,f,D,dx,dz,dy,d3,p,p2,sp,ang,da,v,scare,come,px=me.x,pz=me.z,py=DV.on?DV.y:WS+1.4,k,cx,cz,nd,nx,nz,under=DV.on&&DV.y<WS-.3;
+  if(Math.hypot(px-PC[0],pz-PC[1])>130)return; /* 池から遠い時は動かさない */
+  for(i=0;i<FISH.length;i++){f=FISH[i];D=f.D;sp=f.sp;
+    if(f.st==='gone'){f.re-=dt;if(f.re>0)continue;f.st='swim';f.x=f.hx;f.z=f.hz;f.y=fishY(f,f.x,f.z);sp.userData.off=false}
+    if(f.red>0){f.red-=dt;if(f.red<=0)sp.material.color.copy(col(0xffffff))}
+    dx=px-f.x;dz=pz-f.z;dy=py-f.y;d3=Math.hypot(dx,dz,dy);f.t-=dt;f.ph+=dt*1.3;
+    if(f.st==='hook'){f.a+=Math.sin(t*.02)*dt*5;f.y+=Math.sin(t*.03)*dt*.6} /* 銛が刺さったヌシ: 暴れる。引き寄せは hookTap */
+    else{scare=false;come=false;
+      if(under){ /* 逃げ方（参考にした素潜りゲームの仕組み）: 常連＝ほぼ逃げない／小金持ち＝速く泳ぐとすぐ逃げる／夜ふかし＝じっとしていると寄ってくる／番人＝近づくだけで逃げる（ゆっくりなら4mまで）／ヌシ＝2mまで逃げない */
+        if(D.mode==='calm')scare=(d3<3.5&&DV.aura>.8)||d3<.9;
+        else if(D.mode==='shy')scare=(d3<8&&DV.aura>.45)||d3<2.2;
+        else if(D.mode==='curious'){scare=(d3<7&&DV.aura>.6)||d3<1;come=!scare&&DV.still>2.5&&d3<10}
+        else if(D.mode==='wary')scare=(d3<9&&DV.aura>.3)||d3<3.5;
+        else scare=d3<2}
+      if(scare&&f.st!=='flee'){f.st='flee';f.t=2.2;f.fa=Math.atan2(-dz,-dx)+(Math.random()-.5)*.8}
+      if(f.st==='flee'){ang=f.fa;v=D.v*3.2;if(f.t<=0)f.st='swim'}
+      else if(come){ang=Math.atan2(dz,dx)+(d3<2.6?1.5:0);v=D.v*1.3}
+      else{f.tt-=dt;if(f.tt<=0||Math.hypot(f.tx-f.x,f.tz-f.z)<.6){for(k=0;k<6;k++){cx=f.hx+(Math.random()*2-1)*(D.mode==='nushi'?4:6.5);cz=f.hz+(Math.random()*2-1)*(D.mode==='nushi'?4:6.5);nd=WS-gh(cx,cz);if(nd>=D.dmin*(D.mode==='nushi'?.9:.75)&&nd<=D.dmax+.7){f.tx=cx;f.tz=cz;break}}f.tt=3+Math.random()*5}
+        ang=Math.atan2(f.tz-f.z,f.tx-f.x);v=D.v}
+      da=((ang-f.a+9.42478)%6.28318)-3.14159;f.a+=da*Math.min(1,dt*(f.st==='flee'?9:2.4));
+      nx=f.x+Math.cos(f.a)*v*dt;nz=f.z+Math.sin(f.a)*v*dt;nd=WS-gh(nx,nz);
+      if(nd>Math.max(.75,D.dmin*(D.mode==='nushi'?.8:.6))){f.x=nx;f.z=nz}else{f.a+=dt*(f.st==='flee'?8:3);f.tt=0} /* 浅すぎる所へは行かない */
+      f.y+=((come?Math.max(gh(f.x,f.z)+.5,Math.min(WS-.45,py-.25)):fishY(f,f.x,f.z))-f.y)*Math.min(1,dt*1.5)} /* 寄ってくる時は、底ではなく泳いでいる人の高さへ来る */
+    nd=gh(f.x,f.z)+.35;if(f.y<nd)f.y=nd;if(f.y>WS-.42)f.y=WS-.42; /* 坂を速く上る時に底へめり込まない・水面から出ない */
+    p=warp(f.x,f.z);p2=warp(f.x+Math.cos(f.a)*.3,f.z+Math.sin(f.a)*.3);sp.position.set(p[0],f.y,p[1]);sp.rotation.y=Math.atan2(p2[1]-p[1],-(p2[0]-p[0]))+Math.sin(f.ph*4)*.1}} /* 鯉の絵は頭が -x 向き */
+function dvMsg(txt,sec,gold){var e=$('#dvm');e.textContent=txt;e.className=gold?'gold':'';DV.msgT=sec}
+function dvBig(a,b,gold,sec){var e=$('#dvg');e.firstChild.textContent=a;e.lastChild.textContent=b;e.className=gold?'gold':'';e.hidden=false;DV.bigT=sec}
+function dvHud(force){var b=Math.max(0,DV.breath/DV.MAX),w=Math.round(b*100),sec=Math.max(0,Math.ceil(DV.breath)),dep=Math.max(0,WS-DV.y).toFixed(1),n=DV.catch.length,f;
+  if(force||DV.h_w!==w){DV.h_w=w;f=$('#dvbf');f.style.width=w+'%';f.style.background=b>.5?'#9BD94F':(b>.25?'#FFC83D':'#E94B3C')}
+  if(force||DV.h_s!==sec){DV.h_s=sec;$('#dvbt').textContent='息 '+sec+'秒'}
+  if(force||DV.h_d!==dep){DV.h_d=dep;$('#dvd').textContent='水深 '+dep+'m'}
+  if(force||DV.h_n!==n){DV.h_n=n;$('#dvcn').textContent=n}
+  var low=b<.25&&DV.y<WS-.05;if(force||DV.h_low!==low){DV.h_low=low;$('#dv').classList.toggle('low',low)}
+  var ch=DV.charge<0?0:DV.charge,off=(119.4*(1-ch)).toFixed(1);if(force||DV.h_c!==off){DV.h_c=off;$('#dvr').setAttribute('stroke-dashoffset',off);var mx=ch>=1;if(DV.h_m!==mx){DV.h_m=mx;$('#dvx').classList.toggle('max',mx);if(mx&&navigator.vibrate)try{navigator.vibrate(20)}catch(e){}}}
+  if(force||DV.h_a!==DV.aim){DV.h_a=DV.aim;$('#dvx').classList.toggle('aim',DV.aim)}}
+/* 水中の色と見通し（チャッピー）: 0〜2m 青緑 #287F83・12m先まで／2〜5m #155568・8m／5〜8m #103344・5m／8〜10m #091D2A・3m。あいだはなめらかにつなぐ */
+var DVK=[[0,40,127,131,12],[2,34,112,121,10],[3.500,21,85,104,8],[6.500,16,51,68,5],[9,9,29,42,3]];
+function dvFog(depth,under){var F=scene.fog,i,a,b,k;if(!under){if(F.far!==84){F.color.setHex(FOG);F.near=17;F.far=84}return}
+  for(i=0;i<DVK.length-2&&depth>DVK[i+1][0];i++);a=DVK[i];b=DVK[i+1];k=Math.max(0,Math.min(1,(depth-a[0])/(b[0]-a[0])));
+  F.color.setRGB((a[1]+(b[1]-a[1])*k)/255,(a[2]+(b[2]-a[2])*k)/255,(a[3]+(b[3]-a[3])*k)/255);F.near=.3;F.far=a[4]+(b[4]-a[4])*k}
+function diveIn(){DV.on=true;DV.y=WS+.22;camera.near=.15;camera.fov=W<H?80:CAM.fov;camera.updateProjectionMatrix(); /* 縦持ちは横の見える幅が狭いので、泳いでいる間だけ広く映す。水面のすぐ上から水を見ても手前が欠けないよう、近くの切り取りも詰める */
+  DV.pitch=-.2;DV.breath=DV.MAX;DV.catch=[];DV.rise=false;DV.charge=-1;DV.cool=0;DV.hook=null;DV.aura=0;DV.still=0;DV.black=0;DV.vy=0;DV.jl=0;CAM.tilt=0;me.path=[];me.go=null;
+  me.sp.userData.off=true;me.sp.visible=false;if(sheetOpen)close();$('#dv').hidden=false;$('#dvg').hidden=true;$('#dvm').textContent='';$('#dvk').style.opacity=0;$('#mapbtn').hidden=true;
+  actOn=null;actBtn.textContent='銛';actBtn.classList.add('spear');actBtn.hidden=false;$('#hint').textContent='丸で泳ぐ・なぞって見回す・銛は長押し';$('#hint').hidden=false;DV.hintT=7;dvHud(true);logEv('dive:in')}
+function diveOut(){if(DV.catch.length)diveBank();if(DV.hook)hookEnd();DV.on=false;camera.near=.5;camera.fov=CAM.fov;camera.updateProjectionMatrix();if(G.motes)G.motes.forEach(function(q){q.visible=false});DV.charge=-1;me.sp.userData.off=false;me.sp.visible=true;CAM.tilt=0;$('#dv').hidden=true;$('#mapbtn').hidden=false;actBtn.classList.remove('spear');actBtn.hidden=true;actOn=null;$('#hint').hidden=true;
+  dvFog(0,false);if(DV.fx){DV.fx.g.visible=false;DV.fx.ring.visible=false;DV.fx.on=false}logEv('dive:out')}
+function diveBank(){var n=DV.catch.length,sum=0,head=0;DV.catch.forEach(function(c){sum+=Math.ceil(c.price*(c.head?1.2:1));if(c.head)head++});DV.catch=[];S.coin+=sum;S.fish=(S.fish||0)+n;save();
+  dvBig('獲れた　＋'+sum+'フカ',n+'匹'+(head?'　急所！ 頭に当てた '+head+'匹は＋20%':''),head>0,2.2);logEv('dive:catch:'+n+':'+sum)}
+function diveFaint(){DV.black=1.9;DV.lost=DV.catch.length;DV.catch=[];if(DV.hook)hookEnd();DV.charge=-1;$('#dvk').style.opacity=1;dvBig('息が……！',DV.lost?'獲物を '+DV.lost+'匹 落とした':'',false,1.7);logEv('dive:faint')}
+function hookEnd(){var hf=DV.hook.f;DV.hook=null;hf.st='flee';hf.t=3.5;hf.fa=Math.atan2(hf.z-me.z,hf.x-me.x)}
+function eyeDir(){var cp=Math.cos(DV.pitch);return [-Math.sin(CAM.yaw)*cp,Math.sin(DV.pitch),-Math.cos(CAM.yaw)*cp]}
+/* 視線の先にいる魚。当たりは体の太さより少し広く取る（指で狙うので）。頭＝進む向きへ全長の33%先。体の前から3割（頭）を通った時だけ「急所」 */
+function spearRay(range){var o=[me.wx,DV.y,me.wz],d=eyeDir(),best=null,i,f,p,vx,vy,vz,t,rw,ux,uz,b,th,hd,dc;
+  for(i=0;i<FISH.length;i++){f=FISH[i];if(f.st==='gone'||f.st==='hook')continue;p=f.sp.position;vx=p.x-o[0];vy=p.y+f.hh*.5-o[1];vz=p.z-o[2];t=vx*d[0]+vy*d[1]+vz*d[2];if(t<.3||t>range)continue;
+    dc=Math.hypot(vx-d[0]*t,vy-d[1]*t,vz-d[2]*t);if(dc>f.len*.3+.14)continue;if(best&&best.t<t)continue;
+    rw=f.sp.rotation.y;ux=-Math.cos(rw);uz=Math.sin(rw);b=d[0]*ux+d[2]*uz;th=1-b*b;hd=th<.12?(b<0?f.len:-f.len):(b*t-ux*vx-uz*vz)/th; /* hd=銛が体の軸のどこを通ったか（頭の向きが＋）。ほぼ真正面からは頭、真後ろからは尾 */
+    best={f:f,t:t,head:hd>f.len*.2}}
+  return best}
+/* 飛ぶ銛（仮。チャッピー: 細い棒＋先の三角、柄 #8A6244・先 #D8D8CC、0.18〜0.30秒で飛ぶ、当たると白い輪。銛の絵が届いたら差し替える） */
+function spearFxMake(){var tx=canvasTex(256,24,function(g,w,hh){g.clearRect(0,0,w,hh);g.fillStyle='#8A6244';g.fillRect(0,9,206,6);g.fillStyle='#D8D8CC';g.beginPath();g.moveTo(200,2);g.lineTo(256,12);g.lineTo(200,22);g.closePath();g.fill()}),
+    m=new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:false}),g=new THREE.Group(),a=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.14),m),b=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.14),m);b.rotation.x=Math.PI/2;g.add(a);g.add(b);g.visible=false;scene.add(g);
+  var rt=canvasTex(128,128,function(g2,w,hh){g2.clearRect(0,0,w,hh);g2.strokeStyle='#fff';g2.lineWidth=9;g2.beginPath();g2.arc(64,64,52,0,6.2832);g2.stroke()}),ring=new THREE.Sprite(new THREE.SpriteMaterial({map:rt,transparent:true,depthTest:false,depthWrite:false,fog:false}));ring.visible=false;ring.renderOrder=4;scene.add(ring);
+  return {g:g,ring:ring,on:false,t:0,T:.2,o:null,d:null,dist:0,hit:false,q:new THREE.Quaternion(),vx:new THREE.Vector3(1,0,0),vd:new THREE.Vector3()}}
+function spearFx(o,d,dist,hit){var F=DV.fx||(DV.fx=spearFxMake());F.on=true;F.t=0;F.T=.18+.12*Math.min(1,dist/11);F.o=o;F.d=d;F.dist=dist;F.hit=hit;F.vd.set(d[0],d[1],d[2]);F.g.quaternion.setFromUnitVectors(F.vx,F.vd);F.g.visible=true;F.ring.visible=false}
+function spearFxStep(dt){var F=DV.fx;if(!F||!F.on)return;F.t+=dt;var u=F.t/F.T,k,rx=Math.cos(CAM.yaw),rz=-Math.sin(CAM.yaw);
+  if(u<1){k=1-u;F.g.position.set(F.o[0]+F.d[0]*F.dist*u+rx*.22*k,F.o[1]+F.d[1]*F.dist*u-.2*k,F.o[2]+F.d[2]*F.dist*u+rz*.22*k)}
+  else{F.g.visible=false;if(!F.hit){F.on=false;return}var v=(F.t-F.T)/.28;if(v>=1){F.ring.visible=false;F.on=false;return}F.ring.visible=true;F.ring.position.set(F.o[0]+F.d[0]*F.dist,F.o[1]+F.d[1]*F.dist,F.o[2]+F.d[2]*F.dist);F.ring.scale.setScalar(.25+v*.7);F.ring.material.opacity=1-v}}
+function spearDown(){if(!DV.on||DV.black>0||sheetOpen)return;if(DV.hook){hookTap();return}if(DV.cool>0||DV.charge>=0)return;DV.charge=0;$('#hint').hidden=true}
+function spearUp(cancel){if(!DV.on||DV.charge<0)return;var c=Math.max(.12,DV.charge);DV.charge=-1;if(cancel)return;var range=4+7*c,hit=spearRay(range),o=[me.wx,DV.y,me.wz],d=eyeDir();DV.cool=.55;spearFx(o,d,hit?hit.t:range,!!hit);logEv('spear');
+  if(!hit)return;var f=hit.f;f.sp.material.color.setRGB(1,.3,.25);f.red=.2;
+  if(f.D.mode==='nushi'){if(c<.6){dvMsg('浅い　もっと溜めないと刺さらない',1.6);f.st='flee';f.t=3;f.fa=Math.atan2(f.z-me.z,f.x-me.x);return}
+    f.st='hook';DV.hook={f:f,n:0,need:10,t:7,head:hit.head};dvMsg('ヌシだ　銛を連打して引き寄せろ　0/10',7,true);logEv('nushi:hook');return}
+  fishCaught(f,hit.head)}
+function fishCaught(f,head){f.st='gone';f.re=50+Math.random()*50;f.sp.visible=false;f.sp.userData.off=true;DV.catch.push({k:f.D.k,price:f.D.price,head:!!head});
+  dvMsg((head?'急所！　':'')+f.D.n+'　'+Math.ceil(f.D.price*(head?1.2:1))+'フカ（水面に顔を出すと確定）',2.4,!!head)}
+function hookTap(){var hk=DV.hook,f=hk.f;hk.n++;f.x+=(me.x-f.x)*.13;f.z+=(me.z-f.z)*.13;f.y+=(DV.y-.5-f.y)*.13;if(hk.n>=hk.need){DV.hook=null;fishCaught(f,hk.head);logEv('nushi:got')}else dvMsg('連打！　'+hk.n+'/'+hk.need,hk.t,true)}
+function motesStep(t,under){var i,q,u,bx=7,by=4.5;if(!G.motes){G.motes=[];for(i=0;i<28;i++){q=new THREE.Sprite(new THREE.SpriteMaterial({map:TX.glow||(TX.glow=glowTex()),transparent:true,depthTest:true,depthWrite:false,fog:true,color:col(0xcfeeff),opacity:.18+((i*37)%10)/40}));
+      q.scale.setScalar(.05+((i*13)%7)/140);q.renderOrder=2.4;q.visible=false;q.userData={ox:((i*73)%100)/100*bx,oy:((i*41)%100)/100*by,oz:((i*59)%100)/100*bx,s:.03+((i*17)%10)/200};scene.add(q);G.motes.push(q)}}
+  for(i=0;i<G.motes.length;i++){q=G.motes[i];if(!under){q.visible=false;continue}u=q.userData;q.visible=true;
+    q.position.set(me.wx+((((u.ox+t*.001*u.s*3-me.wx)%bx)+bx)%bx)-bx/2,DV.y+((((u.oy+t*.001*u.s-DV.y)%by)+by)%by)-by/2,me.wz+((((u.oz-t*.001*u.s*2-me.wz)%bx)+bx)%bx)-bx/2)}}
+function diveStep(dt,t,mh,dep){
+  if(!DV.on){if(dep>1.75&&!me.onB&&!intro&&me.sp)diveIn();else return}
+  else if(dep<1.45){diveOut();return}
+  var top=WS+.22,bot=mh+.55,jl=DV.jl,depth;
+  if(DV.black>0){DV.black-=dt;if(DV.black<1.1&&DV.y<top){DV.y=top;DV.breath=DV.MAX*.4;DV.pitch=0}if(DV.black<=.5)$('#dvk').style.opacity=0;DV.vy=0;jl=0}
+  if(DV.rise){DV.vy=3.2;if(DV.y>=top-.01)DV.rise=false}
+  else if(jl<.05&&DV.y>WS-1.2&&DV.charge<0)DV.vy=Math.max(DV.vy,.5); /* 水面の近くで何もしていないと、体が浮く */
+  DV.y=Math.max(bot,Math.min(top,DV.y+DV.vy*dt));DV.vy=0;DV.jl=0;depth=Math.max(0,WS-DV.y);
+  DV.aura+=(jl-DV.aura)*Math.min(1,dt*3);DV.still=jl<.12?DV.still+dt:0;
+  if(DV.y>=WS-.05){DV.breath=Math.min(DV.MAX,DV.breath+10*dt);if(DV.catch.length&&!DV.hook&&DV.black<=0)diveBank()}
+  else if(DV.black<=0){DV.breath-=dt*(1+depth/3.5);if(DV.breath<=0){DV.breath=0;diveFaint()}}
+  if(DV.charge>=0)DV.charge=Math.min(1,DV.charge+dt/.9);if(DV.cool>0)DV.cool-=dt;
+  if(DV.hook){DV.hook.t-=dt;if(DV.hook.t<=0){hookEnd();dvMsg('逃げられた',1.8)}}
+  if(DV.msgT>0){DV.msgT-=dt;if(DV.msgT<=0)$('#dvm').textContent=''}
+  if(DV.bigT>0){DV.bigT-=dt;if(DV.bigT<=0)$('#dvg').hidden=true}
+  if(DV.hintT>0){DV.hintT-=dt;if(DV.hintT<=0)$('#hint').hidden=true}
+  if((DV.tick++%5)===0)DV.aim=!!spearRay(11);
+  spearFxStep(dt);dvFog(depth,DV.y<WS-.05);motesStep(t,DV.y<WS-.05);dvHud(false);
+  me.wy=DV.y-1.45;me.under=DV.y<WS-.05;me.wet=1;
+  if(actBtn.hidden&&!sheetOpen){actBtn.textContent='銛';actBtn.hidden=false}else if(!actBtn.hidden&&sheetOpen)actBtn.hidden=true}
 function step(dt,t){ /* 歩く */
   if(ROOM.on){stepRoom(dt,t);return}
   var moving=false,ddx=0,ddz=0;
-  if(me.path.length&&!intro){var p=me.path[0],dx=p.x-me.x,dz=p.z-me.z,d=Math.hypot(dx,dz),s=SPEED*(1-.45*(me.wet||0))*dt;
+  if(me.path.length&&!intro){var p=me.path[0],dx=p.x-me.x,dz=p.z-me.z,d=Math.hypot(dx,dz),s=SPD()*dt;
     if(d<=s){me.x=p.x;me.z=p.z;me.path.shift()}else{me.x+=dx/d*s;me.z+=dz/d*s;moving=true;ddx=dx;ddz=dz}
     if(inPlaza(me.x,me.z)&&me.path.length){var wp=me.path[0];hard().forEach(function(o){var ox=me.x-o.x,oz=me.z-o.z,od=Math.hypot(ox,oz),rr=o.r+.3;if(od<rr&&od>1e-4){var nx=ox/od,nz=oz/od,tx=-nz,tz=nx,sg=((wp.x-me.x)*tx+(wp.z-me.z)*tz)>=0?1:-1;me.x=o.x+nx*rr+tx*sg*s*.7;me.z=o.z+nz*rr+tz*sg*s*.7}})}
     var d2=me.path.length?Math.hypot(me.path[0].x-me.x,me.path[0].z-me.z):0;if(me.path.length&&d2>d-s*.2){me.stuck=(me.stuck||0)+dt;if(me.stuck>2.5){me.path.shift();me.stuck=0}}else me.stuck=0;
     if(!me.path.length&&me.go){var g=me.go;me.go=null;arrive(g)}}
   /* スティックかキーで自由に歩く（通路以外も歩ける。家・木・柵にはぶつかる） */
   var jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y+(keys.d?1:0)-(keys.u?1:0),jl=Math.hypot(jx,jz);
-  if(jl>.15&&!intro&&land.hidden){if(jl>1){jx/=jl;jz/=jl}me.path=[];me.go=null;if(sheetOpen)close();var yc=Math.cos(CAM.yaw),ys=Math.sin(CAM.yaw),wxj=jx*yc+jz*ys,wzj=-jx*ys+jz*yc,ja=angAt(me.x,me.z),jc=Math.cos(ja),js=Math.sin(ja);me.x+=(wxj*jc+wzj*js)*SPEED*(1-.45*(me.wet||0))*dt;me.z+=(-wxj*js+wzj*jc)*SPEED*(1-.45*(me.wet||0))*dt;collide(me);moving=true;ddx=wxj;ddz=wzj}
+  if(DV.on){if(DV.black>0)jl=0;else if(jl>.15){DV.jl=Math.min(1,jl);DV.vy=-(jz/Math.max(1,jl))*Math.sin(DV.pitch)*DV.SW;jz*=Math.cos(DV.pitch)}}
+  if(jl>.15&&!intro&&land.hidden){if(jl>1){jx/=jl;jz/=jl}me.path=[];me.go=null;if(sheetOpen)close();var yc=Math.cos(CAM.yaw),ys=Math.sin(CAM.yaw),wxj=jx*yc+jz*ys,wzj=-jx*ys+jz*yc,ja=angAt(me.x,me.z),jc=Math.cos(ja),js=Math.sin(ja);me.x+=(wxj*jc+wzj*js)*SPD()*dt;me.z+=(-wxj*js+wzj*jc)*SPD()*dt;if(!DV.on)collide(me);else{me.x=Math.max(-TOWN-5,Math.min(TOWN+5,me.x));me.z=Math.max(-TOWN-5,Math.min(TOWN+5,me.z))}moving=true;ddx=wxj;ddz=wzj}
   else if(moving){var pa=angAt(me.x,me.z),pc=Math.cos(pa),ps=Math.sin(pa),gdx=ddx,gdz=ddz;ddx=gdx*pc-gdz*ps;ddz=gdx*ps+gdz*pc}
   me.moving=moving;nearAct();
   /* 橋: 両端（土手の高さ）から乗る。乗っている間は手すりの内側だけ歩ける。潜って下をくぐる時は乗らない */
@@ -703,15 +868,15 @@ function step(dt,t){ /* 歩く */
   if(BR.m&&me.onB){var bu=(me.x-BR.cx)/(BR.xh*BR.s);mh=Math.max(mh,BR.y0+(BR.yEnd+(BR.yMid-BR.yEnd)*Math.max(0,1-bu*bu))*BR.s)}
   if(me.camH===undefined)me.camH=mh;me.camH+=(mh-me.camH)*Math.min(1,dt*5);me.wx=mw[0];me.wz=mw[1];me.wy=mh;
   /* 池: 水面より下にいる分だけ「濡れ」（0〜1）。体が沈み、遅くなり、泳ぐ形に傾く。頭まで沈んだら画面を青くして泡を出す */
-  var dep=WS-mh;me.wet=sm(.15,1.7,dep);me.under=dep>1.75;
+  var dep=pondIn(me.x,me.z)>0?WS-mh:0;me.wet=sm(.15,1.7,dep);me.under=false;diveStep(dt,t,mh,dep); /* v0.12: 池の中だけ。池より低い陸地を水あつかいしない（v0.9〜v0.11 の不具合） */
   var hop=dirPose(me,ddx,ddz,moving,dt,7.5-3*me.wet)*(1-.6*me.wet)+me.wet*Math.sin(t*.0035)*.07;me.sp.position.set(mw[0],mh+hop,mw[1]);
   me.sp.rotation.x+=((me.wet*(moving?.6:.12))-me.sp.rotation.x)*Math.min(1,dt*6);
-  var uo=(sm(1.2,1.95,dep)*.55).toFixed(2);if(uw&&uw.__o!==uo){uw.__o=uo;uw.style.opacity=uo}
-  if(G.bub)for(var bi2=0;bi2<G.bub.length;bi2++){var bb=G.bub[bi2],bu=bb.userData;if(dep<.9){bb.visible=false;continue}
+  var uo=(DV.on?(DV.y<WS-.05?.16:0):sm(1.2,1.95,dep)*.55).toFixed(2);if(uw&&uw.__o!==uo){uw.__o=uo;uw.style.opacity=uo}
+  if(G.bub)for(var bi2=0;bi2<G.bub.length;bi2++){var bb=G.bub[bi2],bu=bb.userData;if(dep<.9||DV.on){bb.visible=false;continue}
     bu.t+=dt*(.55+bi2*.04);if(bu.t>=1||!bb.visible){bu.t=bu.t%1;bu.x=mw[0]+(Math.sin(bi2*12.9+t*.001)*.5);bu.z=mw[1]+(Math.cos(bi2*7.3+t*.0013)*.5);bu.y0=mh+1.1}
     bb.visible=true;bb.position.set(bu.x+Math.sin(bu.t*9+bi2)*.12,Math.min(WS-.03,bu.y0+bu.t*(WS-bu.y0)),bu.z);bb.material.opacity=.75*(1-bu.t*bu.t)}
   if(G.waterT){G.waterT.offset.x=t*.000012;G.waterT.offset.y=t*.000007}
-  stepPeople(dt,t,mw,mh);stepKoi(dt);
+  stepPeople(dt,t,mw,mh);stepFish(dt,t);
   var na=npc.a+dt*.2,nx2=Math.cos(na)*7.5,nz2=Math.sin(na)*7.5+2;hop=dirPose(npc,nx2-npc.x,nz2-npc.z,true,dt,5);npc.a=na;npc.x=nx2;npc.z=nz2;npc.sp.position.set(npc.x,hop,npc.z);npc.tag.position.set(npc.x,npc.tag.userData.oy,npc.z);
   _q.set(0,0,0,1);[me,npc,cop].forEach(function(o){var ow=o===me?mw:[o.x,o.z];_v.set(ow[0],(o===me?mh:0)+.03,ow[1]+.05);_s.set(1.5,1,.8);_m.compose(_v,_q,_s);G.fshade.setMatrixAt(o.shI,_m)});G.fshade.instanceMatrix.needsUpdate=true;
   /* カメラ（主人公のまわりを回る。10/6 1:44 主「主人公を中心に視点を変えるべき」）。yaw=0 が北向き。tilt で高さを変える */
@@ -724,6 +889,7 @@ function step(dt,t){ /* 歩く */
     cy+=k1*(5+intro.y);cz+=k1*3;lx+=(intro.x-lx)*k1;lz+=(intro.z-lz)*k1;ly+=k1*(3.2+intro.y);cx+=(intro.x-cx)*k1*.55;
     var msg=u>=7&&u<9?'あの家、'+intro.ask+'フカ':(u>=9&&u<10.8?'……高すぎる':'');if(big.textContent!==msg){big.textContent=msg;big.hidden=!msg;big.className=u<9?'':'sub2'}
     if(u>=10.8)endIntro()}
+  if(DV.on){var cp=Math.cos(DV.pitch);cx=mw[0];cz=mw[1];cy=DV.y;lx=cx-sy*cp;ly=cy+Math.sin(DV.pitch);lz=cz-cyw*cp;cb=.001;ch=2} /* 泳いでいる間は一人称 */
   camera.position.set(cx,cy,cz);camera.lookAt(lx,ly,lz);camera.updateMatrixWorld();
   /* 遠い物・視点の後ろの物は描かない。視点と主人公のあいだに立つ物は透かす */
   var i,b,ud,far,fx=-sy,fz=-cyw,rx=cyw,rz=-sy,ex,ez,al,lat,sC,want,mt,cur,tr;
@@ -737,7 +903,7 @@ function step(dt,t){ /* 歩く */
       if(mt.opacity===0)b.visible=false;
       else if(ud.m3&&want===1&&mt.transparent){mt.opacity=1;mt.transparent=false;mt.depthWrite=true;mt.needsUpdate=true}}}
   for(i=0;i<glowOrbs.length;i++){b=glowOrbs[i];if(b.visible)b.material.opacity=(has('lantern')?.36:.85)+Math.sin(t*.003+i*1.7)*.06}
-  for(i=0;i<flies.length;i++){b=flies[i];var f=b.userData.fly;f.a+=dt*f.s*.5;b.position.set(mw[0]+Math.cos(f.a+f.p)*f.r,mh+f.h+Math.sin(t*.001*f.s*3+f.p)*.5,mw[1]-4+Math.sin(f.a*1.3)*f.r*.8);b.material.opacity=.45+.45*Math.sin(t*.004*f.s+f.p)}
+  for(i=0;i<flies.length;i++){b=flies[i];var f=b.userData.fly;b.visible=!DV.on;f.a+=dt*f.s*.5;b.position.set(mw[0]+Math.cos(f.a+f.p)*f.r,mh+f.h+Math.sin(t*.001*f.s*3+f.p)*.5,mw[1]-4+Math.sin(f.a*1.3)*f.r*.8);b.material.opacity=.45+.45*Math.sin(t*.004*f.s+f.p)}
   if(poster)poster.visible=!!S.wanted}
 function allCols(){if(!colC||colC.t!==townCols||colC.n!==fixCols.length+townCols.length)colC={t:townCols,n:fixCols.length+townCols.length,L:fixCols.concat(townCols)};return colC.L}
 /* ぶつかり: 丸（木・ランタンなど）と、向きのある箱（家・柵・広場の建物）。主人公の体の太さは 0.4m。人（住人・警察官）にもぶつかる */
@@ -749,7 +915,7 @@ function collide(o){var i,c,dx,dz,d,rr,L=allCols(),ca,sa,lx,lz,px,pz;o.x=Math.ma
   if(o===me){var P2=[npc,cop],q;for(i=0;i<RES.length;i++){q=RES[i];if(Math.abs(q.x-o.x)<3&&Math.abs(q.z-o.z)<3)P2.push(q)}
     for(i=0;i<P2.length;i++){q=P2[i];dx=o.x-q.x;dz=o.z-q.z;d=Math.hypot(dx,dz);if(d<.8){if(d<1e-4){dx=0;dz=1;d=1}o.x=q.x+dx/d*.8;o.z=q.z+dz/d*.8}}}}
 var actBtn=$('#act'),actOn=null,actTick=0;
-function nearAct(){ if(++actTick%6)return;var best=null,bd=1e9,i,h,d,x,z,lim;
+function nearAct(){ if(DV.on)return;if(++actTick%6)return;var best=null,bd=1e9,i,h,d,x,z,lim;
   if(!intro&&!sheetOpen&&land.hidden&&!me.path.length)for(i=0;i<hits.length;i++){h=hits[i];
     if(h.who){x=h.who.x;z=h.who.z;lim=2.3}else if(h.type==='plot'){x=h.fx;z=h.fz;lim=2.7}else{x=h.px;z=h.pz+.6;lim=3.4}
     d=Math.hypot(me.x-x,me.z-z);if(d<lim&&d<bd){bd=d;best=h}}
@@ -758,7 +924,10 @@ function nearAct(){ if(++actTick%6)return;var best=null,bd=1e9,i,h,d,x,z,lim;
   var t;if(best.type==='plot'){var tr=resOf(best.id);t=isMine(best.id)?'自分の家に入る':(tr?tr+'段の家を見る':'空き地を見る')}
   else if(best.type==='res')t='住人に話しかける';else if(best.id==='chest')t='宝箱を見る';else if(best.id==='npc')t='森の住人に話しかける';else if(best.who)t='警察官に話しかける';else t=PLACES.filter(function(q){return q.id===best.id})[0].name+'を見る';
   actOn={key:key,h:best};actBtn.textContent=t;actBtn.hidden=false}
-actBtn.addEventListener('click',function(){ if(ROOM.on){$('#hint').hidden=true;open('home');return} if(!actOn)return;var h=actOn.h;actOn=null;actBtn.hidden=true;$('#hint').hidden=true;me.face=1;if(h.type==='plot')openLot(h.id);else{var bw2=whoOf(h.id);if(bw2)openChat(bw2);else open(h.id)}});
+actBtn.addEventListener('pointerdown',function(e){if(!DV.on)return;e.preventDefault();try{actBtn.setPointerCapture(e.pointerId)}catch(_){}spearDown()});
+actBtn.addEventListener('pointerup',function(e){if(DV.on)spearUp(false)});actBtn.addEventListener('pointercancel',function(e){if(DV.on)spearUp(true)});
+$('#dvup').addEventListener('click',function(){if(DV.on&&DV.black<=0){DV.rise=true;logEv('rise')}});
+actBtn.addEventListener('click',function(){ if(DV.on)return;if(ROOM.on){$('#hint').hidden=true;open('home');return} if(!actOn)return;var h=actOn.h;actOn=null;actBtn.hidden=true;$('#hint').hidden=true;me.face=1;if(h.type==='plot')openLot(h.id);else{var bw2=whoOf(h.id);if(bw2)openChat(bw2);else open(h.id)}});
 function endIntro(){ if(!intro)return;intro=null;big.hidden=true;big.textContent='';S.intro=1;save();$('#hint').hidden=false}
 function startIntro(){var c=LOTS.filter(function(l){return resOf(l.id)===5}).sort(function(a,b){return (a.q?5e3:0)+(a.cz<0?0:1e3)+a.dist-((b.q?5e3:0)+(b.cz<0?0:1e3)+b.dist)})[0];
   if(!c||window.matchMedia('(prefers-reduced-motion: reduce)').matches){S.intro=1;return}
@@ -771,9 +940,9 @@ function joySet(e){var r=jb.getBoundingClientRect(),dx=e.clientX-(r.left+r.width
 function joyEnd(e){if(e.pointerId!==joy.id)return;joy.id=null;joy.x=joy.y=0;jk.style.transform=''}
 jb.addEventListener('pointerdown',function(e){e.preventDefault();joy.id=e.pointerId;try{jb.setPointerCapture(e.pointerId)}catch(_){}if(intro)endIntro();$('#hint').hidden=true;joySet(e)});
 jb.addEventListener('pointermove',function(e){if(e.pointerId===joy.id)joySet(e)});jb.addEventListener('pointerup',joyEnd);jb.addEventListener('pointercancel',joyEnd);
-var KEYMAP={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r',w:'u',s:'d',a:'l',d:'r',W:'u',S:'d',A:'l',D:'r',q:'q',e:'e',Q:'q',E:'e'};
-window.addEventListener('keydown',function(e){var k=KEYMAP[e.key];if(!k||/TEXTAREA|INPUT/.test(e.target.tagName))return;keys[k]=1;if(intro)endIntro();$('#hint').hidden=true;e.preventDefault()});
-window.addEventListener('keyup',function(e){var k=KEYMAP[e.key];if(k)keys[k]=0});window.addEventListener('blur',function(){keys={}});
+var KEYMAP={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r',w:'u',s:'d',a:'l',d:'r',W:'u',S:'d',A:'l',D:'r',q:'q',e:'e',Q:'q',E:'e',' ':'sp',f:'f',F:'f'};
+window.addEventListener('keydown',function(e){var k=KEYMAP[e.key];if(!k||/TEXTAREA|INPUT/.test(e.target.tagName))return;if(k==='sp'){if(DV.on&&!e.repeat)spearDown();e.preventDefault();return}if(k==='f'){if(DV.on)DV.rise=true;return}keys[k]=1;if(intro)endIntro();$('#hint').hidden=true;e.preventDefault()});
+window.addEventListener('keyup',function(e){var k=KEYMAP[e.key];if(k==='sp'){spearUp(false);return}if(k)keys[k]=0});window.addEventListener('blur',function(){keys={}});
 /* ---- タッチ: 画面に映っている絵の四角で当たりを取る（手前のものが勝つ） ---- */
 var ray=null,v2=null,v3=null,fwd=null;
 function scr(x,y,z){v3=v3||new THREE.Vector3();fwd=fwd||new THREE.Vector3();camera.getWorldDirection(fwd);var d=(x-camera.position.x)*fwd.x+(y-camera.position.y)*fwd.y+(z-camera.position.z)*fwd.z;
@@ -789,7 +958,7 @@ function pick(px,py){ var best=null,i,h,q,x,z,mx=me.wx===undefined?me.x:me.wx,mz
     for(k=0;k<4;k++){tt=(y0-o.y)/d.y;gx=o.x+d.x*tt;gz=o.z+d.z*tt;y0=height(gx,gz)} /* 丘の高さに合わせて当たる場所を詰める */
     var g=unwarp(gx,gz),l=lotAtPoint(g[0],g[1]);best=l?{type:'plot',id:l.id}:{type:'ground',x:g[0],z:g[1]}}
   return best}
-function tapAt(cx,cy){ if(!R)return;if(ROOM.on){roomTap(cx,cy);return}if(intro){endIntro();return}close();$('#hint').hidden=true;var b=pick(cx,cy);if(!b)return;
+function tapAt(cx,cy){ if(!R)return;if(ROOM.on){roomTap(cx,cy);return}if(DV.on){var b0=pick(cx,cy);if(b0&&b0.id==='chest')open('chest');return}if(intro){endIntro();return}close();$('#hint').hidden=true;var b=pick(cx,cy);if(!b)return;
   if(b.type==='talk'){openChat(b.who);return}
   if(b.type==='ground'){walkTo(b,null);return}
   if(b.type==='plot'){walkTo(lotFront(LOTS[b.id]),{lot:b.id});return}
@@ -800,7 +969,7 @@ var drag=null,rst=$('#rst'),uw=$('#uw');
 cv.addEventListener('pointerdown',function(e){drag={id:e.pointerId,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,moved:false};try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',function(e){if(!drag||e.pointerId!==drag.id)return;
   if(!drag.moved&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>8){drag.moved=true;if(intro)endIntro();$('#hint').hidden=true}
-  if(drag.moved){CAM.yaw-=(e.clientX-drag.x)*.008;CAM.tilt=Math.max(-.75,Math.min(1,CAM.tilt+(e.clientY-drag.y)*.006));drag.x=e.clientX;drag.y=e.clientY}});
+  if(drag.moved){CAM.yaw-=(e.clientX-drag.x)*.008;if(DV.on)DV.pitch=Math.max(-1.4,Math.min(1.4,DV.pitch-(e.clientY-drag.y)*.006));else CAM.tilt=Math.max(-.75,Math.min(1,CAM.tilt+(e.clientY-drag.y)*.006));drag.x=e.clientX;drag.y=e.clientY}});
 function dragEnd(e){if(!drag||e.pointerId!==drag.id)return;var d=drag;drag=null;if(!d.moved&&e.type==='pointerup'){var r=cv.getBoundingClientRect();tapAt(e.clientX-r.left,e.clientY-r.top)}}
 cv.addEventListener('pointerup',dragEnd);cv.addEventListener('pointercancel',dragEnd);
 if(rst)rst.addEventListener('click',function(){CAM.yaw=0;CAM.tilt=0;rst.hidden=true});
@@ -905,13 +1074,12 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp
 function open(id){
   var jl=jailLeft();
   if(id==='pk')show(id,'<h2>PKスタジアム（フカシPK）</h2><p>ストーリーを1章クリアするごとに、森の家が1段広がる　今 '+S.clear.pk+'章クリア</p>'+
-    '<div class="row"><a class="btn" href="'+HUB_URL+'fukashi-pk/" target="_blank" rel="noopener">フカシPKを遊ぶ</a><button class="sub" data-a="sim:pk">1章クリアした事にする（試作用）</button></div>'+
-    '<p class="note">試作では実際のクリア記録をまだ読めないので、ボタンで代用している</p>');
+    '<div class="row"><a class="btn" href="'+HUB_URL+'fukashi-pk/" target="_blank" rel="noopener">フカシPKを遊ぶ</a>'+(ON_HUB?'</div><p class="note">フカシPKのクリア記録を、この端末から読んでいる（遊んで戻ってくると増える）</p>':'<button class="sub" data-a="sim:pk">1章クリアした事にする（試作用）</button></div><p class="note">ここ（Claudeの中）では実際のクリア記録を読めないので、ボタンで代用している</p>'));
   else if(id==='dil')show(id,'<h2>ジレンマの小屋（フカシのジレンマ）</h2><p>森で捕まるとここで取り調べになる　本編は作り直し中　今 '+S.clear.dil+'回クリア</p>'+
     '<div class="row"><button class="sub" data-a="sim:dil">1回クリアした事にする（試作用）</button></div>');
-  else if(id==='chest'){var cn=CHEST&&Math.hypot(me.x-CHEST.x,me.z-CHEST.z)<3.2;
-    if(S.chest)show(id,'<h2>宝箱</h2><p>もう空っぽ　中身は主がもらった</p>');
-    else if(!cn)show(id,'<h2>池の底に何かある</h2><p>歩いて池に入ると潜れる　近くまで行くと開けられる</p>');
+  else if(id==='chest'){var cn=CHEST&&Math.hypot(me.x-CHEST.x,me.z-CHEST.z)<3.2&&(!DV.on||DV.y<gh(CHEST.x,CHEST.z)+3);
+    if(S.chest)show(id,'<h2>宝箱</h2><p>もう空っぽ</p>');
+    else if(!cn)show(id,'<h2>池の底に何かある</h2><p>池の深い所に沈んでいる　潜ってすぐ近くまで行くと開けられる</p>');
     else show(id,'<h2>宝箱</h2><p>池の底に沈んでいた　鍵はかかっていない</p><div class="row"><button data-a="chest">開ける</button></div>')}
   else if(id==='log')logOpen();
   else if(id==='tab')show(id,'<h2>喫煙所（たばこのフカシ）</h2><p>開発中　できたらここから入れるようにする</p>');
@@ -993,7 +1161,7 @@ function band(r){return r<=1?1:(r<=2?2:(r<=4?3:4))}
 function renderLand(sel,msg){var h='',x,y,c;
   for(y=0;y<N;y++)for(x=0;x<N;x++){c=natAt(x,y);if(c==='w'||c==='g'||c==='k'||c==='f')h+='<i class="nat n'+c+'" style="grid-column:'+(x+1)+';grid-row:'+(y+1)+'"></i>'}
   LOTS.forEach(function(l){var mine=isMine(l.id),occ=resOf(l.id);
-    h+='<button type="button" class="plot'+(mine?' own':'')+(l.id===sel?' sel':'')+'" data-r="'+band(l.ring)+'" data-p="'+l.id+'" style="grid-column:'+(l.x+1)+'/span '+l.w+';grid-row:'+(l.y+1)+'/span '+l.h+'" aria-label="'+KNAME[l.kind]+'の土地 '+RNAME[l.ring]+(mine?' 自分の家':occ?' 森の住人の家 '+occ+'段':' 空き地')+'">'+(mine?'主':occ?occ:'')+'</button>'});
+    h+='<button type="button" class="plot'+(mine?' own':'')+(l.id===sel?' sel':'')+'" data-r="'+band(l.ring)+'" data-p="'+l.id+'" style="grid-column:'+(l.x+1)+'/span '+l.w+';grid-row:'+(l.y+1)+'/span '+l.h+'" aria-label="'+KNAME[l.kind]+'の土地 '+RNAME[l.ring]+(mine?' 自分の家':occ?' 森の住人の家 '+occ+'段':' 空き地')+'">'+(mine?'家':occ?occ:'')+'</button>'});
   h+='<div class="plaza">広場</div>';
   var yx=Math.max(1,Math.min(99,(me.x+TOWN)/(2*TOWN)*100)),yz=Math.max(1,Math.min(99,(me.z+TOWN)/(2*TOWN)*100)),ya=-(CAM.yaw+angAt(me.x,me.z))*180/Math.PI; /* 現在地（v0.11）: 赤い矢印＝いる場所と見ている向き */
   h+='<i class="you" style="left:'+yx.toFixed(1)+'%;top:'+yz.toFixed(1)+'%"><u style="transform:rotate('+ya.toFixed(0)+'deg)"></u><b style="transform:rotate('+ya.toFixed(0)+'deg)"></b></i>';
@@ -1032,14 +1200,14 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.11',APP_BUILD='1006-1523',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.12',APP_BUILD='1006-1923',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
 function logDev(){var d=null;try{d=localStorage.getItem('fk_dev');if(!d){d=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():logUuid();localStorage.setItem('fk_dev',d)}}catch(e){d=null}return d||(LOG.tmp=LOG.tmp||logUuid())}
 function logAuto(){try{return localStorage.getItem(LK+'_auto')!=='0'}catch(e){return true}}
 function logCtx(){var c={ver:APP_VER,build:APP_BUILD,ua:navigator.userAgent.slice(0,160),w:window.innerWidth,h:window.innerHeight,dpr:window.devicePixelRatio||1,t:Math.round((Date.now()-LOG.t0)/1000)};
-  try{c.x=+me.x.toFixed(1);c.z=+me.z.toFixed(1);c.yaw=+CAM.yaw.toFixed(2);c.room=ROOM.on?1:0;c.wet=me.under?2:(me.wet>.3?1:0);c.sheet=sheetOpen||'';c.map=land.hidden?0:1;c.lv=level();c.fps=LOG.fps.last;c.fpsMin=LOG.fps.min;c.gl=LOG.gl;c.ok3d=R?1:0}catch(e){}return c}
+  try{c.x=+me.x.toFixed(1);c.z=+me.z.toFixed(1);c.yaw=+CAM.yaw.toFixed(2);c.room=ROOM.on?1:0;c.wet=me.under?2:(me.wet>.3?1:0);c.dive=DV.on?+(WS-DV.y).toFixed(1):-1;c.breath=DV.on?Math.round(DV.breath):-1;c.sheet=sheetOpen||'';c.map=land.hidden?0:1;c.lv=level();c.fps=LOG.fps.last;c.fpsMin=LOG.fps.min;c.gl=LOG.gl;c.ok3d=R?1:0}catch(e){}return c}
 function logSave(){try{localStorage.setItem(LK,JSON.stringify(LOG.list))}catch(e){}}
 function logEv(t){LOG.trail.push([Math.round((Date.now()-LOG.t0)/1000),String(t).slice(0,28)]);if(LOG.trail.length>60)LOG.trail.splice(0,20);LOG.dirty=1}
 function logBadge(){var b=$('#logbtn'),n=LOG.list.filter(function(e){return !e.sent}).length;b.classList.toggle('bad',n>0);b.setAttribute('aria-label','記録（ログ）を開く'+(n?'　まだ送っていない記録が'+n+'件ある':''))} /* 件数は板の中に出す（札の幅を変えない＝上の段が折り返さない） */
@@ -1096,12 +1264,13 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,KOI:KOI,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
   screenOf:function(x,y,z){step(0,performance.now());R.render(scene,camera);var p=warp(x,z),q=scr(p[0],y+height(p[0],p[1]),p[1]);return [q.x,q.y,q.ppm]}};
-function start(){init3d();if(!R)logPush('load','3Dを始められなかった（three='+(ok3d?1:0)+'）','');else{try{var gl=R.getContext(),gx=gl.getExtension('WEBGL_debug_renderer_info');LOG.gl=String(gx?gl.getParameter(gx.UNMASKED_RENDERER_WEBGL):'').slice(0,80)}catch(e){}}mmSync();if(R&&!S.intro)startIntro();requestAnimationFrame(frame)}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)pkSync()});window.addEventListener('focus',pkSync);
+function start(){pkSync();init3d();if(!R)logPush('load','3Dを始められなかった（three='+(ok3d?1:0)+'）','');else{try{var gl=R.getContext(),gx=gl.getExtension('WEBGL_debug_renderer_info');LOG.gl=String(gx?gl.getParameter(gx.UNMASKED_RENDERER_WEBGL):'').slice(0,80)}catch(e){}}mmSync();if(R&&!S.intro)startIntro();requestAnimationFrame(frame)}
 function loadImgs(cb){var jobs=[];Object.keys(IMG).forEach(function(k){jobs.push([IM,k,IMG[k]])});
   Object.keys(MDLDEF).forEach(function(k){jobs.push([MIM,k,MDLDEF[k].t]);var hs=MDLDEF[k].hats||{};Object.keys(hs).forEach(function(c){jobs.push([MIM,k+'@'+c,hs[c]])})});
   var n=jobs.length;if(!n){cb();return}jobs.forEach(function(j){var im=new Image();im.onload=function(){j[0][j[1]]=im;if(!--n)cb()};im.onerror=function(){if(!--n)cb()};im.src=j[2]})}
