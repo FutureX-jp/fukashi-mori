@@ -1305,6 +1305,7 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='greet'){S.like++;save();if(sheetOpen==='chat'&&chatWho===npc){npc.log.push(['me','（挨拶した）']);npc.log.push(['bot','やあ　これで'+S.like+'回目　今は'+stageName()+'だね']);sayOver(npc,'やあ　今は'+stageName()+'だね',4200);renderChat()}else open('npc');return}
   if(a.indexOf('st:')===0){chatSend('st',+a.slice(3));return}
   if(a==='pname'){var pn=(($('#pname')||{}).value||'').trim().slice(0,12);if(pn){S.pname=pn;save();renderChat()}return}
+  if(a.indexOf('vote:')===0){var vv=a.split(':');voteSend(+vv[1],+vv[2]);return}
   if(a.indexOf('talkai:')===0){var oo=AIBY[a.slice(7)];if(oo)openChat(oo);return}
   if(a==='say'){var cv2=($('#chatin').value||'').trim();if(cv2)chatSend('text',cv2);return}
   if(a==='rob'){loot=5+Math.floor(Math.random()*10);
@@ -1441,11 +1442,15 @@ function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み
   var h='<p>森の'+w.day+'日目 '+w.slot+'時　天気 '+esc(w.weather||'')+'　住人 '+ppl.length+'人　役場のお金 '+((w.town||{}).coin||0)+'フカ</p>';
   h+='<h3>きのうの日誌</h3>'+ppl.map(function(r){return '<p><b>'+esc(r.name)+'</b>　'+esc(last(r)).slice(0,90)+'</p>'}).join('');
   h+='<h3>役場の記録</h3>'+(w.hall||[]).slice(-6).reverse().map(function(x){return '<p class="note">'+x.day+'日 '+x.slot+'時 ['+esc(x.kind)+'] '+esc(x.text)+'</p>'}).join('');
-  var rq=(w.requests||[]).slice(0,3);if(rq.length)h+='<h3>住人からの要望</h3>'+rq.map(function(q){return '<p class="note">'+esc(q.text)+'（'+q.count+'回）</p>'}).join('');
+  var b=w.ballot;if(b){h+='<h3>投票中（'+b.closes+'日目の夜に開票）</h3><p class="note">一番多い物が森にできる　住人1人1票・旅人1人1票</p>'+b.cands.map(function(c,i){var mine=S.vote&&S.vote.n===b.n&&S.vote.c===i;return '<p><b>'+(i+1)+'. '+esc(c.title)+'</b>　'+(c.res+c.pl)+'票（住人'+c.res+'・旅人'+c.pl+'）<br><span class="note">'+esc(c.detail)+'</span></p><div class="row"><button'+(mine?' class="sub" disabled':'')+' data-a="vote:'+b.n+':'+i+'">'+(mine?'入れた':'これに入れる')+'</button></div>'}).join('')}
+  var dc=(w.decided||[]).slice(-2).reverse();if(dc.length)h+='<h3>決まった物</h3>'+dc.map(function(x){return '<p class="note">'+esc(x.title)+'（'+x.status+'）</p>'}).join('');
+  if(!b){var rq=(w.requests||[]).filter(function(q){return !q.used}).slice(0,3);if(rq.length)h+='<h3>住人からの要望</h3>'+rq.map(function(q){return '<p class="note">'+esc(q.text)+'（'+q.count+'回）</p>'}).join('')}
   h+='<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">役場の記録を全部見る</a></div>';show('yakuba','<h2>森の役場</h2>'+h)},function(){if(sheetOpen==='yakuba')show('yakuba','<h2>森の役場</h2><p>役場に人がいないみたい（つながらなかった）</p>')})}
 function news15(){if(S.n15||!V15.on)return;S.n15=1;save();toast('森が狭くなった。広場のまわりと池だけ歩ける');toast('AIで動く住人が7人になった。話しかけると覚えている');if(S.v15moved)toast('家が立入禁止の外だったので、広場の近くへ引っ越しました')}
 function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000)}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
 function nameRow(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.pname?'<div class="row say"><input id="pname" type="text" maxlength="12" placeholder="あなたの名前" autocomplete="off" aria-label="名前"><button data-a="pname">名前を決める</button></div>':''}
+function voteSend(n,c){if(!S.dev){S.dev=Math.random().toString(36).slice(2)+Date.now().toString(36);save()}
+  fetch(MORI+'/api/vote?w=live',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({c:c,dev:S.dev,name:S.pname||'旅人'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
 
 function landPrice(l){return PLACEV[l.ring]*l.area}
 function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.ring]*l.area/10)*10:0}
