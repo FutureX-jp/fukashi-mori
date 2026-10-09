@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#071c18">
-<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.16）">
+<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.17）">
 <meta property="og:title" content="フカシの森（試作）">
 <meta property="og:description" content="夜の森を歩く・家を買う・住人と話す　フカシGames の入口の試作">
 <script>window.__earlyErr=[];window.addEventListener('error',function(e){if(window.__earlyErr)window.__earlyErr.push([e.message||((e.target&&e.target.tagName||'')+' '+String(e.target&&(e.target.src||e.target.href)||'').replace(/^.*\//,''))||'load',e.error&&e.error.stack||''])},true)</script>
@@ -57,6 +57,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 #sheet{max-height:calc(100% - 64px);overflow-y:auto;overscroll-behavior:contain} /* v0.16 役場が長いと上が画面の外に切れていた */
 .qz{display:flex;flex-direction:column;gap:8px}.qz .qa{text-align:left;width:100%}.qz.two .qa{padding:10px 12px}.qa.on{outline:3px solid var(--leaf)}.row.col{flex-direction:column;align-items:stretch;gap:2px}
 .qres{text-align:center;border:2px dashed #cdbf8f;border-radius:14px;padding:10px}.qtype{font-size:22px!important;font-weight:700}.qname{font-size:20px!important;font-weight:700;color:var(--leaf)}.qmsg{color:var(--danger);font-weight:700}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}.agree input{width:22px;height:22px;flex:none;margin-top:1px}.codebox{border:2px dashed #cdbf8f;border-radius:14px;padding:10px 12px;display:grid;gap:6px;justify-items:start}.code{font-family:ui-monospace,Menlo,monospace;font-size:22px!important;font-weight:700;letter-spacing:.08em;user-select:all}.mytab{width:100%;border-collapse:collapse;font-size:14px}.mytab th{text-align:left;font-weight:700;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top}.mytab td{padding:5px 0}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 button,a.btn{font:inherit;font-weight:700;font-size:15px;color:var(--ink);background:var(--lantern);border:0;border-radius:999px;
   padding:11px 16px;min-height:44px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;flex:1 1 auto}
@@ -76,9 +77,10 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:#fff;border:2px
 table{border-collapse:collapse;font-size:12px;width:100%;font-variant-numeric:tabular-nums}
 td{border-bottom:1px solid #e3d6a4;padding:3px 4px}td:last-child{text-align:right;color:var(--dim)}
 #uw{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 55%,rgba(40,130,180,.28),rgba(6,36,78,.82));transition:opacity .25s}
-.log{display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:1.45;overflow:hidden}
-.log p{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.log .me{color:#7a5a1c}.log .bot{font-weight:700}
+.log{display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.55;max-height:min(38vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:2px 2px 4px}
+.log p{margin:0;display:flex}.log .me{justify-content:flex-end}
+.log .bb{max-width:84%;padding:7px 12px;border-radius:16px;background:#fff;border:1.5px solid #e2d6b0;overflow-wrap:anywhere;white-space:normal}
+.log .bot .bb{border-bottom-left-radius:5px;font-weight:700}.log .me .bb{background:#f6dc8c;border-color:#e9c768;border-bottom-right-radius:5px;color:#4a3a12}
 .stamps{display:flex;flex-wrap:wrap;gap:6px}
 .stamps .st{flex:0 0 auto;min-height:38px;padding:6px 12px;font-size:13px;background:#fff;border:2px solid #cdbf8f}
 .say{flex-wrap:nowrap}
@@ -227,7 +229,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.16';
+var VERSION='v0.17';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1203,18 +1205,18 @@ function aiReply(w,text){var persona=w.kind==='cop'?'森の警察官（まじめ
   return sampleFn(turns,{cache:false,modelTier:'quick'}).then(function(r){var t=String(r&&r.text||'').replace(/\s+/g,' ').trim();if(!t)throw {code:'empty_completion'};return t.slice(0,80)})}
 function openChat(w){chatWho=w;w.log=w.log||[];renderChat()}
 function renderChat(){var w=chatWho;if(!w)return;var keep=$('#chatin')?$('#chatin').value:'';
-  var lines=w.log.slice(-4).map(function(l){return '<p class="'+(l[0]==='me'?'me':'bot')+'">'+(l[0]==='me'?'自分':'相手')+'：'+esc(l[1])+'</p>'}).join('')||'<p class="note">スタンプか、ひとことで話しかける</p>';
+  var lines=w.log.slice(-14).map(function(l){return '<p class="'+(l[0]==='me'?'me':'bot')+'"><span class="bb">'+esc(l[1])+'</span></p>'}).join('')||'<p class="note">スタンプか、ひとことで話しかける</p>';
   show('chat','<h2>'+esc(whoName(w))+'</h2><div class="log" id="chatlog">'+lines+'</div>'+
     nameRow(w)+'<div class="stamps">'+STAMPS.map(function(st,i){return '<button type="button" class="st" data-a="st:'+i+'">'+st[0]+'</button>'}).join('')+'</div>'+
     '<div class="row say"><input id="chatin" type="text" maxlength="60" placeholder="ひとこと書く" autocomplete="off" enterkeyhint="send" aria-label="ひとこと"><button data-a="say">送る</button></div>'+
     (w.kind==='npc'?'<div class="row"><button class="sub" data-a="greet">挨拶する（今 '+S.like+'回）</button></div>':'')+
     (sampleFn?'<label class="ai"><input type="checkbox" id="aion"'+(S.ai?' checked':'')+'>AIが考えて返事する（開いた人のClaudeの使用量を使う）</label>':'')+
     '<p class="note">'+(V15.on&&(w.kind==='ai'||w===cop)?'相手はAIで暮らす森の住人（人ではない）　話したことを覚えている　1日30回まで':'相手は森の住人（bot）　人ではない')+(w.kind==='npc'?'　挨拶3回で相棒、6回でお付き合い、10回で同棲':'')+'</p>');
-  if(keep&&$('#chatin'))$('#chatin').value=keep}
+  if(keep&&$('#chatin'))$('#chatin').value=keep;var lg=$('#chatlog');if(lg)lg.scrollTop=lg.scrollHeight}
 function chatSend(kind,val){var w=chatWho;if(!w)return;if(w!==cop)qEv('talk',w===npc?'npc':(w.id!==undefined?'r'+w.id:(w.name||'r')));var text=kind==='st'?STAMPS[val][0]:String(val).slice(0,60);w.log.push(['me',text]);sayOver(me,text,2800);if($('#chatin'))$('#chatin').value='';renderChat();
   var seq=w.seq=(w.seq||0)+1;sayOver(w,'…',12000);
   function done(rep){if(w.seq!==seq)return;w.log.push(['bot',rep]);if(w.log.length>14)w.log.splice(0,w.log.length-14);sayOver(w,rep,5200);if(chatWho===w&&sheetOpen==='chat')renderChat()}
-  if(V15.on&&(w.kind==='ai'||w===cop)){aiTalk(w,text).then(done,function(e){done(e&&e.code==='limit'?'今日はもうたくさん話したね　また明日':botReply(w,kind,val,text))});return} /* v0.15: AIの住人はサーバーのHaikuが記憶つきで返す */
+  if(V15.on&&(w.kind==='ai'||w===cop)){aiTalk(w,text).then(done,function(e){done(e&&e.code==='limit'?'今日はもうたくさん話したね　また明日':e&&e.code==='login'?(setTimeout(juminOpen,1200),'住民票を作ってくれたら、ちゃんと話せるよ'):botReply(w,kind,val,text))});return} /* v0.15: AIの住人はサーバーのHaikuが記憶つきで返す */
   if(kind==='text'&&S.ai&&sampleFn){aiReply(w,text).then(done,function(e){if(e&&/not_granted|sampling_disabled|not_declared|capability_disabled|capability_removed/.test(e.code||''))sampleFn=null;done(botReply(w,kind,val,text))})}
   else setTimeout(function(){done(botReply(w,kind,val,text))},600+Math.random()*400)}
 sheet.addEventListener('change',function(e){if(e.target&&e.target.id==='aion'){S.ai=!!e.target.checked;save()}});
@@ -1308,6 +1310,8 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='greet'){S.like++;save();if(sheetOpen==='chat'&&chatWho===npc){npc.log.push(['me','（挨拶した）']);npc.log.push(['bot','やあ　これで'+S.like+'回目　今は'+stageName()+'だね']);sayOver(npc,'やあ　今は'+stageName()+'だね',4200);renderChat()}else open('npc');return}
   if(a.indexOf('st:')===0){chatSend('st',+a.slice(3));return}
   if(a.indexOf('q15:')===0){q15Act(a.slice(4));return}
+  if(a==='jumin'){juminOpen();return}if(a==='jumin:make'){juminMake();return}if(a==='jumin:restore'){J17.view='restore';J17.err='';juminDraw();return}if(a==='jumin:back'){J17.view='make';J17.err='';juminDraw();return}if(a==='jumin:restoreGo'){juminRestore();return}if(a==='jumin:copy'){juminCopy();return}if(a==='jumin:done'){juminDone();return}
+  if(a==='my'){myOpen();return}if(a.indexOf('my:')===0){myAct(a.slice(3));return}
   if(a.indexOf('gift:')===0){giftSend(a.slice(5));return}
   if(a.indexOf('oshi:')===0){oshiSet(a.slice(5));return}
   if(a==='yakubaGo'){yakubaOpen();return}
@@ -1439,7 +1443,7 @@ function stepAI(dt,t,mw){var i,o,p,y,a,c,s2,gx,gz,mv,hop,d;
     else if(o.path.length){var q=o.path[0];gx=q.x-o.x;gz=q.z-o.z;var dd=Math.hypot(gx,gz),sp=1.7*dt;
       if(dd<=sp){o.x=q.x;o.z=q.z;o.path.shift()}else{o.x+=gx/dd*sp;o.z+=gz/dd*sp;mv=true}p=warp(o.x,o.z)}
     y=height(p[0],p[1]);a=angAt(o.x,o.z);c=Math.cos(a);s2=Math.sin(a);hop=dirPose(o,gx*c-gz*s2,gx*s2+gz*c,mv,dt,4.5);o.sp.position.set(p[0],y+hop,p[1]);o.tag.position.set(p[0],y+2.5,p[1])}}
-function aiTalk(w,text){var nm=w===cop?'ケイ':w.name;return fetch(MORI+'/api/talk?w=live',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({who:nm,player:S.pname||'旅人',text:text,history:(w.log||[]).slice(-7,-1)})}).then(function(r){return r.json()}).then(function(j){if(!j||!j.reply)throw {code:j&&j.reason||'none'};return j.reply})}
+function aiTalk(w,text){var nm=w===cop?'ケイ':w.name;return fetch(MORI+'/api/talk?w=live',{method:'POST',headers:MH(),body:JSON.stringify({who:nm,player:S.pname||'旅人',text:text,history:(w.log||[]).slice(-7,-1)})}).then(function(r){return r.json()}).then(function(j){if(j&&j.masked)toast('名前や学校などは（ひみつ）にしておいた。住人には伝えていない');if(!j||!j.reply)throw {code:j&&j.reason||'none'};return j.reply})}
 /* 天気（画面の上に重ねる。夜なので真っ暗にはしない） */
 function wxPaint(){var el=$('#wx');if(!el){el=document.createElement('div');el.id='wx';el.setAttribute('aria-hidden','true');document.body.appendChild(el);
     var st=document.createElement('style');st.textContent='#wx{position:fixed;inset:0;pointer-events:none;z-index:4;transition:background-color 2s}#wx.c{background:rgba(40,52,70,.10)}#wx.r,#wx.s{background:rgba(30,44,60,.15) repeating-linear-gradient(104deg,rgba(200,220,255,0) 0 9px,rgba(200,220,255,.22) 9px 10px,rgba(200,220,255,0) 10px 23px);background-size:auto,140px 140px;animation:wxr .45s linear infinite}#wx.s{background-color:rgba(20,30,46,.24);animation:wxr .22s linear infinite,wxf 7s steps(1) infinite}@keyframes wxr{to{background-position:0 0,-38px 140px}}@keyframes wxf{0%,93%,97%{filter:none}94%,96%{background-color:rgba(230,236,255,.42)}}';document.head.appendChild(st)}
@@ -1455,10 +1459,10 @@ function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み
   if(!b){var rq=(w.requests||[]).filter(function(q){return !q.used}).slice(0,3);if(rq.length)h+='<h3>住人からの要望</h3>'+rq.map(function(q){return '<p class="note">'+esc(q.text)+'（'+q.count+'回）</p>'}).join('')}
   h+='<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">役場の記録を全部見る</a></div>';show('yakuba','<h2>森の役場</h2>'+h);sheet.scrollTop=0},function(){if(sheetOpen==='yakuba')show('yakuba','<h2>森の役場</h2><p>役場に人がいないみたい（つながらなかった）</p>')})}
 function news15(){if(S.n15||!V15.on)return;S.n15=1;save();toast('森が狭くなった。広場のまわりと池だけ歩ける');toast('AIで動く住人が7人になった。話しかけると覚えている');if(S.v15moved)toast('家が立入禁止の外だったので、広場の近くへ引っ越しました')}
-function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500)}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
-function nameRow(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.pname?'<div class="row say"><input id="pname" type="text" maxlength="12" placeholder="あなたの名前" autocomplete="off" aria-label="名前"><button data-a="pname">名前を決める</button></div>':''}
-function voteSend(n,c){if(!S.dev){S.dev=Math.random().toString(36).slice(2)+Date.now().toString(36);save()}
-  fetch(MORI+'/api/vote?w=live',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({c:c,dev:S.dev,name:S.pname||'旅人'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
+function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500);juminSync()}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
+function nameRow(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.acct?'<div class="row say"><button data-a="jumin">森の住民票を作って話す</button></div><p class="note">住人と話すには住民票（呼び名だけ）が要る</p>':''} /* v0.17: 名前は住民票の呼び名 */
+function voteSend(n,c){if(!S.acct){juminOpen();return}
+  fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
 
 /* ===== v0.16 「性格診断 → 推し／分身」 =====
    10/9 主「僕らが入っていく時に、お気に入りの住人（AI）を選ぶようにする？性格診断的なものをして作る？ 気になって見る要因になると思う」
@@ -1484,7 +1488,8 @@ var QNG=/死|殺|うんこ|うんち|ちんこ|まんこ|ばか|バカ|アホ|�
 var Q16={step:0,ans:[],res:null,cl:{name:'',sex:'',look:-1,val:-1},busy:false};
 function devId(){if(!S.dev){S.dev=Math.random().toString(36).slice(2)+Date.now().toString(36);save()}return S.dev}
 function qScore(ans){var sc={},k;ans.forEach(function(a,i){var pt=QZ[i][1][a][1];for(k in pt)sc[k]=(sc[k]||0)+pt[k]});var best=-1,top=[];for(k in QTYPE){var v=sc[k]||0;if(v>best){best=v;top=[k]}else if(v===best)top.push(k)}return {sc:sc,top:top,id:top[Math.floor(Math.random()*top.length)]}} /* 同点はランダム */
-function q15Auto(){if(S.q16s||!V15.on||intro||sheetOpen||(typeof ROOM!=='undefined'&&ROOM.on)||(typeof TQ!=='undefined'&&TQ.length)||(typeof TT!=='undefined'&&TT>0))return; /* お知らせが全部出終わってから（重なると選択肢が隠れる） */S.q16s=1;save();q15Open(0)} /* 初めて入った時に1回だけ（とじてもあとで役場からできる） */
+function q15Auto(){if(!S.acct&&!S.j17s&&V15.on&&!intro&&!sheetOpen&&!(typeof ROOM!=='undefined'&&ROOM.on)&&!(typeof TQ!=='undefined'&&TQ.length)&&!(typeof TT!=='undefined'&&TT>0)){S.j17s=1;save();juminOpen('first');return} /* v0.17: まず住民票 */
+  if(S.q16s||!V15.on||intro||sheetOpen||(typeof ROOM!=='undefined'&&ROOM.on)||(typeof TQ!=='undefined'&&TQ.length)||(typeof TT!=='undefined'&&TT>0))return; /* お知らせが全部出終わってから（重なると選択肢が隠れる） */S.q16s=1;save();q15Open(0)} /* 初めて入った時に1回だけ（とじてもあとで役場からできる） */
 function q15Open(step){Q16.step=step;var h;setTimeout(function(){sheet.scrollTop=0},0);
   if(step===0){h='<p class="note">FOREST PERSONALITY TEST</p><h2>あなたと気が合う森の住人は？</h2><p>5問だけの性格診断。結果で、森に暮らすAIの住人7人のうち、あなたと気が合いそうな住人が分かる</p><p class="note">結果のあと「推しにする」か「自分の分身を作って移住する」かを選べる</p><div class="row"><button data-a="q15:go">はじめる</button><button class="sub" data-a="close">あとで（役場からできる）</button></div>';show('quiz',h);return}
   if(step<=5){var q=QZ[step-1];h='<p class="note">FOREST PERSONALITY TEST　'+step+' / 5</p><h2>'+esc(q[0])+'</h2><div class="qz">'+q[1].map(function(o,k){return '<button class="qa" data-a="q15:a:'+k+'">'+'ABCD'[k]+'. '+esc(o[0])+'</button>'}).join('')+'</div>'+(step>1?'<div class="row"><button class="sub" data-a="q15:back">ひとつ戻る</button></div>':'');show('quiz',h);return}
@@ -1518,17 +1523,17 @@ function q15Act(a){var p=a.split(':');
     if(AIDEF.some(function(d){return d.name===c.name})||c.name==='ケイ')return q15Clone('森の住人と同じ名前は使えない');
     if(!c.sex)return q15Clone('男の子か女の子かを選んでね');if(c.look<0)return q15Clone('見た目を選んでね');if(c.val<0)return q15Clone('大切にしたいものを選んでね');
     cloneSend();return}}
-function cloneSend(){var c=Q16.cl,ans=(S.quiz?S.quiz.ans:Q16.ans).map(function(a,i){return QZ[i][0]+'→'+QZ[i][1][a][0]});ans.push('森で大切にしたい物→'+QVAL[c.val]);
+function cloneSend(){if(!S.acct){Q16.busy=false;juminOpen();return}var c=Q16.cl,ans=(S.quiz?S.quiz.ans:Q16.ans).map(function(a,i){return QZ[i][0]+'→'+QZ[i][1][a][0]});ans.push('森で大切にしたい物→'+QVAL[c.val]);
   var look=c.look===3?Math.floor(Math.random()*3):c.look;Q16.busy=true;q15Clone();
-  fetch(MORI+'/api/join?w=live',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mode:'clone',dev:devId(),name:S.pname||'旅人',cloneName:c.name,sex:c.sex,look:look,value:QVAL[c.val],answers:ans,type:S.quiz?S.quiz.type:''})}).then(function(r){return r.json()}).then(function(j){Q16.busy=false;
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'clone',cloneName:c.name,sex:c.sex,look:look,value:QVAL[c.val],answers:ans,type:S.quiz?S.quiz.type:''})}).then(function(r){return r.json()}).then(function(j){Q16.busy=false;
     if(j&&j.ok&&j.clone){S.clone={id:j.clone.id,name:j.clone.name};S.oshi={id:j.clone.id,name:j.clone.name};save();logEv('quiz:clone');
       show('quiz','<h2>🌱 '+esc(j.clone.name)+'が森に引っ越してきた！</h2><p>'+esc(j.clone.core||'')+'</p><p class="note">いま: '+esc(j.clone.traits||'')+'</p><p class="note">話し方: '+esc(j.clone.speech||'')+'</p><p>2時間ごとに、ほかの住人と同じように自分で考えて暮らす。話しかけると、あなたのことも覚えている</p><div class="row"><button data-a="close">森へ</button></div>');aiPoll();return}
-    var why={full:'いまの森は満員（12人まで）。だれかが減るまで待ってね',already:'もうあなたの分身が森にいる（1人1体まで）',name:'その名前の住人がもういる。ほかの名前にしてね',budget:'今日はAIの予算が終わった。また明日ためしてね',ai:'性格を作るのに失敗した。もう一度ためしてね'}[j&&j.reason]||'移住できなかった';q15Clone(why)},
+    var why={login:'先に森の住民票を作ってね',full:'いまの森は満員（12人まで）。だれかが減るまで待ってね',already:'もうあなたの分身が森にいる（1人1体まで）',name:'その名前の住人がもういる。ほかの名前にしてね',budget:'今日はAIの予算が終わった。また明日ためしてね',ai:'性格を作るのに失敗した。もう一度ためしてね'}[j&&j.reason]||'移住できなかった';q15Clone(why)},
   function(){Q16.busy=false;q15Clone('役場につながらなかった。電波のいい所でもう一度')})}
 /* 推し: かぶってOK（ファンの人数が出る）。分身を作った人は分身が推しになる */
-function oshiSet(id){var t=QTYPE[id],nm=t?t[0]:((AIBY[id]||{}).name||'');S.oshi={id:id,name:nm};save();tagsPaint();logEv('quiz:oshi');
+function oshiSet(id){if(!S.acct){Q16.after={oshi:id};juminOpen();return}var t=QTYPE[id],nm=t?t[0]:((AIBY[id]||{}).name||'');S.oshi={id:id,name:nm};save();tagsPaint();logEv('quiz:oshi');
   show('quiz','<h2>★ '+esc(nm)+'を推しにした</h2><p>'+esc(nm)+'の頭の上に★が付く。おなかがすいたり家が壊れたりしたら、お知らせが来る</p><p class="note">役場で日誌を読んだり、1日1回 差し入れ（10フカ）ができる</p><div class="row"><button data-a="close">森へ</button><button class="sub" data-a="yakubaGo">役場で様子を見る</button></div>');
-  fetch(MORI+'/api/join?w=live',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mode:'oshi',dev:devId(),name:S.pname||'旅人',oshi:id})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.oshiFans=j.fans;save()}},function(){})}
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'oshi',oshi:id})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.oshiFans=j.fans;save()}},function(){})}
 function whoAI(id){return id==='kei'?cop:AIBY[id]}
 function tagsPaint(){AI.concat(cop.tag?[cop]:[]).forEach(function(o){var id=o===cop?'kei':o.id,nm=o===cop?'ケイ':o.name,t=(S.oshi&&S.oshi.id===id?'★ ':'')+(o.clone?'🌱':'')+nm;if(!o.tag||o.tagTxt===t)return;
   if(o===cop&&o.tagTxt===undefined&&t===nm){o.tagTxt=t;return}o.tagTxt=t;var tx=textTex(t,{fs:44,pill:1,body:1,fg:'#173a2c',bg:S.oshi&&S.oshi.id===id?'rgba(255,214,120,.98)':undefined}),h=o.tag.userData.h||.42;o.tag.material.map=tx;o.tag.material.needsUpdate=true;o.tag.scale.x=h*tx.userData.asp;o.tag.userData.w=o.tag.scale.x})}
@@ -1539,20 +1544,82 @@ function oshiWatch(d){if(!S.oshi)return;var p=(d.people||[]).filter(function(x){
   var why=oshiPinch(p),k=d.day+':'+why;if(why&&S.pinch!==k){S.pinch=k;save();toast('推しの'+S.oshi.name+'が ピンチ：'+why,1)}}
 /* 役場の先頭: 自分の推し・分身 */
 function myBox(w){var h='<h3>あなたの推し・分身</h3>';
-  if(!S.oshi){return h+'<p class="note">'+(S.quiz?'診断は「'+esc(S.quiz.type)+'」　まだ推しがいない':'まだ性格診断をしていない')+'</p><div class="row"><button data-a="q15:start">性格診断をする</button></div>'}
+  if(!S.oshi){return h+'<p class="note">'+(S.quiz?'診断は「'+esc(S.quiz.type)+'」　まだ推しがいない':'まだ性格診断をしていない')+'</p><div class="row"><button data-a="q15:start">性格診断をする</button></div>'+myRow()}
   var r=(w.residents||[]).filter(function(x){return x.id===S.oshi.id})[0];
-  if(!r||!r.alive)return h+'<p>'+esc(S.oshi.name)+'は森にいない…'+(r&&r.cause?'（'+esc(r.cause)+'）':'')+'</p><div class="row"><button data-a="q15:start">診断して推しを決め直す</button></div>';
+  if(!r||!r.alive)return h+'<p>'+esc(S.oshi.name)+'は森にいない…'+(r&&r.cause?'（'+esc(r.cause)+'）':'')+'</p><div class="row"><button data-a="q15:start">診断して推しを決め直す</button></div>'+myRow();
   V15.wday=w.day;var d=(r.diary||[]).slice(-1)[0],why=oshiPinch(r);
   h+='<p><b>'+(S.clone&&S.clone.id===r.id?'🌱 分身の ':'★ 推しの ')+esc(r.name)+'</b>　'+esc(r.place||'')+'にいる　おなか '+r.hunger+'　'+r.coin+'フカ'+(r.fans?'　ファン '+r.fans+'人':'')+'</p>'+(why?'<p class="qmsg">ピンチ：'+esc(why)+'</p>':'')+
     (r.say?'<p class="note">「'+esc(r.say)+'」</p>':'')+'<p class="note">日誌: '+esc(d?d.text:'まだ日誌がない').slice(0,120)+'</p>';
   var g=S.gift===w.day;h+='<div class="row">'+['パン','野菜','魚'].map(function(it){return '<button'+(g?' class="sub" disabled':'')+' data-a="gift:'+it+'">'+it+'を差し入れ</button>'}).join('')+'</div><p class="note">'+(g?'今日の差し入れはもうした（1日1回）':'差し入れは1日1回・10フカ（いま '+S.coin+'フカ）　食べ物は時間がたつと腐る')+'</p>';
-  return h+'<div class="row"><button class="sub" data-a="q15:start">性格診断をもう一度（推しを変える）</button></div>'}
-function giftSend(item){var gd=V15.wday||V15.day;if(!S.oshi||S.gift===gd)return;if(S.coin<10){toast('フカが足りない（10フカ）');return}S.coin-=10;S.gift=gd;save();
-  fetch(MORI+'/api/join?w=live',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mode:'gift',dev:devId(),name:S.pname||'旅人',to:S.oshi.id,item:item})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){toast(S.oshi.name+'に'+item+'を差し入れた');logEv('gift')}else{S.coin+=10;if(!(j&&j.reason==='today'))S.gift=0;save();toast(j&&j.reason==='today'?'今日はもう差し入れした':'差し入れできなかった（フカは返した）')}yakubaOpen()},function(){S.coin+=10;S.gift=0;save();toast('役場につながらなかった（フカは返した）')})}
+  return h+'<div class="row"><button class="sub" data-a="q15:start">性格診断をもう一度（推しを変える）</button></div>'+myRow()}
+function myRow(){return '<div class="row">'+(S.acct?'<button class="sub" data-a="my">自分のデータ（見る・直す・消す）</button>':'<button class="sub" data-a="jumin">森の住民票を作る</button>')+'</div>'}
+function giftSend(item){if(!S.acct){juminOpen();return}var gd=V15.wday||V15.day;if(!S.oshi||S.gift===gd)return;if(S.coin<10){toast('フカが足りない（10フカ）');return}S.coin-=10;S.gift=gd;save();
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'gift',to:S.oshi.id,item:item})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){toast(S.oshi.name+'に'+item+'を差し入れた');logEv('gift')}else{S.coin+=10;if(!(j&&j.reason==='today'))S.gift=0;save();toast(j&&j.reason==='today'?'今日はもう差し入れした':'差し入れできなかった（フカは返した）')}yakubaOpen()},function(){S.coin+=10;S.gift=0;save();toast('役場につながらなかった（フカは返した）')})}
 /* 分身: 家は持たないので、広場のまわりの空き場所を「家」にする。見た目は ②の答え（0=まんまる 1=ちいさめ 2=もこもこ） */
 var CLONE_SPOTS=[[-11,-2],[11,-3],[-12,8],[12,9],[-6,-7],[6,-8],[0,17],[-14,3],[14,3],[-9,13],[9,14],[0,-9]];
 function cloneAI(p){var n=parseInt(String(p.id).slice(1),10)||0,sp=CLONE_SPOTS[n%CLONE_SPOTS.length],look=p.look==null?n%3:p.look,hat=['y','g','b','p','r'][n%5];
   return mkAI({id:p.id,name:p.name,tier:2,hat:hat,tint:[0xfff0f6,0xf4f4ff,0xeef4ff][look],h3:[1.85,1.5,2.15][look],clone:true},{fx:sp[0],fz:sp[1]})}
+
+/* ===== v0.17 「森の住民票」 =====
+   10/9 主「ログイン的な仕組み ⇒作ろう。それでデータの管理もした方がいい」「（自動チェック・規約とプライバシー）どっちもやっておいて」
+   メール・パスワード・本名は聞かない。呼び名だけ。鍵は端末に、別の端末へは引き継ぎコードで。自分のデータは役場で見る・直す・消す */
+var LEGAL='https://mori.futurex-works.jp',AGREE_VER='2026-10-09',J17={mode:'',code:'',err:'',busy:false,me:null,sure:false};
+function MH(){var h={'content-type':'application/json'};if(S.acct&&S.acct.token)h['x-mori-token']=S.acct.token;return h}
+function legalLinks(){return '<a class="btn sub" href="'+LEGAL+'/terms" target="_blank" rel="noopener">利用規約</a><a class="btn sub" href="'+LEGAL+'/privacy" target="_blank" rel="noopener">プライバシーポリシー</a>'}
+function juminOpen(mode){J17.mode=mode||J17.mode||'';J17.err='';J17.code='';J17.view='make';juminDraw()}
+function juminDraw(){var h,v=J17.view;
+  if(v==='make')h='<p class="note">はじめに</p><h2>森の住民票を作る</h2><p>住人と話す・推す・投票するには住民票が要る。決めるのは<b>呼び名だけ</b>。メールもパスワードもいらない</p>'+
+    '<div class="row say"><input id="jname" type="text" maxlength="12" placeholder="呼び名（本名は入れないでね）" autocomplete="off" aria-label="呼び名" value="'+esc(J17.name||S.pname||'')+'"></div>'+
+    '<label class="agree"><input id="jagree" type="checkbox"'+(J17.agree?' checked':'')+'> 利用規約とプライバシーポリシーを読んで、同意する</label><div class="row">'+legalLinks()+'</div>'+
+    '<p class="note">13歳未満の人は、おうちの人と一緒に読んでね。住人に話したことは、住人の日誌に出ることがある。名前・学校・住所・電話番号は書かないでね</p>'+
+    (J17.err?'<p class="qmsg">'+esc(J17.err)+'</p>':'')+
+    '<div class="row"><button data-a="jumin:make"'+(J17.busy?' disabled':'')+'>'+(J17.busy?'作っているところ…':'同意して住民票を作る')+'</button><button class="sub" data-a="jumin:restore">引き継ぎコードで続きから</button></div>';
+  else if(v==='restore')h='<h2>引き継ぎコードで続きから</h2><p>前の端末で住民票を作った時に出た、12文字のコードを入れてね</p><div class="row say"><input id="jcode" type="text" maxlength="16" placeholder="XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" aria-label="引き継ぎコード"></div>'+
+    (J17.err?'<p class="qmsg">'+esc(J17.err)+'</p>':'')+'<div class="row"><button data-a="jumin:restoreGo"'+(J17.busy?' disabled':'')+'>続きから遊ぶ</button><button class="sub" data-a="jumin:back">住民票を作るにもどる</button></div><p class="note">前の端末の住民票は、こちらに移ると使えなくなる</p>';
+  else if(v==='code')h='<h2>住民票ができた</h2><p>ようこそ、<b>'+esc(S.acct.name)+'</b>さん</p><div class="codebox"><p class="note">引き継ぎコード（この画面でしか出ない）</p><p class="code" id="jcodeShow">'+esc(J17.code)+'</p><button class="sub" data-a="jumin:copy">コピーする</button></div>'+
+    '<p class="note">スクショかメモで残しておくと、別のスマホでも続きから遊べる。人には教えないでね。なくしても、役場の「自分のデータ」から出し直せる</p><div class="row"><button data-a="jumin:done">森へ</button></div>';
+  show('jumin',h);if(v==='make'){var n=$('#jname'),a=$('#jagree');if(n)n.oninput=function(){J17.name=n.value};if(a)a.onchange=function(){J17.agree=a.checked}}}
+var JERR={agree:'同意にチェックしてね',name:'呼び名を入れてね',ngname:'その呼び名には使えない言葉か、電話番号・メールっぽい物が入ってる。ほかの呼び名にしてね',taken:'その呼び名はもう使われている。ほかの呼び名にしてね',many:'今日はこの場所から作れる住民票の数をこえた。また明日ためしてね',code:'コードがちがうみたい。12文字を確かめてね',login:'住民票が見つからなかった'};
+function juminMake(){var nm=(($('#jname')||{}).value||'').trim(),ag=($('#jagree')||{}).checked;J17.name=nm;J17.agree=ag;
+  if(!nm){J17.err=JERR.name;juminDraw();return}if(!ag){J17.err=JERR.agree;juminDraw();return}
+  J17.busy=true;J17.err='';juminDraw();
+  fetch(MORI+'/api/account/new?w=live',{method:'POST',headers:MH(),body:JSON.stringify({name:nm,agree:AGREE_VER,dev:S.dev||''})}).then(function(r){return r.json()}).then(function(j){J17.busy=false;
+    if(j&&j.ok){S.acct={id:j.id,name:j.name,token:j.token,agree:AGREE_VER};S.pname=j.name;save();logEv('acct:new');J17.code=j.code;J17.view='code';juminDraw();tagsPaint();juminSync();return}
+    J17.err=JERR[j&&j.reason]||'作れなかった。もう一度ためしてね';juminDraw()},function(){J17.busy=false;J17.err='役場につながらなかった。電波のいい所でもう一度';juminDraw()})}
+function juminRestore(){var c=(($('#jcode')||{}).value||'').trim();if(!c){J17.err=JERR.code;juminDraw();return}J17.busy=true;J17.err='';juminDraw();
+  fetch(MORI+'/api/account/restore?w=live',{method:'POST',headers:MH(),body:JSON.stringify({code:c})}).then(function(r){return r.json()}).then(function(j){J17.busy=false;
+    if(j&&j.ok){S.acct={id:j.id,name:j.name,token:j.token,agree:AGREE_VER};S.pname=j.name;save();logEv('acct:restore');toast('おかえり、'+j.name+'さん');juminSync();close();return}
+    J17.err=JERR[j&&j.reason]||'続きから遊べなかった';juminDraw()},function(){J17.busy=false;J17.err='役場につながらなかった';juminDraw()})}
+/* サーバーの記録（推し・分身・投票）を端末に合わせる */
+function juminSync(){if(!S.acct)return;fetch(MORI+'/api/account/me?w=live',{headers:MH(),cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(!j||!j.ok){if(j&&j.reason==='login'){S.acct=null;save()}return}var m=j.me;J17.me=m;
+  S.oshi=m.oshi?{id:m.oshi.id,name:m.oshi.name}:null;S.clone=m.clone&&m.clone.alive?{id:m.clone.id,name:m.clone.name}:null;if(S.acct.name!==m.name){S.acct.name=m.name;S.pname=m.name}save();tagsPaint()},function(){})}
+function juminDone(){close();if(Q16.after&&Q16.after.oshi){var o=Q16.after.oshi;Q16.after=null;oshiSet(o);return}if(!S.q16s){S.q16s=1;save();q15Open(0)}}
+function juminCopy(){var t=J17.code,el=$('#jcodeShow');try{navigator.clipboard.writeText(t).then(function(){toast('コピーした')},function(){sel()})}catch(e){sel()}
+  function sel(){try{var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);toast('選んだ。長押しでコピーしてね')}catch(e){}}}
+/* 役場の「自分のデータ」 */
+function myOpen(){if(!S.acct){juminOpen();return}J17.sure=false;J17.err='';J17.code='';show('my','<h2>自分のデータ</h2><p class="note">読み込み中…</p>');
+  fetch(MORI+'/api/account/me?w=live',{headers:MH(),cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(sheetOpen!=='my')return;if(!j||!j.ok){if(j&&j.reason==='login'){S.acct=null;save();show('my','<h2>自分のデータ</h2><p>住民票が見つからなかった（消したか、別の端末に引き継いだのかも）</p><div class="row"><button data-a="jumin">住民票を作る</button></div>')}else show('my','<h2>自分のデータ</h2><p>役場につながらなかった</p>');return}
+    J17.me=j.me;myDraw()},function(){if(sheetOpen==='my')show('my','<h2>自分のデータ</h2><p>役場につながらなかった</p>')})}
+function myDraw(msg){var m=J17.me,d=function(t){return new Date(t+9*3600e3).toISOString().slice(0,10)};
+  var h='<p class="note">サーバーにあるあなたの記録は、これで全部</p>'+(msg?'<p class="qmsg">'+esc(msg)+'</p>':'')+
+    '<table class="mytab"><tr><th>呼び名</th><td>'+esc(m.name)+'</td></tr><tr><th>住民票を作った日</th><td>'+d(m.created)+'</td></tr><tr><th>推し</th><td>'+(m.oshi?esc(m.oshi.name):'なし')+'</td></tr><tr><th>分身</th><td>'+(m.clone?esc(m.clone.name)+(m.clone.alive?'':'（森にいない）'):'なし')+'</td></tr><tr><th>いまの投票</th><td>'+(m.vote?esc(m.vote.title):(m.canVote?'まだ入れていない':'作って6時間たつと投票できる'))+'</td></tr><tr><th>差し入れ</th><td>'+m.gifts+'回</td></tr></table>'+
+    '<div class="row say"><input id="myname" type="text" maxlength="12" placeholder="新しい呼び名" autocomplete="off" aria-label="新しい呼び名"><button class="sub" data-a="my:name">呼び名を変える</button></div>'+
+    '<h3>住人が覚えていること（'+m.memoryCount+'件）</h3>'+(m.memories.length?m.memories.slice().reverse().map(function(x){return '<p class="note"><b>'+esc(x.who)+'</b>　'+x.day+'日目　'+esc(x.text)+'</p>'}).join(''):'<p class="note">まだない</p>')+
+    (m.hall.length?'<h3>役場の記録</h3>'+m.hall.slice().reverse().map(function(x){return '<p class="note">'+x.day+'日目 ['+esc(x.kind)+'] '+esc(x.text)+'</p>'}).join(''):'')+
+    '<h3>引き継ぎコード</h3><p class="note">コードは作った時にしか出ない。なくしたら出し直せる（前のコードは使えなくなる）</p>'+(J17.code?'<div class="codebox"><p class="code" id="jcodeShow">'+esc(J17.code)+'</p><button class="sub" data-a="jumin:copy">コピーする</button></div>':'<div class="row"><button class="sub" data-a="my:code">引き継ぎコードを出し直す</button></div>')+
+    '<h3>住民票を消す</h3><p class="note">消すと、推し・投票・差し入れの記録、住人の記憶の中のあなたの言葉、役場の記録のあなたの名前が消える。分身は森を出ていく。元に戻せない（バックアップからは14日で消える）</p>'+
+    (J17.sure?'<div class="row"><button class="bad" data-a="my:delGo">住民票を消す（元に戻せない）</button><button class="sub" data-a="my:keep">やめる</button></div>':'<div class="row"><button class="sub" data-a="my:del">住民票を消す…</button></div>')+
+    '<div class="row">'+legalLinks()+'</div>';
+  show('my','<h2>自分のデータ</h2>'+h)}
+function myAct(a){
+  if(a==='name'){var nm=(($('#myname')||{}).value||'').trim();if(!nm)return;fetch(MORI+'/api/account/name?w=live',{method:'POST',headers:MH(),body:JSON.stringify({name:nm})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.acct.name=j.name;S.pname=j.name;J17.me.name=j.name;save();myDraw('呼び名を「'+j.name+'」にした')}else myDraw(JERR[j&&j.reason]||'変えられなかった')},function(){myDraw('役場につながらなかった')});return}
+  if(a==='code'){fetch(MORI+'/api/account/code?w=live',{method:'POST',headers:MH(),body:'{}'}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){J17.code=j.code;myDraw('新しい引き継ぎコードを出した。前のコードはもう使えない')}else myDraw('出し直せなかった')},function(){myDraw('役場につながらなかった')});return}
+  if(a==='del'){J17.sure=true;myDraw();return}
+  if(a==='keep'){J17.sure=false;myDraw();return}
+  if(a==='delGo'){fetch(MORI+'/api/account/delete?w=live',{method:'POST',headers:MH(),body:JSON.stringify({confirm:'消す'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){
+      S.acct=null;S.oshi=null;S.clone=null;S.vote=null;S.gift=0;S.pname='';S.j17s=1;save();tagsPaint();logEv('acct:delete');J17.me=null;J17.code='';
+      show('my','<h2>住民票を消した</h2><p>あなたの記録を森から消した（住人の記憶 '+j.removed.memories+'件・役場の記録 '+j.removed.hall+'件'+(j.removed.clone?'・分身の'+esc(j.removed.clone)+'は森を出ていった':'')+'）</p><p class="note">また遊ぶ時は、新しく住民票を作れる</p><div class="row"><button data-a="close">とじる</button></div>')}
+    else myDraw('消せなかった。もう一度ためしてね')},function(){myDraw('役場につながらなかった')});return}}
 
 function landPrice(l){return PLACEV[l.ring]*l.area}
 function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.ring]*l.area/10)*10:0}
@@ -1600,7 +1667,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.16',APP_BUILD='1009-0016',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.17',APP_BUILD='1009-0017',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -1664,7 +1731,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
