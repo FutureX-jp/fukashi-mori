@@ -54,6 +54,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 #sheet h2{font-family:var(--display);font-weight:400;font-size:19px;margin:0;color:var(--ink);text-wrap:balance;padding-right:92px}
 #sheet p{margin:0;font-size:14px;line-height:1.6}
 #sheet .note{font-size:12px;color:var(--dim)}
+.give19{border-top:1px dashed #d8cba3;padding-top:8px;margin:0 0 8px;display:grid;gap:6px;font-size:14px}.give19 .row.wrap{flex-wrap:wrap;gap:6px}
 .plan19{border:2px dashed #cdbf8f;border-radius:14px;padding:8px 12px;margin:0 0 8px;display:grid;gap:4px;font-size:14px}.plan19 p{margin:0}.plan19 .tm{display:inline-block;min-width:4.2em;color:var(--dim);font-size:12px}.plan19 .now{font-weight:700}.plan19 .nw{margin-left:6px;font-size:11px;background:#f6dc8c;border-radius:8px;padding:1px 6px}
 #sheet{max-height:calc(100% - 64px);overflow-y:auto;overscroll-behavior:contain} /* v0.16 役場が長いと上が画面の外に切れていた */
 .qz{display:flex;flex-direction:column;gap:8px}.qz .qa{text-align:left;width:100%}.qz.two .qa{padding:10px 12px}.qa.on{outline:3px solid var(--leaf)}.row.col{flex-direction:column;align-items:stretch;gap:2px}
@@ -957,8 +958,8 @@ function diveIn(){if(FS.on)fishEnd('');DV.on=true;DV.y=WS+.22;camera.near=.15;ca
   actOn=null;actBtn.textContent='銛';actBtn.classList.add('spear');actBtn.hidden=false;$('#hint').textContent='丸で泳ぐ・なぞって見回す・銛は長押し';$('#hint').hidden=false;DV.hintT=7;dvHud(true);logEv('dive:in')}
 function diveOut(){if(DV.catch.length)diveBank();if(DV.hook)hookEnd();DV.on=false;camera.near=.5;camera.fov=CAM.fov;camera.updateProjectionMatrix();if(G.motes)G.motes.forEach(function(q){q.visible=false});DV.charge=-1;me.sp.userData.off=false;me.sp.visible=true;CAM.tilt=0;$('#dv').hidden=true;$('#mapbtn').hidden=false;actBtn.classList.remove('spear');actBtn.hidden=true;actOn=null;$('#hint').hidden=true;
   dvFog(0,false);if(DV.fx){DV.fx.g.visible=false;DV.fx.ring.visible=false;DV.fx.on=false}logEv('dive:out')}
-function diveBank(){var all=DV.catch.length,sh=DV.catch.filter(function(c){return c.k==='shell'}).length,n=all-sh,sum=0,head=0;DV.catch.forEach(function(c){sum+=Math.ceil(c.price*(c.head?1.2:1));if(c.head)head++});var got=DV.catch;DV.catch=[];S.coin+=sum;got.forEach(function(c){if(c.k==='shell')qEv('shell');else{bookAdd(c.k,c.cm||0);qEv('catch',c.k,'spear')}});qEv('bank',sum);S.fish=(S.fish||0)+n;S.shell=(S.shell||0)+sh;save();
-  dvBig('獲れた　＋'+sum+'フカ',(n?n+'匹':'')+(sh?(n?'・':'')+'貝'+sh+'個':'')+(head?'　急所！ 頭に当てた '+head+'匹は＋20%':''),head>0,2.2);logEv('dive:catch:'+n+':'+sh+':'+sum)}
+function diveBank(){var all=DV.catch.length,sh=DV.catch.filter(function(c){return c.k==='shell'}).length,n=all-sh,sum=0,head=0;DV.catch.forEach(function(c){sum+=Math.ceil(c.price*(c.head?1.2:1));if(c.head)head++});var got=DV.catch;DV.catch=[];var b19=V15.on?dive19Bank(got):null;if(b19)sum=b19.shell;S.coin+=sum;got.forEach(function(c){if(c.k==='shell')qEv('shell');else{bookAdd(c.k,c.cm||0);qEv('catch',c.k,'spear')}});qEv('bank',sum);S.fish=(S.fish||0)+n;S.shell=(S.shell||0)+sh;save();
+  if(b19)dvBig(b19.n?'獲れた　'+b19.n+'匹リュックへ':'獲れた　＋'+sum+'フカ',(b19.full?'リュックがいっぱいで'+b19.full+'匹は売った　':'')+(sh?'貝'+sh+'個 ＋'+sum+'フカ':'')+(head?'　急所！ 頭に当てた '+head+'匹は値段＋20%':''),head>0,2.4);else dvBig('獲れた　＋'+sum+'フカ',(n?n+'匹':'')+(sh?(n?'・':'')+'貝'+sh+'個':'')+(head?'　急所！ 頭に当てた '+head+'匹は＋20%':''),head>0,2.2);logEv('dive:catch:'+n+':'+sh+':'+sum)}
 function diveFaint(){DV.black=1.9;var ls=DV.catch.filter(function(c){return c.k==='shell'}).length;DV.lost=DV.catch.length-ls;DV.lostS=ls;DV.catch=[];if(DV.hook)hookEnd();DV.charge=-1;$('#dvk').style.opacity=1;dvBig('息が……！',(DV.lost||DV.lostS)?'獲物を '+(DV.lost?DV.lost+'匹':'')+(DV.lostS?(DV.lost?'と':'')+'貝'+DV.lostS+'個':'')+' 落とした':'',false,1.7);logEv('dive:faint')}
 function hookEnd(){var hf=DV.hook.f;DV.hook=null;hf.st='flee';hf.t=3.5;hf.fa=Math.atan2(hf.z-me.z,hf.x-me.x)}
 function eyeDir(){var cp=Math.cos(DV.pitch);return [-Math.sin(CAM.yaw)*cp,Math.sin(DV.pitch),-Math.cos(CAM.yaw)*cp]}
@@ -1311,6 +1312,7 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
     S.box.push({t:v,d:Date.now()});if(S.box.length>50)S.box.shift();save();open('box');$('#msg').textContent='「'+v+'」を入れた';return}
   if(a==='greet'){S.like++;save();if(sheetOpen==='chat'&&chatWho===npc){npc.log.push(['me','（挨拶した）']);npc.log.push(['bot','やあ　これで'+S.like+'回目　今は'+stageName()+'だね']);sayOver(npc,'やあ　今は'+stageName()+'だね',4200);renderChat()}else open('npc');return}
   if(a.indexOf('st:')===0){chatSend('st',+a.slice(3));return}
+  if(a.indexOf('give19:')===0){give19(+a.slice(7));return}
   if(a.indexOf('q15:')===0){q15Act(a.slice(4));return}
   if(a==='jumin'){juminOpen();return}if(a==='jumin:make'){juminMake();return}if(a==='jumin:restore'){J17.view='restore';J17.err='';juminDraw();return}if(a==='jumin:back'){J17.view='make';J17.err='';juminDraw();return}if(a==='jumin:login'){J17.view='login';J17.err='';juminDraw();return}if(a==='jumin:loginGo'){juminLogin();return}if(a==='jumin:restoreGo'){juminRestore();return}if(a==='jumin:copy'){juminCopy();return}if(a==='jumin:done'){juminDone();return}
   if(a==='bag'){bagOpen();return}if(a.indexOf('bag:')===0){bagAct(a.slice(4));return}  if(a==='my'){myOpen();return}if(a.indexOf('my:')===0){myAct(a.slice(3));return}
@@ -1447,7 +1449,7 @@ function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み
   h+='<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">役場の記録を全部見る</a></div>';show('yakuba','<h2>森の役場</h2>'+h);sheet.scrollTop=0},function(){if(sheetOpen==='yakuba')show('yakuba','<h2>森の役場</h2><p>役場に人がいないみたい（つながらなかった）</p>')})}
 function news15(){if(S.n15||!V15.on)return;S.n15=1;save();toast('森が狭くなった。広場のまわりと池だけ歩ける');toast('AIで動く住人が7人になった。話しかけると覚えている');if(S.v15moved)toast('家が立入禁止の外だったので、広場の近くへ引っ越しました')}
 function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500);juminSync();var hb=$('#hunb');if(hb){hb.hidden=false;hb.onclick=bagOpen}hunTick();setInterval(hunTick,5000)}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
-function nameRow(w){return plan19(w)+nameRow0(w)}
+function nameRow(w){return plan19(w)+give19Row(w)+nameRow0(w)}
 function nameRow0(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.acct?'<div class="row say"><button data-a="jumin">森の住民票を作って話す</button></div><p class="note">住人と話すには住民票（呼び名だけ）が要る</p>':''} /* v0.17: 名前は住民票の呼び名 */
 function voteSend(n,c){if(!S.acct){juminOpen();return}
   fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
@@ -1785,9 +1787,9 @@ function bagBuy(){if(S.coin<BAG.BREAD){toast('フカが足りない（'+BAG.BREA
 function bagOpen(){bagSpoil();var b=bagList(),h=hunNow(),full=Math.round(100-h),now=dayNo(),gd=V15.wday||V15.day;
   var rows=b.map(function(it,i){var left=(BAG.SHELF[it.k]||99)-(now-it.day),p=it.price||BAG.SELL[it.k]||0;
     return '<div class="bagrow"><div class="bagn"><b>'+esc(it.name)+'</b>'+(it.cm?' <span class="note">'+it.cm+'cm</span>':'')+'<span class="note">'+(left<=1?'今日中に傷む':'あと'+left+'日で傷む')+'</span></div><div class="row"><button data-a="bag:eat:'+i+'">食べる</button>'+
-      (S.oshi&&['パン','野菜','魚'].indexOf(it.k)>=0?'<button class="sub" data-a="bag:gift:'+i+'"'+(S.gift===gd?' disabled':'')+'>'+esc(S.oshi.name)+'に差し入れ</button>':'')+'<button class="sub" data-a="bag:sell:'+i+'">売る ＋'+p+'</button></div></div>'}).join('');
+'<button class="sub" data-a="bag:sell:'+i+'">売る ＋'+p+'</button></div></div>'}).join('');
   show('bag','<h2>リュック</h2><div class="hunbar" role="meter" aria-label="おなか" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+full+'"><i style="width:'+full+'%"></i></div><p class="note">おなか '+full+'%　'+(h>=90?'ぺこぺこで歩くのがおそい':h>=70?'すいてきた':'まだ大丈夫')+'（10時間で空っぽになる・倒れることはない）</p>'+
-    (rows||'<p class="note">からっぽ。池で釣った魚がここに入る</p>')+'<p class="note">'+b.length+' / '+BAG.MAX+'こ　食べ物は日がたつと傷む（魚1日・パン2日・野菜3日・木の実7日）'+(S.oshi&&S.gift===gd?'　今日の差し入れはもうした':'')+'</p>'+
+    (rows||'<p class="note">からっぽ。池で釣った魚がここに入る</p>')+'<p class="note">'+b.length+' / '+BAG.MAX+'こ　食べ物は日がたつと傷む（魚1日・パン2日・野菜3日・木の実7日）'+'　住人にあげる時は、その住人に話しかける'+'</p>'+
     '<div class="row"><button class="sub" data-a="bag:buy">パンを買う（'+BAG.BREAD+'フカ・いま '+S.coin+'フカ）</button></div>')}
 function bagAct(a){var p=a.split(':');if(p[0]==='eat')bagEat(+p[1]);else if(p[0]==='sell')bagSell(+p[1]);else if(p[0]==='gift')bagGift(+p[1]);else if(p[0]==='buy')bagBuy()}
 /* 釣れた魚はリュックへ（v0.15 の森のとき）。前の「その場でフカ」は #v14 のまま */
@@ -2131,6 +2133,24 @@ function plan19(w){if(!V15.on||!w||w.kind!=='ai')return '';var L=act19List(w),d=
   return '<div class="plan19">'+nowH+'<b>この2時間の予定</b>'+L.map(function(a,i){var h=((d.at+2*i)%24),D=ACT19[a.k],now=cur===a&&nowA&&nowA.k===a.k;
     return '<p'+(now?' class="now"':'')+'><span class="tm">'+h+'時〜</span>'+D.i+' '+esc(a.t||D.l)+(now?'<span class="nw">いま</span>':'')+'</p>'}).join('')+'</div>'}
 function news19(){if(S.n19||!V15.on)return;S.n19=1;save();toast('住人が森のあちこちを歩き回って、畑仕事・釣り・立ち話をするようになった');toast('畑が2面に広がった。南の畑は役場が売っていて、住人が買える')}
+/* ===== v0.19.4 あげるのは話しかけた時（10/9 17:48 主「魚とかあげるのは話しかけた時じゃない？ リュックのボタン押してあげるのは違うと思う」）
+   話す画面に「あげる」の列。リュックの食べ物（パン・野菜・魚）を、その住人にあげる。誰にでも・1日3回まで（サーバーも3回で止める） */
+var GIVE19={KIND:['パン','野菜','魚'],MAX:3};
+function give19Today(){var gd=V15.wday||V15.day;if(!S.give19||S.give19.d!==gd)S.give19={d:gd,n:0};return S.give19}
+function give19Row(w){if(!V15.on||!w||w.kind!=='ai')return '';var b=bagList(),seen={},btn=[];b.forEach(function(it,i){if(GIVE19.KIND.indexOf(it.k)<0||seen[it.name])return;seen[it.name]=1;btn.push('<button class="sub" data-a="give19:'+i+'">'+esc(it.name)+'をあげる</button>')});
+  var g=give19Today(),left=GIVE19.MAX-g.n;
+  if(!btn.length)return '<p class="note">リュックにパン・野菜・魚があれば、ここから'+esc(w.name)+'にあげられる</p>';
+  return '<div class="give19"><b>'+esc(w.name)+'にあげる</b>'+(left>0?'<div class="row wrap">'+btn.slice(0,6).join('')+'</div><p class="note">今日はあと'+left+'回あげられる</p>':'<p class="note">今日はもう3回あげた（また明日）</p>')+'</div>'}
+function give19(i){var w=chatWho,b=bagList(),it=b[i];if(!w||w.kind!=='ai'||!it)return;if(!S.acct){juminOpen();return}var g=give19Today();if(g.n>=GIVE19.MAX){toast('今日はもう3回あげた');return}
+  b.splice(i,1);g.n++;save();if(sheetOpen==='chat')renderChat();
+  var back=function(msg){b.push(it);g.n=Math.max(0,g.n-1);save();toast(msg);if(sheetOpen==='chat')renderChat()};
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'gift',to:w.id,item:it.k})}).then(function(r){return r.json()}).then(function(j){
+    if(j&&j.ok){w.log=w.log||[];w.log.push(['me',it.name+'をあげた']);var th=['わあ、ありがとう！','いいの？うれしい','ありがと〜大事に食べるね','助かるよ'][Math.floor(Math.random()*4)];w.log.push(['bot',th]);sayOver(w,th,4200);w.a19hop=.6;logEv('gift:talk:'+it.k);if(sheetOpen==='chat')renderChat()}
+    else if(j&&j.reason==='login'){back('住民票が要る（リュックに戻した）');juminOpen()}else back(j&&j.reason==='today'?'今日はもう3回あげた（リュックに戻した）':'あげられなかった（リュックに戻した）')},function(){back('役場につながらなかった（リュックに戻した）')})}
+/* ===== v0.19.4 銛で獲った魚もリュックへ（10/9 17:47 主「池の中でとった？銛でとったやつ？がリュックに反映されない。たくさんとったのに」）
+   原因: 竿の魚だけ v0.18 でリュックに入れるようにして、銛（素潜り）の魚は前のまま「水面に出たらフカ」だった。貝は今までどおりフカ */
+function dive19Bank(got){var n=0,full=0,sum=0;got.forEach(function(c){if(c.k==='shell'){sum+=c.price;return}var D=FISHDEF.filter(function(f){return f.k===c.k})[0]||{n:'魚'},p=Math.ceil(c.price*(c.head?1.2:1));
+    if(bagAdd({k:'魚',name:D.n,cm:c.cm||0,price:p,fk:c.k,spear:1}))n++;else full++});return {n:n,full:full,shell:sum}}
 
 function landPrice(l){return PLACEV[l.ring]*l.area}
 function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.ring]*l.area/10)*10:0}
