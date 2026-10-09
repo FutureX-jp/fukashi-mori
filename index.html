@@ -1944,7 +1944,16 @@ var ACT19={
   '手伝う':{l:'お手伝い',i:'🤝',p:'box',c:2.8,tl:12,hp:.015,sq:.03,pc:[0x76513A],pn:2,at:'plot'},
   '迷う':{l:'迷い中',i:'❔',p:'',c:2.6,tl:10,hp:0,sq:.01,pc:[],pn:0,at:'here',look:1},
   '散歩':{l:'お散歩中',i:'🍃',p:'',c:1.1,tl:3,hp:0,sq:0,pc:[],pn:0,at:'wander'},
-  '見回り':{l:'見回り中',i:'🔍',p:'stick',c:2.5,tl:5,hp:0,sq:0,pc:[],pn:0,at:'wander',look:1}};
+  '見回り':{l:'見回り中',i:'🔍',p:'stick',c:2.5,tl:5,hp:0,sq:0,pc:[],pn:0,at:'wander',look:1},
+  '掲示板':{l:'掲示板を見る',i:'📋',p:'',c:3,tl:6,hp:0,sq:.01,pc:[],pn:0,at:'yakuba',look:1},
+  '遊びに行く':{l:'遊びに行く',i:'🏠',p:'',c:2.2,tl:6,hp:.02,sq:.02,pc:[],pn:0,at:'spot',nod:1},
+  '景色':{l:'景色を見る',i:'🌳',p:'',c:4,tl:3,hp:0,sq:.015,pc:[],pn:0,at:'spot',breath:1},
+  '広場で休む':{l:'広場でひと休み',i:'☕',p:'',c:4,tl:3,hp:.006,sq:.015,pc:[],pn:0,at:'spot',breath:1}};
+/* ===== v0.19.2 「暮らし」: 10/9 17:11 主「いろんなところ散歩したりするプログラムにするんじゃないの？」「全然生きてる感じしないよ」
+   サーバーの予定（2時間に最大2つ）は「やること」の一部。その合間に、森のあちこちを歩き回る・すれ違うと挨拶・誰かを見つけて立ち話・人の家に遊びに行く・掲示板を見る・広場で休む・景色を見る
+   1回の行動は歩く時間＋20〜80秒。性格（住人ごとの好み）とおなかで選び方を変える。同じことは続けにくくする。AI代は増えない */
+var LIFE={on:true,clock:0};
+var LIKES={gonzo:{畑:2.5,掲示板:1.6,話す:.7},mitsu:{話す:2.6,買い物:2,遊びに行く:1.8,散歩:1.2},haru:{畑:1.8,話す:1.6,遊びに行く:1.3},rin:{釣り:3,景色:1.6,散歩:1.2},popo:{家:2.4,広場で休む:2,景色:1.5,畑:.4},jiro:{散歩:1.8,木の実:1.6,話す:1.2,畑:.6}};
 /* いまの行動: 考えた刻（at）から2時間ごとに次の行動へ。4時間より古い予定は使わない（夜・予算切れでAIを呼ばなかった時） */
 function act19List(o){var d=o.doing;if(!d||!d.list||!d.list.length)return [];var L=d.list.filter(function(a){return ACT19[a.k]});if(L.length>1&&L[0].k==='散歩')L=L.slice(1);return L} /* 「畑へ行った」→「耕した」なら、歩くのは演じる中に入っている */
 function act19Cur(o){var L=act19List(o),d=o.doing;if(L.length&&A19.now){var age=A19.now-d.at;if(age>=0&&age<4)return L[Math.min(L.length-1,Math.floor(age/2))]}return act19Here(o)}
@@ -1958,7 +1967,7 @@ function act19Here(o){var pl=o.place,mine,a=null;if(!pl)return null;
   a.here=1;a.t='';return a}
 function act19Night(){var s=V15.slot;return s>=22||s<6}
 /* どこに立って、どっちを向くか（森の座標） */
-function act19Spot(o,a){var D=ACT19[a.k],h=((o.id.charCodeAt(0)*7+o.id.length*13)%360)*Math.PI/180,pl,mine,no,p,q,i;
+function act19Spot(o,a){if(a.spot&&a.k!=='話す')return a.spot;var D=ACT19[a.k],h=((o.id.charCodeAt(0)*7+o.id.length*13)%360)*Math.PI/180,pl,mine,no,p,q,i;
   if(D.at==='plot'){no=a.plot;if(!no){mine=V15.plots.filter(function(p){return p.user===o.id})[0];no=mine?mine.no:5}
     if(!FARM.plots[no-1])no=5;p=farmXY(no,1.9,0);q=farmXY(no,0,0);return {x:p.x,z:p.z,fx:q.x,fz:q.z,plot:no}}
   if(D.at==='pond'){var R=RODS[0];if(!R){p=placeXY(o,'池');return {x:p.x,z:p.z,fx:p.x-3,fz:p.z,water:{x:p.x-3,z:p.z}}}
@@ -1973,13 +1982,62 @@ function act19Spot(o,a){var D=ACT19[a.k],h=((o.id.charCodeAt(0)*7+o.id.length*13
   if(D.at==='yakuba'){p=placeXY(o,'役場');var y=LOTS[YAKUBA_LOT];return {x:p.x,z:p.z,fx:y.hx,fz:y.hz}}
   if(D.at==='wander'){p=placeXY(o,o.place||'広場');return {x:p.x,z:p.z,fx:p.x+Math.cos(h),fz:p.z+Math.sin(h),r:3}}
   return {x:o.x,z:o.z,fx:o.x+Math.sin(o.sp.rotation.y||0),fz:o.z+Math.cos(o.sp.rotation.y||0)}} /* here: その場で */
-/* サーバーの読み込みのたび（aiApply の最後）: 予定が変わった人だけ歩き出す */
+/* サーバーの読み込みのたび（aiApply の最後）: 予定が変わった人・場所が変わった人は、今の行動を早めに切り上げて予定へ向かう */
 function act19Apply(d){if(!V15.on||!d||!d.people)return;A19.now=d.now||(d.day*24+d.slot);
-  d.people.forEach(function(p){var o=AIBY[p.id];if(!o)return;o.doing=p.doing||null;act19Set(o,!A19.init)});A19.init=true}
-function act19Set(o,jump){var a=(o.sleep||o.dead||o.jail||act19Night())?null:act19Cur(o),key=a?a.k+'|'+(a.plot||'')+'|'+(a.with||''):'';
-  if(key===o.a19key&&!jump)return;o.a19key=key;o.a19=a;o.a19t=0;o.a19n=0;o.a19fun=0;act19Prop(o,a?ACT19[a.k].p:'');act19Label(o,a);
+  d.people.forEach(function(p){var o=AIBY[p.id];if(!o)return;o.doing=p.doing||null;var pc=act19Cur(o),k=(pc&&!pc.here?pc.k+(pc.plot||'')+(pc.with||''):'-')+'|'+p.place+'|'+(o.sleep?1:0)+(o.jail?1:0)+(act19Night()?1:0); /* 予定の「いまの分」が変わった時（2時間たって2つ目になった時も）だけ選び直す */
+    if(k!==o.a19src){o.a19src=k;life19Pick(o,A19.init?'plan':'first')}});A19.init=true}
+/* 次にやることを選ぶ */
+function life19Rand(a,b){return a+Math.random()*(b-a)}
+function life19Ok(x,z){return inZone(x,z,-1.5)}
+function life19POI(o,kind){var p,R=RODS[0],j,c=[];
+  if(kind==='散歩'){c.push({x:life19Rand(-6,6),z:7+life19Rand(-5,5)});c.push(placeXY(o,'森'));c.push(placeXY(o,'役場'));if(R)c.push({x:R.x-R.uz*life19Rand(3,7),z:R.z+R.ux*life19Rand(3,7)});
+    c.push(farmXY(1+Math.floor(Math.random()*18),1.9,0));AI.forEach(function(w){if(w!==o)c.push({x:w.L.fx,z:w.L.fz})});SHOP_LOTS.forEach(function(id){var l=LOTS[id];if(l)c.push({x:l.fx,z:l.fz})});
+    p=c[Math.floor(Math.random()*c.length)];var q={x:p.x+life19Rand(-1.5,1.5),z:p.z+life19Rand(-1.5,1.5)};return life19Ok(q.x,q.z)?q:p}
+  if(kind==='景色'){if(R&&Math.random()<.6){var k=life19Rand(-6,6);p={x:R.x-R.uz*k-R.ux*.8,z:R.z+R.ux*k-R.uz*.8};return {x:p.x,z:p.z,fx:p.x+R.ux*6,fz:p.z+R.uz*6}}p=placeXY(o,'森');return {x:p.x,z:p.z+1,fx:p.x,fz:p.z-6}}
+  if(kind==='広場で休む'){var a=Math.random()*6.2832;p={x:Math.cos(a)*5.5,z:7+Math.sin(a)*4.5};return {x:p.x,z:p.z,fx:0,fz:7}}
+  return null}
+function life19Partner(o){var best=null,bd=50;AI.forEach(function(w){if(w===o||w.dead||w.sleep||w.jail||!w.sp.visible||w.hold>0||(w.seg&&w.seg.k==='話す'))return;var d=Math.hypot(w.x-o.x,w.z-o.z)+Math.random()*12;if(d<bd){bd=d;best=w}});return best}
+function life19Pick(o,why){var a=null,L=LIKES[o.id]||{},plan=act19Cur(o),here=plan&&plan.here?plan:null,mine=V15.plots.filter(function(p){return p.user===o.id}).length;if(here)plan=null;
+  if(o.dead||o.sleep||o.jail||act19Night()){o.seg={k:'',end:LIFE.clock+20};if(o.a19)act19Do(o,null);return}
+  if(o.seg&&o.seg.k==='話す'&&o.seg.mate&&o.seg.mate.seg&&o.seg.mate.seg.mate===o){o.seg.mate.seg.end=LIFE.clock} /* 話の途中で抜ける時は相手も解放 */
+  o.seg=null; /* 前の行動（話を聞いている等）の印を消してから選ぶ */
+  if(why==='first')a=plan||here;
+  else if(why==='plan'&&plan)a=plan;
+  else{var hun=(o.hunger||0)>=70?3:1,last=o.seg&&o.seg.k,M=[
+      ['予定',plan?4.5:0],['散歩',3*(L.散歩||1)],['話す',1.6*(L.話す||1)],['畑',mine?2*(L.畑||1):0],['釣り',(L.釣り||.8)*hun],['木の実',(L.木の実||.7)*hun],
+      ['広場で休む',1*(L.広場で休む||1)],['掲示板',.6*(L.掲示板||1)],['買い物',.5*(L.買い物||1)],['家',.5*(L.家||1)],['遊びに行く',.6*(L.遊びに行く||1)],['景色',.8*(L.景色||1)]];
+    M.forEach(function(m){if(m[0]===last||(last&&m[0]==='予定'&&plan&&plan.k===last))m[1]*=.25});
+    var tot=M.reduce(function(s,m){return s+m[1]},0),r=Math.random()*tot,pick='散歩';for(var i=0;i<M.length;i++){r-=M[i][1];if(r<=0){pick=M[i][0];break}}
+    if(pick==='予定')a=plan;
+    else if(pick==='話す'){var w=life19Partner(o);if(w){a={k:'話す',with:w.id};var end=LIFE.clock+Math.hypot(w.x-o.x,w.z-o.z)/1.7*1.3+life19Rand(22,40);
+        w.seg={k:'話す',mate:o,end:end,listen:1,said:0};w.path=[];act19Do(w,{k:'話す',with:o.id});o.seg={k:'話す',mate:w,end:end,said:0,t:0};act19Do(o,a);return}pick='散歩'}
+    if(!a){if(pick==='畑'){var h2=act19Here({id:o.id,place:'畑'});a=h2}else if(pick==='釣り')a={k:'釣る'};else if(pick==='木の実')a={k:'木の実を拾う'};else if(pick==='家')a={k:'休む'};
+      else if(pick==='掲示板')a={k:'掲示板'};else if(pick==='買い物')a={k:'買い物'};
+      else if(pick==='遊びに行く'){var hs=AI.filter(function(w){return w!==o&&!w.dead});var hw=hs[Math.floor(Math.random()*hs.length)];a=hw?{k:'遊びに行く',spot:{x:hw.L.fx,z:hw.L.fz,fx:hw.L.hx,fz:hw.L.hz},who:hw.name}:{k:'散歩'}}
+      else if(pick==='景色'||pick==='広場で休む')a={k:pick,spot:life19POI(o,pick)};
+      else {var q=life19POI(o,'散歩');a={k:'散歩',spot:{x:q.x,z:q.z,fx:q.x+1,fz:q.z,r:2.5}}}}}
+  if(!a)a={k:'散歩',spot:(function(q){return {x:q.x,z:q.z,fx:q.x+1,fz:q.z,r:2.5}})(life19POI(o,'散歩'))};
+  act19Do(o,a,why==='first');var s=o.a19s||{x:o.x,z:o.z},dist=Math.hypot(s.x-o.x,s.z-o.z);
+  o.seg={k:a.k,end:LIFE.clock+dist/1.7*1.4+(a.k==='散歩'?life19Rand(12,25):a===plan?life19Rand(50,90):life19Rand(25,60))}}
+/* 行動を始める（小物・札・歩き出し） */
+function act19Do(o,a,jump){var key=a?a.k+'|'+(a.plot||'')+'|'+(a.with||'')+'|'+(a.spot?a.spot.x.toFixed(1)+','+a.spot.z.toFixed(1):''):'';
+  o.a19key=key;o.a19=a;o.a19t=0;o.a19n=0;o.a19fun=0;act19Prop(o,a?ACT19[a.k].p:'');act19Label(o,a);
   if(!a){o.a19s=null;return}var s=act19Spot(o,a);o.a19s=s;
+  if(o.seg&&o.seg.listen)return; /* 話しかけられた側はその場で待つ */
   if(jump){o.x=s.x;o.z=s.z;o.path=[]}else if(Math.hypot(s.x-o.x,s.z-o.z)>.6)o.path=route({x:o.x,z:o.z},{x:s.x,z:s.z})}
+function act19Set(o,jump){life19Pick(o,jump?'first':'plan')}
+/* 立ち話の吹き出し（AIは呼ばない。最初のひとことは、その住人がサーバーで言った今日のひとこと） */
+var TALK19={open:function(o,w){var wx={'晴れ':'いい天気だね','くもり':'くもってるね〜','雨':'雨やまないね','嵐':'すごい風だね'}[V15.weather]||'いい天気だね';
+    return [w.name+'、やあ',w.name+'、元気？',wx,'畑どう？','釣れた？','おなかすいた〜','ねえ聞いて'].concat(o.lastSay?[o.lastSay]:[])},
+  re:['へえ〜','そうなんだ','いいね','わかる〜','たしかに','あはは','ほんとに？','それな'],bye:['またね','じゃあね','また後で']};
+function life19Talk(o,dt){var sg=o.seg,w=sg&&sg.mate;if(!w||sg.listen)return;if(Math.hypot(w.x-o.x,w.z-o.z)>2.2||o.path.length)return;sg.t=(sg.t||0)+dt;
+  var n=Math.floor(sg.t/4.2);if(n<=sg.said)return;sg.said=n;var left=sg.end-LIFE.clock,P=function(a){return a[Math.floor(Math.random()*a.length)]};
+  if(left<5){sayOver(o,P(TALK19.bye),3200);setTimeout(function(){if(w.sp.visible)sayOver(w,P(TALK19.bye),3000)},1300);return}
+  if(n%2){var op=TALK19.open(o,w);sayOver(o,n===1?op[0]:P(op),3600)}else sayOver(w,n===2&&w.lastSay&&Math.random()<.5?w.lastSay:P(TALK19.re),3600)}
+/* すれ違ったら挨拶（同じ2人は90秒に1回） */
+var GREET19={};
+function life19Greet(){for(var i=0;i<AI.length;i++)for(var j=i+1;j<AI.length;j++){var a=AI[i],b=AI[j];if(!a.sp.visible||!b.sp.visible||!a.path.length&&!b.path.length)continue;
+  if(Math.hypot(a.x-b.x,a.z-b.z)>2.6)continue;var k=a.id+b.id;if(GREET19[k]&&LIFE.clock-GREET19[k]<90)continue;GREET19[k]=LIFE.clock;var s=Math.random()<.5?a:b;sayOver(s,['やあ','おっす','こんにちは','おつかれ〜'][Math.floor(Math.random()*4)],2200);s.a19hop=.5}}
 /* 札「🌱 畑を耕す」: 名前の札のすぐ下 */
 function act19Label(o,a){var t=a?ACT19[a.k].i+' '+ACT19[a.k].l:'';if(o.a19lt===t)return;o.a19lt=t;
   if(!t){if(o.a19lb)o.a19lb.visible=false;return}
@@ -2024,7 +2082,7 @@ function act19Parts(dt){for(var i=0;i<A19.parts.length;i++){var q=A19.parts[i];i
   q.vy-=5*dt;q.m.position.x+=q.vx*dt;q.m.position.y+=q.vy*dt;q.m.position.z+=q.vz*dt;q.m.material.opacity=1-q.t/q.life}}
 /* 毎フレーム（stepAI の後）: 着いたら演じる。歩いている間・話しかけられている間は普通の姿勢 */
 var _a19v=new THREE.Vector3();
-function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);
+function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);LIFE.clock+=dt;if(LIFE.on&&V15.ok){life19Greet();for(var li=0;li<AI.length;li++){var lo=AI[li];if(lo.dead||!lo.sp.visible)continue;if(!lo.seg||LIFE.clock>=lo.seg.end){if(lo.hold>0||(chatWho===lo&&sheetOpen==='chat'))continue;life19Pick(lo,'life')}else if(lo.seg.k==='話す')life19Talk(lo,dt)}}
   for(var i=0;i<AI.length;i++){var o=AI[i],a=o.a19,vis=o.sp.visible&&!o.dead;
     if(o.a19g)o.a19g.visible=vis&&!!o.a19kind;if(o.a19lb)o.a19lb.visible=vis&&!!o.a19lt;if(o.a19bob)o.a19bob.visible=false;if(o.a19line)o.a19line.visible=false;
     if(!vis){continue}
@@ -2033,7 +2091,7 @@ function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);
     var lean=0,hop=0,sq=0,swing=0,D=a&&ACT19[a.k],busy=o.hold>0||(chatWho===o&&sheetOpen==='chat');
     if(D&&o.a19s&&!o.path.length&&!busy){
       /* with: 相手が2m以上動いたら付いて行く */
-      if(o.a19s.who&&Math.hypot(o.a19s.who.x-o.a19s.fx,o.a19s.who.z-o.a19s.fz)>2){o.a19s=act19Spot(o,a);if(Math.hypot(o.a19s.x-o.x,o.a19s.z-o.z)>.6)o.path=[{x:o.a19s.x,z:o.a19s.z}]}
+      if(o.seg&&o.seg.listen&&o.a19s.who){o.a19s.fx=o.a19s.who.x;o.a19s.fz=o.a19s.who.z}else if(o.a19s.who&&Math.hypot(o.a19s.who.x-o.a19s.fx,o.a19s.who.z-o.a19s.fz)>2){o.a19s=act19Spot(o,a);if(Math.hypot(o.a19s.x-o.x,o.a19s.z-o.z)>.6)o.path=[{x:o.a19s.x,z:o.a19s.z}]}
       o.a19t+=dt;var ph=(o.a19t/D.c)%1,w=.5-.5*Math.cos(ph*6.2832),cyc=Math.floor(o.a19t/D.c);
       var fp=warp(o.a19s.fx,o.a19s.fz),yaw=Math.atan2(fp[0]-p[0],fp[1]-p[1]);
       if(D.look){var lk=Math.floor(o.a19t/1.3)%4;yaw+=[0,.55,0,-.55][lk]} /* 迷う・見回り: 右を見て、左を見て */
@@ -2056,6 +2114,7 @@ function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);
       if(D.at==='wander'&&o.a19t>6+((o.id.charCodeAt(1)||3)%5)){o.a19t=0;var b2=act19Spot(o,a);o.path=[{x:b2.x+(Math.random()*2-1)*b2.r,z:b2.z+(Math.random()*2-1)*b2.r}]}
     }
     /* 体: 前へ傾ける・跳ねる・縮む（足元が支点） */
+    if(o.a19hop>0){o.a19hop-=dt;hop+=Math.abs(Math.sin(o.a19hop*12))*.12}
     if(!o.sp.userData.m3){lean=0;sq=0}o.sp.rotation.x=lean;o.sp.position.y+=hop;var bs=o.a19base;o.sp.scale.set(bs.x*(1+sq*.5),bs.y*(1-sq),bs.z*(1+sq*.5));
     if(o.a19g&&o.a19g.visible){o.a19g.position.set(o.sp.position.x,o.sp.position.y,o.sp.position.z);o.a19g.rotation.y=o.sp.rotation.y;o.a19lean.rotation.x=lean;if(o.a19hand)o.a19hand.rotation.x=swing;
       /* 釣り: 竿の先から糸、ウキは水の上で揺れて、たまに沈む */
@@ -2067,10 +2126,11 @@ function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);
 /* 住人と話す画面に「この2時間の予定」 */
 function act19Next(){var s=V15.slot,n=[6,10,14,18].filter(function(h){return h>s})[0];return n===undefined?6:n}
 function plan19(w){if(!V15.on||!w||w.kind!=='ai')return '';var L=act19List(w),d=w.doing;
-  var cur=act19Cur(w);if(cur&&cur.here)return '<div class="plan19"><b>いまやっていること</b><p class="now">'+ACT19[cur.k].i+' '+esc(w.place||'')+'で'+ACT19[cur.k].l+'</p><p class="note">次の予定を考えるのは '+act19Next()+'時</p></div>';
-  return '<div class="plan19"><b>この2時間の予定</b>'+L.map(function(a,i){var h=((d.at+2*i)%24),D=ACT19[a.k],now=cur===a;
+  var nowA=w.a19,nowT=nowA?ACT19[nowA.k].i+' '+(nowA.k==='話す'&&w.seg&&w.seg.mate?w.seg.mate.name+'と立ち話':nowA.k==='遊びに行く'&&nowA.who?nowA.who+'の家に遊びに行く':ACT19[nowA.k].l):'';
+  var cur=act19Cur(w),nowH=nowA?'<p class="now">いま: '+esc(nowT)+'</p>':'';if(cur&&cur.here)return '<div class="plan19"><b>いまやっていること</b>'+(nowH||'<p class="now">'+ACT19[cur.k].i+' '+ACT19[cur.k].l+'</p>')+'<p class="note">次の予定を考えるのは '+act19Next()+'時（予定が無い間は、森をぶらぶらしている）</p></div>';
+  return '<div class="plan19">'+nowH+'<b>この2時間の予定</b>'+L.map(function(a,i){var h=((d.at+2*i)%24),D=ACT19[a.k],now=cur===a&&nowA&&nowA.k===a.k;
     return '<p'+(now?' class="now"':'')+'><span class="tm">'+h+'時〜</span>'+D.i+' '+esc(a.t||D.l)+(now?'<span class="nw">いま</span>':'')+'</p>'}).join('')+'</div>'}
-function news19(){if(S.n19||!V15.on)return;S.n19=1;save();toast('住人が、畑仕事や釣りをその場で本当にやるようになった（2時間ごとに予定が変わる）');toast('畑が2面に広がった。南の畑は役場が売っていて、住人が買える')}
+function news19(){if(S.n19||!V15.on)return;S.n19=1;save();toast('住人が森のあちこちを歩き回って、畑仕事・釣り・立ち話をするようになった');toast('畑が2面に広がった。南の畑は役場が売っていて、住人が買える')}
 
 function landPrice(l){return PLACEV[l.ring]*l.area}
 function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.ring]*l.area/10)*10:0}
@@ -2118,7 +2178,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.19',APP_BUILD='1009-1700',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.19',APP_BUILD='1009-1730',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -2182,7 +2242,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
