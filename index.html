@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#071c18">
-<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.17）">
+<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.18）">
 <meta property="og:title" content="フカシの森（試作）">
 <meta property="og:description" content="夜の森を歩く・家を買う・住人と話す　フカシGames の入口の試作">
 <script>window.__earlyErr=[];window.addEventListener('error',function(e){if(window.__earlyErr)window.__earlyErr.push([e.message||((e.target&&e.target.tagName||'')+' '+String(e.target&&(e.target.src||e.target.href)||'').replace(/^.*\//,''))||'load',e.error&&e.error.stack||''])},true)</script>
@@ -57,7 +57,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 #sheet{max-height:calc(100% - 64px);overflow-y:auto;overscroll-behavior:contain} /* v0.16 役場が長いと上が画面の外に切れていた */
 .qz{display:flex;flex-direction:column;gap:8px}.qz .qa{text-align:left;width:100%}.qz.two .qa{padding:10px 12px}.qa.on{outline:3px solid var(--leaf)}.row.col{flex-direction:column;align-items:stretch;gap:2px}
 .qres{text-align:center;border:2px dashed #cdbf8f;border-radius:14px;padding:10px}.qtype{font-size:22px!important;font-weight:700}.qname{font-size:20px!important;font-weight:700;color:var(--leaf)}.qmsg{color:var(--danger);font-weight:700}
-.agree{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}.agree input{width:22px;height:22px;flex:none;margin-top:1px}.codebox{border:2px dashed #cdbf8f;border-radius:14px;padding:10px 12px;display:grid;gap:6px;justify-items:start}.code{font-family:ui-monospace,Menlo,monospace;font-size:22px!important;font-weight:700;letter-spacing:.08em;user-select:all}.mytab{width:100%;border-collapse:collapse;font-size:14px}.mytab th{text-align:left;font-weight:700;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top}.mytab td{padding:5px 0}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}.agree input{width:22px;height:22px;flex:none;margin-top:1px}.codebox{border:2px dashed #cdbf8f;border-radius:14px;padding:10px 12px;display:grid;gap:6px;justify-items:start}.code{font-family:ui-monospace,Menlo,monospace;font-size:22px!important;font-weight:700;letter-spacing:.08em;user-select:all}.mytab{width:100%;border-collapse:collapse;font-size:14px}.mytab th{text-align:left;font-weight:700;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top}.mytab td{padding:5px 0}body.inroom #wx{display:none}#hunb{position:absolute;left:8px;top:52px;flex:none;min-height:32px;padding:4px 12px;font-size:13px;background:var(--cream);color:var(--ink);z-index:3}#hunb.warn{background:#f6dc8c}#hunb.bad{background:#e9a08f}.hunbar{height:10px;border-radius:6px;background:#e7dcc0;overflow:hidden}.hunbar i{display:block;height:100%;background:linear-gradient(90deg,#e0a43c,#8fc56a)}.bagrow{border-top:1px dashed #d8cba3;padding-top:8px;display:grid;gap:6px}.bagn{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 button,a.btn{font:inherit;font-weight:700;font-size:15px;color:var(--ink);background:var(--lantern);border:0;border-radius:999px;
   padding:11px 16px;min-height:44px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;flex:1 1 auto}
@@ -199,6 +199,7 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
     <button id="act" type="button" hidden></button>
     <div id="big" hidden></div>
     <button id="mapbtn" type="button">土地の地図</button>
+    <button id="hunb" type="button" hidden aria-label="リュックとおなか">🍙 リュック <b id="hunv">90%</b></button>
     <div id="mmw">
       <button id="mm" type="button" aria-label="ミニマップ（タッチでたたむ）"><canvas id="mmc" width="264" height="264"></canvas></button>
       <button id="mmf" type="button" aria-label="ミニマップをひらく" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 6.5l5.5-2 6 2 5.5-2v13l-5.5 2-6-2-5.5 2z M9 4.5v13 M15 6.5v13" fill="none" stroke="#FFEFBF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8.2l3 6.6-3-1.5-3 1.5z" fill="#FFC83D"/></svg></button>
@@ -229,7 +230,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.17';
+var VERSION='v0.18';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -641,7 +642,7 @@ function buildWorld(){
   for(i=0;i<26;i++){var f=bill('glow',.22,0,0,{add:1,order:3,tint:0xd8ff9a});f.userData.fly={a:r()*6.28,r:3+r()*12,h:.6+r()*2.4,s:.2+r()*.5,p:r()*6.28};flies.push(f)}
   fixCols=fixCols.filter(function(c){return c.auto});
   G.talk=talkBubble();buildV15();
-  buildTown()}
+  buildTown();if(V15.on)bridge18()}
 function lamp(x,z){var hasL=has('lantern');
   if(hasL){bill('lantern',1.15,x,z,{tint:0xffffff,fade:1});obst.push({x:x,z:z,r:.5,soft:1});fixCols.push({x:x,z:z-.1,r:.22})}
   var g=bill('glow',hasL?2.6:1.5,x,z,{add:1,y:hasL?2.15:2.3,cy:.5,order:2});g.material.opacity=hasL?.38:.95;glowOrbs.push(g);
@@ -734,14 +735,14 @@ function roomBuild(){ROOM.objs.forEach(function(m){scene.remove(m);m.material.di
     var pb=M.prof[Math.min(7,Math.max(0,Math.ceil(Math.min(1,1.75/h)*8)-1))],c=Math.cos(yaw),sn=Math.sin(yaw),ox=(pb[0]+pb[1])*.5*h,oz=(pb[2]+pb[3])*.5*h;
     ROOM.cols.push({x:lx+ox*c+oz*sn,z:lz-ox*sn+oz*c,hw:Math.max(.12,(pb[1]-pb[0])*h*.46),hd:Math.max(.12,(pb[3]-pb[2])*h*.46),a:-yaw})});
   ROOM.shown=cnt}
-function enterRoom(){if(!MDL.room)return;close();roomBuild();ROOM.on=true;ROOM.yaw0=CAM.yaw;ROOM.tilt0=CAM.tilt;CAM.yaw=-.82;CAM.tilt=0;ROOM.path=null;me.rx=.36*ROOM.s;me.rz=.02*ROOM.s;me.path=[];me.go=null;
+function enterRoom(){if(!MDL.room)return;close();ROOM.kind='';document.body.classList.add('inroom');roomBuild();ROOM.on=true;ROOM.yaw0=CAM.yaw;ROOM.tilt0=CAM.tilt;CAM.yaw=-.82;CAM.tilt=0;ROOM.path=null;me.rx=.36*ROOM.s;me.rz=.02*ROOM.s;me.path=[];me.go=null;
   bills.forEach(function(b){b.visible=false});if(G.talk)G.talk.visible=false;SAYS.forEach(function(q){q.s.visible=false});me.sp.visible=true;me.sp.rotation.x=0;me.yawT=-1.57;if(uw)uw.style.opacity=0;
   $('#mapbtn').textContent='外に出る';actBtn.textContent='帽子・家具';actBtn.hidden=false;actOn=null;if(rst)rst.hidden=true;$('#hint').textContent='自分の家の中　丸で歩く・なぞると見回せる';$('#hint').hidden=false}
-function exitRoom(){if(!ROOM.on)return;close();ROOM.on=false;ROOM.objs.forEach(function(m){scene.remove(m);m.material.dispose()});ROOM.objs=[];CAM.yaw=ROOM.yaw0;CAM.tilt=ROOM.tilt0;
+function exitRoom(){if(!ROOM.on)return;close();ROOM.on=false;ROOM.kind='';document.body.classList.remove('inroom');ROOM.objs.forEach(function(m){scene.remove(m);if(m.material&&m.material.dispose)m.material.dispose()});ROOM.objs=[];CAM.yaw=ROOM.yaw0;CAM.tilt=ROOM.tilt0;
   $('#mapbtn').textContent='土地の地図';actBtn.hidden=true;actOn=null;$('#hint').hidden=true;SAYS.forEach(function(q){q.s.visible=true});me.yawT=0}
 function roomTap(cx,cy){if(sheetOpen){close();return}$('#hint').hidden=true;ray=ray||new THREE.Raycaster();v2=v2||new THREE.Vector2();v2.set(cx/W*2-1,-(cy/H*2-1));ray.setFromCamera(v2,camera);var o=ray.ray.origin,d=ray.ray.direction;if(d.y>-1e-4)return;
   var tt=(ROOM.fy-o.y)/d.y;ROOM.path={x:o.x+d.x*tt-ROOM.x,z:o.z+d.z*tt-ROOM.z}}
-function stepRoom(dt,t){var s=ROOM.s,jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y+(keys.d?1:0)-(keys.u?1:0),jl=Math.hypot(jx,jz),mv=false,dx=0,dz=0,i,c,ca,sa,lx,lz,px,pz,ox=me.rx,oz=me.rz;
+function stepRoom(dt,t){if(ROOM.kind==='yakuba'){stepHall(dt,t);return}var s=ROOM.s,jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y+(keys.d?1:0)-(keys.u?1:0),jl=Math.hypot(jx,jz),mv=false,dx=0,dz=0,i,c,ca,sa,lx,lz,px,pz,ox=me.rx,oz=me.rz;
   CAM.yaw+=((keys.q?1:0)-(keys.e?1:0))*dt*1.8;CAM.yaw=Math.max(-1.42,Math.min(-.15,CAM.yaw)); /* 壁の裏へは回さない */
   if(jl>.15&&land.hidden){if(jl>1){jx/=jl;jz/=jl}if(sheetOpen)close();ROOM.path=null;var yc=Math.cos(CAM.yaw),ys=Math.sin(CAM.yaw);dx=jx*yc+jz*ys;dz=-jx*ys+jz*yc;mv=true}
   else if(ROOM.path&&!sheetOpen){dx=ROOM.path.x-me.rx;dz=ROOM.path.z-me.rz;var dd=Math.hypot(dx,dz);if(dd<.12)ROOM.path=null;else{dx/=dd;dz/=dd;mv=true}}
@@ -755,7 +756,7 @@ function stepRoom(dt,t){var s=ROOM.s,jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y
   ROOM.shK=(ROOM.shK||0)+((sheetOpen?1:0)-(ROOM.shK||0))*Math.min(1,dt*6);
   var sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),nar=(W<H*.62?1.17:1)*(1+(s/4.4-1)*.85),cb=(12.5-CAM.tilt*2.5)*nar,ch=(7.6+CAM.tilt*4)*nar,tx=ROOM.x+(-.13*s)*.55+me.rx*.45,tz=ROOM.z+(.13*s)*.55+me.rz*.45,off=1.9+ROOM.shK*4.2;
   camera.position.set(tx+sy*cb,ROOM.fy+ch,tz+cy*cb);camera.lookAt(tx+sy*off,ROOM.fy+.6,tz+cy*off);camera.updateMatrixWorld();
-  if(!sheetOpen&&land.hidden){if(actBtn.hidden){actBtn.textContent='帽子・家具';actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
+  if(!sheetOpen&&land.hidden){var al=ROOM.kind==='yakuba'?yakLabel():'帽子・家具';if(actBtn.hidden||actBtn.textContent!==al){actBtn.textContent=al;actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
 /* ---- 素潜り（v0.12。10/6 17:50 主「池に潜った時一人称視点に変えて欲しい　素潜り？とかできればいいな」）----
    池の底が頭より深くなった所（水面から 1.75m）で、歩きから泳ぎに切り替わる。泳いでいる間は一人称:
      丸＝見ている向きへ進む（下を向いて前へ＝潜る）／なぞる＝見回す／右下の「銛」＝長押しで溜めて離すと飛ぶ／「浮上」＝水面まで上がる
@@ -847,14 +848,14 @@ function fsMsg(t,gold){var e=$('#fsm');e.textContent=t;e.className=gold?'gold':'
 function fishStart(ix){var p=RODS[ix];if(!p||FS.on||DV.on||ROOM.on||intro)return;close();FS.on=true;FS.st='cast';FS.t=0;FS.ix=ix;FS.pull=false;FS.dip=false;FS.fish=null;FS.x=me.x;FS.z=me.z;me.path=[];me.go=null;
   var a=warp(me.x,me.z),b=warp(p.fx,p.fz);CAM.yaw=Math.atan2(-(b[0]-a[0]),-(b[1]-a[1]))+.3;CAM.tilt=0; /* 池の方を向く（少し斜めから） */
   $('#fs').hidden=false;$('#fsg').hidden=true;fsMsg('');$('#hint').hidden=true;actOn=null;actBtn.hidden=true;logEv('rod:cast')}
-function fishEnd(msg,gold){if(!FS.on)return;FS.on=false;FS.st='';FS.pull=false;$('#fs').hidden=true;actOn=null;actBtn.hidden=true;if(msg)toast(msg,gold)}
+function fishEnd(msg,gold){if(!FS.on)return;FS.on=false;if(V15.on)fish3dOff();FS.st='';FS.pull=false;$('#fs').hidden=true;actOn=null;actBtn.hidden=true;if(msg)toast(msg,gold)}
 function fishTap(){if(!FS.on)return;if(FS.st==='nib'){logEv('rod:early');fishEnd('魚のほうが上手でした');return} /* 早合わせ */
   if(FS.st!=='bite')return;var r=Math.random()*100,acc=0,i,D=FISHDEF[0];for(i=0;i<FISHDEF.length;i++){acc+=RODW[i];if(r<acc){D=FISHDEF[i];break}}
   FS.fish=D;FS.cm=Math.round(D.len*100*fishK(D,Math.random()));FS.st='reel';FS.t=0;FS.total=0;FS.tens=.3;FS.prog=.25;FS.run=false;FS.rt=.9+Math.random()*.6;FS.pull=false;$('#fsg').hidden=false;fsMsg('引く');logEv('rod:hook')}
 function fishDown(){if(!FS.on)return;if(FS.st==='reel')FS.pull=true;else fishTap()}
 function fishUp(){FS.pull=false}
-function fishLand(){var D=FS.fish,cm=FS.cm;S.coin+=D.price;S.fish=(S.fish||0)+1;S.rod=(S.rod||0)+1;save();
-  fishEnd(D.mode==='nushi'?'池の大地主が、釣れました　'+cm+'cm　＋'+D.price+'フカ':'釣れました。実力です　'+D.n+' '+cm+'cm　＋'+D.price+'フカ',D.mode==='nushi');bookAdd(D.k,cm);qEv('catch',D.k,'rod');logEv('rod:got:'+D.k)}
+function fishLand(){var D=FS.fish,cm=FS.cm,bt=V15.on?bagCatch(D,cm):(S.coin+=D.price,'＋'+D.price+'フカ');S.fish=(S.fish||0)+1;S.rod=(S.rod||0)+1;save();
+  fishEnd(D.mode==='nushi'?'池の大地主が、釣れました　'+cm+'cm　'+bt:'釣れました。実力です　'+D.n+' '+cm+'cm　'+bt,D.mode==='nushi');bookAdd(D.k,cm);qEv('catch',D.k,'rod');logEv('rod:got:'+D.k)}
 function fishStep(dt,t){if(!FS.on)return;var p=RODS[FS.ix],sx=FS.x+p.ux*1.1,sz=FS.z+p.uz*1.1,fx=p.fx,fz=p.fz,k,str,w,q,q2,dy=0,jx=0,lbl='';FS.t+=dt;FS.dip=false;
   if(FS.st==='cast'){k=Math.min(1,FS.t/.5);fx=sx+(p.fx-sx)*k;fz=sz+(p.fz-sz)*k;dy=-Math.sin(k*3.1416)*46;if(k>=1){FS.st='wait';FS.t=0;FS.w=2+Math.random()*6;fsMsg('待ちます')}}
   else if(FS.st==='wait'){lbl='合わせる';if(FS.t>=FS.w){FS.st='nib';FS.t=0;fsMsg('……何かいます')}}
@@ -866,8 +867,8 @@ function fishStep(dt,t){if(!FS.on)return;var p=RODS[FS.ix],sx=FS.x+p.ux*1.1,sz=F
     if(FS.tens>=1||FS.prog<=0||FS.total>15){logEv('rod:lost');fishEnd('魚のほうが上手でした');return}
     if(FS.prog>=1){fishLand();return}
     w=$('#fsgf');w.style.width=Math.round(Math.min(1,FS.tens)*100)+'%';w.style.background=FS.prog>.85?'#FFC83D':(FS.tens>=.7?'#E94B3C':'#8FD694')}
-  q=warp(fx,fz);q=scr(q[0],WS+.03,q[1]);q2=scr(me.wx,(me.wy||0)+1.75,me.wz);var f=$('#fsf'),ln=$('#fsln');if(FS.dip&&!dy)dy=5;
-  f.style.transform='translate('+(q.x+jx).toFixed(1)+'px,'+(q.y+dy).toFixed(1)+'px)';f.className=FS.dip?'dip':'';ln.setAttribute('x1',q2.x.toFixed(1));ln.setAttribute('y1',q2.y.toFixed(1));ln.setAttribute('x2',(q.x+jx).toFixed(1));ln.setAttribute('y2',(q.y+dy).toFixed(1));
+  if(V15.on)fish3d(fx,fz,dy,jx,t,dt);else{q=warp(fx,fz);q=scr(q[0],WS+.03,q[1]);q2=scr(me.wx,(me.wy||0)+1.75,me.wz);var f=$('#fsf'),ln=$('#fsln');if(FS.dip&&!dy)dy=5;
+  f.style.transform='translate('+(q.x+jx).toFixed(1)+'px,'+(q.y+dy).toFixed(1)+'px)';f.className=FS.dip?'dip':'';ln.setAttribute('x1',q2.x.toFixed(1));ln.setAttribute('y1',q2.y.toFixed(1));ln.setAttribute('x2',(q.x+jx).toFixed(1));ln.setAttribute('y2',(q.y+dy).toFixed(1));}
   if(lbl){if(actBtn.hidden||actBtn.textContent!==lbl){actBtn.textContent=lbl;actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
 /* 池の底の岩と真珠貝（v0.13）。岩: 泳いでいる人も魚も通り抜けられない・銛を止める・番人と小金持ちは岩かげへ逃げる。貝: 近づくと拾える（獲物と同じで、水面に顔を出すと確定） */
 var ROCKS=[],SHELLS=[],SHELL_PRICE=12;
@@ -893,7 +894,7 @@ function shellStep(dt){var i,sh;
     if(sh.st==='gone'){sh.re-=dt;if(sh.re<=0){sh.st='on';sh.sp.visible=true;sh.sp.userData.off=false}continue}
     if(DV.on&&DV.black<=0&&Math.hypot(me.x-sh.x,me.z-sh.z)<1.3&&DV.y-sh.y<1.7){sh.st='gone';sh.re=180+Math.random()*120;sh.sp.visible=false;sh.sp.userData.off=true;
       DV.catch.push({k:'shell',price:SHELL_PRICE,head:false});dvMsg('真珠貝を拾った　'+SHELL_PRICE+'フカ（水面に顔を出すと確定）',2.4);logEv('shell')}}}
-function SPD(){return DV.on?DV.SW:SPEED*(1-(me.wet||0)*.45)}
+function SPD(){return DV.on?DV.SW:SPEED*(1-(me.wet||0)*.45)*hunK()}
 /* 鯉の絵の色を塗り替える（帽子の色替えと同じ考え方）: クリーム色の所→wc、オレンジの模様→pc。明るさは元の絵のまま */
 function koiTex(wc,pc){var im=MIM.koi,c=document.createElement('canvas');c.width=im.width;c.height=im.height;var g=c.getContext('2d');g.drawImage(im,0,0);var d=g.getImageData(0,0,c.width,c.height),a=d.data,i,r,gg,b,t,l;
   for(i=0;i<a.length;i+=4){r=a[i];gg=a[i+1];b=a[i+2];t=r>40?Math.max(0,Math.min(1,((r-b)/r-.3)/.4)):0;l=Math.max(r,gg,b)/255;a[i]=(wc[0]*(1-t)+pc[0]*t)*l;a[i+1]=(wc[1]*(1-t)+pc[1]*t)*l;a[i+2]=(wc[2]*(1-t)+pc[2]*t)*l}
@@ -1104,7 +1105,7 @@ function nearAct(){ if(DV.on||FS.on)return;if(++actTick%6)return;var best=null,b
 actBtn.addEventListener('pointerdown',function(e){if(FS.on){e.preventDefault();try{actBtn.setPointerCapture(e.pointerId)}catch(_){}fishDown();return}if(!DV.on)return;e.preventDefault();try{actBtn.setPointerCapture(e.pointerId)}catch(_){}spearDown()});
 actBtn.addEventListener('pointerup',function(e){fishUp();if(DV.on)spearUp(false)});actBtn.addEventListener('pointercancel',function(e){fishUp();if(DV.on)spearUp(true)});
 $('#dvup').addEventListener('click',function(){if(DV.on&&DV.black<=0){DV.rise=true;logEv('rise')}});
-actBtn.addEventListener('click',function(){ if(DV.on||FS.on)return;if(ROOM.on){$('#hint').hidden=true;open('home');return} if(!actOn)return;var h=actOn.h;actOn=null;actBtn.hidden=true;$('#hint').hidden=true;me.face=1;if(h.type==='plot')openLot(h.id);else{var bw2=whoOf(h.id);if(bw2)openChat(bw2);else open(h.id)}});
+actBtn.addEventListener('click',function(){ if(DV.on||FS.on)return;if(ROOM.on){$('#hint').hidden=true;if(ROOM.kind==='yakuba'){yakAct();return}open('home');return} if(!actOn)return;var h=actOn.h;actOn=null;actBtn.hidden=true;$('#hint').hidden=true;me.face=1;if(h.type==='plot')openLot(h.id);else{var bw2=whoOf(h.id);if(bw2)openChat(bw2);else open(h.id)}});
 function endIntro(){ if(!intro)return;intro=null;big.hidden=true;big.textContent='';S.intro=1;save();$('#hint').hidden=false}
 function startIntro(){var c=LOTS.filter(function(l){return resOf(l.id)===5}).sort(function(a,b){return (a.q?5e3:0)+(a.cz<0?0:1e3)+a.dist-((b.q?5e3:0)+(b.cz<0?0:1e3)+b.dist)})[0];
   if(!c||window.matchMedia('(prefers-reduced-motion: reduce)').matches){S.intro=1;return}
@@ -1205,7 +1206,7 @@ function aiReply(w,text){var persona=w.kind==='cop'?'森の警察官（まじめ
   return sampleFn(turns,{cache:false,modelTier:'quick'}).then(function(r){var t=String(r&&r.text||'').replace(/\s+/g,' ').trim();if(!t)throw {code:'empty_completion'};return t.slice(0,80)})}
 function openChat(w){chatWho=w;w.log=w.log||[];renderChat()}
 function renderChat(){var w=chatWho;if(!w)return;var keep=$('#chatin')?$('#chatin').value:'';
-  var lines=w.log.slice(-14).map(function(l){return '<p class="'+(l[0]==='me'?'me':'bot')+'"><span class="bb">'+esc(l[1])+'</span></p>'}).join('')||'<p class="note">スタンプか、ひとことで話しかける</p>';
+  var lines=(V15.on?w.log.slice(-14).map(function(l){return '<p class="'+(l[0]==='me'?'me':'bot')+'"><span class="bb">'+esc(l[1])+'</span></p>'}):w.log.slice(-4).map(function(l){return '<p class="'+(l[0]==='me'?'me':'bot')+'">'+(l[0]==='me'?'自分':'相手')+'：'+esc(l[1])+'</p>'})).join('')||'<p class="note">スタンプか、ひとことで話しかける</p>';
   show('chat','<h2>'+esc(whoName(w))+'</h2><div class="log" id="chatlog">'+lines+'</div>'+
     nameRow(w)+'<div class="stamps">'+STAMPS.map(function(st,i){return '<button type="button" class="st" data-a="st:'+i+'">'+st[0]+'</button>'}).join('')+'</div>'+
     '<div class="row say"><input id="chatin" type="text" maxlength="60" placeholder="ひとこと書く" autocomplete="off" enterkeyhint="send" aria-label="ひとこと"><button data-a="say">送る</button></div>'+
@@ -1251,7 +1252,7 @@ function close(){sheetOpen=null;sheet.hidden=true}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
 function open(id){
-  if(id==='yakuba'){yakubaOpen();return}if(id==='mail'){mailOpen();return}if(id==='rec'){recOpen(S.recTab||'book');return}if(id==='gear'){gearOpen();return}if(id.indexOf('rod')===0){fishStart(+id.slice(3));return}
+  if(id==='yakuba'){yakubaOpen();return}if(id==='yakuroom'){yakEnter();return}if(id==='mail'){mailOpen();return}if(id==='rec'){recOpen(S.recTab||'book');return}if(id==='gear'){gearOpen();return}if(id.indexOf('rod')===0){fishStart(+id.slice(3));return}
   var jl=jailLeft();
   if(id==='pk')show(id,'<h2>PKスタジアム（フカシPK）</h2><p>ストーリーを1章クリアするごとに、森の家が1段広がる　今 '+S.clear.pk+'章クリア</p>'+
     '<div class="row"><a class="btn" href="'+HUB_URL+'fukashi-pk/" target="_blank" rel="noopener">フカシPKを遊ぶ</a>'+(ON_HUB?'</div><p class="note">フカシPKのクリア記録を、この端末から読んでいる（遊んで戻ってくると増える）</p>':'<button class="sub" data-a="sim:pk">1章クリアした事にする（試作用）</button></div><p class="note">ここ（Claudeの中）では実際のクリア記録を読めないので、ボタンで代用している</p>'));
@@ -1310,8 +1311,8 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='greet'){S.like++;save();if(sheetOpen==='chat'&&chatWho===npc){npc.log.push(['me','（挨拶した）']);npc.log.push(['bot','やあ　これで'+S.like+'回目　今は'+stageName()+'だね']);sayOver(npc,'やあ　今は'+stageName()+'だね',4200);renderChat()}else open('npc');return}
   if(a.indexOf('st:')===0){chatSend('st',+a.slice(3));return}
   if(a.indexOf('q15:')===0){q15Act(a.slice(4));return}
-  if(a==='jumin'){juminOpen();return}if(a==='jumin:make'){juminMake();return}if(a==='jumin:restore'){J17.view='restore';J17.err='';juminDraw();return}if(a==='jumin:back'){J17.view='make';J17.err='';juminDraw();return}if(a==='jumin:restoreGo'){juminRestore();return}if(a==='jumin:copy'){juminCopy();return}if(a==='jumin:done'){juminDone();return}
-  if(a==='my'){myOpen();return}if(a.indexOf('my:')===0){myAct(a.slice(3));return}
+  if(a==='jumin'){juminOpen();return}if(a==='jumin:make'){juminMake();return}if(a==='jumin:restore'){J17.view='restore';J17.err='';juminDraw();return}if(a==='jumin:back'){J17.view='make';J17.err='';juminDraw();return}if(a==='jumin:login'){J17.view='login';J17.err='';juminDraw();return}if(a==='jumin:loginGo'){juminLogin();return}if(a==='jumin:restoreGo'){juminRestore();return}if(a==='jumin:copy'){juminCopy();return}if(a==='jumin:done'){juminDone();return}
+  if(a==='bag'){bagOpen();return}if(a.indexOf('bag:')===0){bagAct(a.slice(4));return}  if(a==='my'){myOpen();return}if(a.indexOf('my:')===0){myAct(a.slice(3));return}
   if(a.indexOf('gift:')===0){giftSend(a.slice(5));return}
   if(a.indexOf('oshi:')===0){oshiSet(a.slice(5));return}
   if(a==='yakubaGo'){yakubaOpen();return}
@@ -1371,22 +1372,7 @@ AIDEF.forEach(function(d){AIL[d.lot]=d});
   if(c===undefined)c=80;S.lotOld=S.lot;S.lot=c;S.v15moved=1;save()})();
 function resOf(id){if(!V15.on)return S.res2[id]||0;if(AIL[id])return AIL[id].tier;if(SKIPLOT[id]||lotInZone(id))return 0;return S.res2[id]||0}
 /* 畑: 82番の土地に 3×3（1区画 3.6m） */
-var FARM={plots:[],grp:null},FARMC={'荒地':0x806342,'耕した':0x6B4B32,'芽':0x557A38,'育ち中':0x4E8B3A,'収穫できる':0x78A83C,'収穫済み':0x6B4B32,'枯れた':0x665B3E};
-function farmXY(no){var l=LOTS[FARM_LOT],i=(no-1)%3,j=Math.floor((no-1)/3);return {x:l.cx-4.6+i*4.6,z:l.cz-4.6+j*4.6}}
-function buildFarm(){var g=new THREE.Group();scene.add(g);FARM.grp=g;
-  for(var no=1;no<=9;no++){var p=farmXY(no),w=warp(p.x,p.z),y=height(w[0],w[1]);
-    var soil=new THREE.Mesh(new THREE.PlaneGeometry(3.6,3.6),new THREE.MeshBasicMaterial({color:col(FARMC['荒地'])}));soil.rotation.x=-Math.PI/2;soil.rotation.z=-angAt(p.x,p.z);soil.position.set(w[0],y+.06,w[1]);soil.renderOrder=1;g.add(soil);
-    var crops=new THREE.Group();crops.position.set(w[0],y+.06,w[1]);crops.rotation.y=-angAt(p.x,p.z);g.add(crops);
-    var parts=[];for(var a=0;a<4;a++){var cx=(a%2?.8:-.8),cz=(a<2?-.8:.8);
-      var leaf=new THREE.Mesh(new THREE.ConeGeometry(.28,.5,6),new THREE.MeshBasicMaterial({color:col(0x5f9a45)}));leaf.position.set(cx,.25,cz);crops.add(leaf);
-      var fruit=new THREE.Mesh(new THREE.SphereGeometry(.22,8,6),new THREE.MeshBasicMaterial({color:col(0xe07a3a)}));fruit.position.set(cx+.12,.5,cz);crops.add(fruit);parts.push([leaf,fruit])}
-    var tag=label(textTex('畑'+no,{fs:44,pill:1,body:1,fg:'#173a2c'}),.34,p.x,p.z+2,0,.9,{far:26});
-    FARM.plots.push({no:no,soil:soil,crops:crops,parts:parts,tag:tag,state:'荒地',water:false})}
-  var l=LOTS[FARM_LOT];bill(has('signboard')?'signboard':'sign',1.3,l.cx+6.8,l.cz+7.2,{});label(textTex('みんなの畑',{fs:52,pill:1,fg:'#173a2c'}),.5,l.cx+6.8,l.cz+7.2,0,1.25,{far:40});
-  farmPaint()}
-function farmPaint(){FARM.plots.forEach(function(f){var st=f.state,c=FARMC[st]||FARMC['荒地'];if(f.water&&(st==='芽'||st==='育ち中'))c=0x3f3a2a;f.soil.material.color.copy(col(c));
-  var k={'芽':.35,'育ち中':.75,'収穫できる':1,'枯れた':.6}[st]||0;f.crops.visible=k>0;
-  f.parts.forEach(function(p){p[0].scale.set(k,k,k);p[0].material.color.copy(col(st==='枯れた'?0x7a5a32:0x5f9a45));p[0].rotation.z=st==='枯れた'?1.1:0;p[1].visible=st==='収穫できる'})})}
+/* 畑は farm18.js（v0.18 で作り直し） */
 /* 柵と霧: 範囲のふちに丸太の柵（高さ1.2m・#59452F）、外側に青緑の霧の幕。札「ここから先は まだ森です」 */
 function buildFence(){var segs=[],i,r,e,x,z,step=2.2,k;
   ZONE.forEach(function(r){var x0=lineX(r[0])-3,x1=lineX(r[2]+1)+3,z0=lineX(r[1])-3,z1=lineX(r[3]+1)+3;
@@ -1404,7 +1390,7 @@ function buildFence(){var segs=[],i,r,e,x,z,step=2.2,k;
 /* 役場（52番の土地）: 外壁 #D8C39A・屋根の緑・看板「森の役場」 */
 function buildYakuba(){var l=LOTS[YAKUBA_LOT];var key=has('h3')?'h3':(has('h2')?'h2':'tree');var s=bill(key,7.5,l.hx,l.hz,{turn:l.turn,tint:0xd8c39a});
   label(textTex('森の役場',{fs:60,pill:1,bg:'rgba(49,92,58,.95)',fg:'#fff3c7'}),.62,l.hx,l.hz,0,(s.userData.h||5)+.6,{far:70});
-  hits.push({type:'sign',id:'yakuba',px:l.fx,pz:l.fz-.6,w:3,h:3});ACT.yakuba='役場に入る'}
+  hits.push({type:'sign',id:'yakuroom',px:l.fx,pz:l.fz-.6,w:3,h:3});ACT.yakuroom='役場に入る'} /* v0.18 中に入れる */
 /* 店（住人が建てたら、空き地 30・80 番に屋台を出す） */
 var SHOPSP={};
 function shopsPaint(){V15.shops.forEach(function(sh,i){if(SHOPSP[sh.name]||i>=SHOP_LOTS.length)return;var l=LOTS[SHOP_LOTS[i]];
@@ -1417,7 +1403,7 @@ function buildAI(){AIDEF.forEach(function(d){mkAI(d,LOTS[d.lot])});
   if(cop.tag){cop.name='ケイ';cop.tier=4}}
 function placeXY(o,pl){var l=o.L,h=(o.id.charCodeAt(0)*7+o.id.length*13)%360*Math.PI/180;
   if(pl==='家')return {x:l.fx,z:l.fz};
-  if(pl==='畑'){var mine=V15.plots.filter(function(p){return p.user===o.id})[0],p=farmXY(mine?mine.no:5);return {x:p.x+2.3,z:p.z+.2}}
+  if(pl==='畑'){var mine=V15.plots.filter(function(p){return p.user===o.id})[0],p=farmXY(mine?mine.no:5);return {x:p.x+1.9,z:p.z+.2}} /* v0.18 区画の間の通路に立つ */
   if(pl==='池'){var f=LOTS[FARM_LOT];return {x:f.x0+1.2,z:f.cz+(h%1)*6-3}}
   if(pl==='森')return {x:lineX(8)+Math.cos(h)*5,z:lineX(5)-1.4};
   if(pl==='役場'){var y=LOTS[YAKUBA_LOT];return {x:y.fx+Math.cos(h)*1.5,z:y.fz+1.2}}
@@ -1449,7 +1435,7 @@ function wxPaint(){var el=$('#wx');if(!el){el=document.createElement('div');el.i
     var st=document.createElement('style');st.textContent='#wx{position:fixed;inset:0;pointer-events:none;z-index:4;transition:background-color 2s}#wx.c{background:rgba(40,52,70,.10)}#wx.r,#wx.s{background:rgba(30,44,60,.15) repeating-linear-gradient(104deg,rgba(200,220,255,0) 0 9px,rgba(200,220,255,.22) 9px 10px,rgba(200,220,255,0) 10px 23px);background-size:auto,140px 140px;animation:wxr .45s linear infinite}#wx.s{background-color:rgba(20,30,46,.24);animation:wxr .22s linear infinite,wxf 7s steps(1) infinite}@keyframes wxr{to{background-position:0 0,-38px 140px}}@keyframes wxf{0%,93%,97%{filter:none}94%,96%{background-color:rgba(230,236,255,.42)}}';document.head.appendChild(st)}
   el.className={'くもり':'c','雨':'r','嵐':'s'}[V15.weather]||''}
 /* 役場の中 */
-function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み込み中…</p>');fetch(MORI+'/api/world?w=live',{cache:'no-store'}).then(function(r){return r.json()}).then(function(w){if(sheetOpen!=='yakuba')return;
+function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み込み中…</p>');fetch(MORI+'/api/world?w=live',{cache:'no-store'}).then(function(r){return r.json()}).then(function(w){if(sheetOpen!=='yakuba')return;V15.ballot=w.ballot||null;
   var ppl=(w.residents||[]).filter(function(r){return r.alive}),last=function(r){var d=(r.diary||[]).slice(-1)[0];return d?d.text:'まだ日誌がない'};
   var h='<p>森の'+w.day+'日目 '+w.slot+'時　天気 '+esc(w.weather||'')+'　住人 '+ppl.length+'人　役場のお金 '+((w.town||{}).coin||0)+'フカ</p>'+myBox(w);
   h+='<h3>きのうの日誌</h3>'+ppl.map(function(r){return '<p><b>'+esc(r.name)+'</b>　'+esc(last(r)).slice(0,90)+'</p>'}).join('');
@@ -1459,7 +1445,7 @@ function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み
   if(!b){var rq=(w.requests||[]).filter(function(q){return !q.used}).slice(0,3);if(rq.length)h+='<h3>住人からの要望</h3>'+rq.map(function(q){return '<p class="note">'+esc(q.text)+'（'+q.count+'回）</p>'}).join('')}
   h+='<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">役場の記録を全部見る</a></div>';show('yakuba','<h2>森の役場</h2>'+h);sheet.scrollTop=0},function(){if(sheetOpen==='yakuba')show('yakuba','<h2>森の役場</h2><p>役場に人がいないみたい（つながらなかった）</p>')})}
 function news15(){if(S.n15||!V15.on)return;S.n15=1;save();toast('森が狭くなった。広場のまわりと池だけ歩ける');toast('AIで動く住人が7人になった。話しかけると覚えている');if(S.v15moved)toast('家が立入禁止の外だったので、広場の近くへ引っ越しました')}
-function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500);juminSync()}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
+function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500);juminSync();var hb=$('#hunb');if(hb){hb.hidden=false;hb.onclick=bagOpen}hunTick();setInterval(hunTick,5000)}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
 function nameRow(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.acct?'<div class="row say"><button data-a="jumin">森の住民票を作って話す</button></div><p class="note">住人と話すには住民票（呼び名だけ）が要る</p>':''} /* v0.17: 名前は住民票の呼び名 */
 function voteSend(n,c){if(!S.acct){juminOpen();return}
   fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
@@ -1573,19 +1559,26 @@ function juminDraw(){var h,v=J17.view;
     '<label class="agree"><input id="jagree" type="checkbox"'+(J17.agree?' checked':'')+'> 利用規約とプライバシーポリシーを読んで、同意する</label><div class="row">'+legalLinks()+'</div>'+
     '<p class="note">13歳未満の人は、おうちの人と一緒に読んでね。住人に話したことは、住人の日誌に出ることがある。名前・学校・住所・電話番号は書かないでね</p>'+
     (J17.err?'<p class="qmsg">'+esc(J17.err)+'</p>':'')+
-    '<div class="row"><button data-a="jumin:make"'+(J17.busy?' disabled':'')+'>'+(J17.busy?'作っているところ…':'同意して住民票を作る')+'</button><button class="sub" data-a="jumin:restore">引き継ぎコードで続きから</button></div>';
+    '<div class="row"><button data-a="jumin:make"'+(J17.busy?' disabled':'')+'>'+(J17.busy?'作っているところ…':'同意して住民票を作る')+'</button></div><div class="row"><button class="sub" data-a="jumin:login">IDとパスワードでログイン</button><button class="sub" data-a="jumin:restore">引き継ぎコードで続きから</button></div>';
+  else if(v==='login')h='<h2>IDとパスワードでログイン</h2><p class="note">役場の「自分のデータ」で IDとパスワードを決めた人は、どの端末からでもログインできる</p>'+
+    '<div class="row say"><input id="lid" type="text" maxlength="20" placeholder="ID" autocomplete="username" autocapitalize="none" aria-label="ID" value="'+esc(J17.lid||'')+'"></div><div class="row say"><input id="lpw" type="password" maxlength="64" placeholder="パスワード" autocomplete="current-password" aria-label="パスワード"></div>'+
+    (J17.err?'<p class="qmsg">'+esc(J17.err)+'</p>':'')+'<div class="row"><button data-a="jumin:loginGo"'+(J17.busy?' disabled':'')+'>ログイン</button><button class="sub" data-a="jumin:back">住民票を作るにもどる</button></div><p class="note">パスワードを忘れた時は、引き継ぎコードで入って決め直せる</p>';
   else if(v==='restore')h='<h2>引き継ぎコードで続きから</h2><p>前の端末で住民票を作った時に出た、12文字のコードを入れてね</p><div class="row say"><input id="jcode" type="text" maxlength="16" placeholder="XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" aria-label="引き継ぎコード"></div>'+
     (J17.err?'<p class="qmsg">'+esc(J17.err)+'</p>':'')+'<div class="row"><button data-a="jumin:restoreGo"'+(J17.busy?' disabled':'')+'>続きから遊ぶ</button><button class="sub" data-a="jumin:back">住民票を作るにもどる</button></div><p class="note">前の端末の住民票は、こちらに移ると使えなくなる</p>';
   else if(v==='code')h='<h2>住民票ができた</h2><p>ようこそ、<b>'+esc(S.acct.name)+'</b>さん</p><div class="codebox"><p class="note">引き継ぎコード（この画面でしか出ない）</p><p class="code" id="jcodeShow">'+esc(J17.code)+'</p><button class="sub" data-a="jumin:copy">コピーする</button></div>'+
-    '<p class="note">スクショかメモで残しておくと、別のスマホでも続きから遊べる。人には教えないでね。なくしても、役場の「自分のデータ」から出し直せる</p><div class="row"><button data-a="jumin:done">森へ</button></div>';
+    '<p class="note">スクショかメモで残しておくと、別のスマホでも続きから遊べる。人には教えないでね。なくしても、役場の「自分のデータ」から出し直せる。役場で IDとパスワードを決めておくと、どの端末からでもログインできる</p><div class="row"><button data-a="jumin:done">森へ</button></div>';
   show('jumin',h);if(v==='make'){var n=$('#jname'),a=$('#jagree');if(n)n.oninput=function(){J17.name=n.value};if(a)a.onchange=function(){J17.agree=a.checked}}}
-var JERR={agree:'同意にチェックしてね',name:'呼び名を入れてね',ngname:'その呼び名には使えない言葉か、電話番号・メールっぽい物が入ってる。ほかの呼び名にしてね',taken:'その呼び名はもう使われている。ほかの呼び名にしてね',many:'今日はこの場所から作れる住民票の数をこえた。また明日ためしてね',code:'コードがちがうみたい。12文字を確かめてね',login:'住民票が見つからなかった'};
+var JERR={wrong:'IDかパスワードがちがう',locked:'今日はまちがえすぎたので、明日またためしてね（引き継ぎコードなら入れる）',lid:'IDは4〜20文字の英数字（a-z 0-9 _ -）にしてね',pwlen:'パスワードは8文字以上にしてね',pwweak:'そのパスワードは当てられやすい。IDを入れない・同じ文字を続けないでね',lidtaken:'そのIDはもう使われている',mismatch:'パスワードが2回とも同じになってないよ',agree:'同意にチェックしてね',name:'呼び名を入れてね',ngname:'その呼び名には使えない言葉か、電話番号・メールっぽい物が入ってる。ほかの呼び名にしてね',taken:'その呼び名はもう使われている。ほかの呼び名にしてね',many:'今日はこの場所から作れる住民票の数をこえた。また明日ためしてね',code:'コードがちがうみたい。12文字を確かめてね',login:'住民票が見つからなかった'};
 function juminMake(){var nm=(($('#jname')||{}).value||'').trim(),ag=($('#jagree')||{}).checked;J17.name=nm;J17.agree=ag;
   if(!nm){J17.err=JERR.name;juminDraw();return}if(!ag){J17.err=JERR.agree;juminDraw();return}
   J17.busy=true;J17.err='';juminDraw();
   fetch(MORI+'/api/account/new?w=live',{method:'POST',headers:MH(),body:JSON.stringify({name:nm,agree:AGREE_VER,dev:S.dev||''})}).then(function(r){return r.json()}).then(function(j){J17.busy=false;
     if(j&&j.ok){S.acct={id:j.id,name:j.name,token:j.token,agree:AGREE_VER};S.pname=j.name;save();logEv('acct:new');J17.code=j.code;J17.view='code';juminDraw();tagsPaint();juminSync();return}
     J17.err=JERR[j&&j.reason]||'作れなかった。もう一度ためしてね';juminDraw()},function(){J17.busy=false;J17.err='役場につながらなかった。電波のいい所でもう一度';juminDraw()})}
+function juminLogin(){var id=(($('#lid')||{}).value||'').trim(),pw=($('#lpw')||{}).value||'';J17.lid=id;if(!id||!pw){J17.err='IDとパスワードを入れてね';juminDraw();return}J17.busy=true;J17.err='';juminDraw();
+  fetch(MORI+'/api/account/login?w=live',{method:'POST',headers:MH(),body:JSON.stringify({loginId:id,password:pw})}).then(function(r){return r.json()}).then(function(j){J17.busy=false;
+    if(j&&j.ok){S.acct={id:j.id,name:j.name,token:j.token,agree:AGREE_VER};S.pname=j.name;save();logEv('acct:login');toast('おかえり、'+j.name+'さん');juminSync();close();return}
+    J17.err=JERR[j&&j.reason]||'ログインできなかった';juminDraw()},function(){J17.busy=false;J17.err='役場につながらなかった';juminDraw()})}
 function juminRestore(){var c=(($('#jcode')||{}).value||'').trim();if(!c){J17.err=JERR.code;juminDraw();return}J17.busy=true;J17.err='';juminDraw();
   fetch(MORI+'/api/account/restore?w=live',{method:'POST',headers:MH(),body:JSON.stringify({code:c})}).then(function(r){return r.json()}).then(function(j){J17.busy=false;
     if(j&&j.ok){S.acct={id:j.id,name:j.name,token:j.token,agree:AGREE_VER};S.pname=j.name;save();logEv('acct:restore');toast('おかえり、'+j.name+'さん');juminSync();close();return}
@@ -1606,6 +1599,9 @@ function myDraw(msg){var m=J17.me,d=function(t){return new Date(t+9*3600e3).toIS
     '<div class="row say"><input id="myname" type="text" maxlength="12" placeholder="新しい呼び名" autocomplete="off" aria-label="新しい呼び名"><button class="sub" data-a="my:name">呼び名を変える</button></div>'+
     '<h3>住人が覚えていること（'+m.memoryCount+'件）</h3>'+(m.memories.length?m.memories.slice().reverse().map(function(x){return '<p class="note"><b>'+esc(x.who)+'</b>　'+x.day+'日目　'+esc(x.text)+'</p>'}).join(''):'<p class="note">まだない</p>')+
     (m.hall.length?'<h3>役場の記録</h3>'+m.hall.slice().reverse().map(function(x){return '<p class="note">'+x.day+'日目 ['+esc(x.kind)+'] '+esc(x.text)+'</p>'}).join(''):'')+
+    '<h3>IDとパスワード</h3>'+(m.loginId?'<p>ID <b>'+esc(m.loginId)+'</b>　<span class="note">ログイン中の端末 '+m.devices+'台</span></p>':'<p class="note">決めておくと、どの端末からでもログインできる（今の端末もそのまま使える）</p>')+
+    '<div class="row say"><input id="myid" type="text" maxlength="20" placeholder="ID（4〜20文字の英数字）" autocomplete="username" autocapitalize="none" aria-label="ID" value="'+esc(J17.lid||m.loginId||'')+'"></div><div class="row say"><input id="mypw" type="password" maxlength="64" placeholder="パスワード（8文字以上）" autocomplete="new-password" aria-label="パスワード"></div><div class="row say"><input id="mypw2" type="password" maxlength="64" placeholder="パスワードをもう一度" autocomplete="new-password" aria-label="パスワードをもう一度"></div>'+
+    '<div class="row"><button class="sub" data-a="my:pw">'+(m.loginId?'パスワードを変える':'IDとパスワードを決める')+'</button>'+(m.loginId?'<button class="sub" data-a="my:logout">この端末からログアウト</button>':'')+'</div><p class="note">ほかのサービスと同じパスワードは使わないでね</p>'+
     '<h3>引き継ぎコード</h3><p class="note">コードは作った時にしか出ない。なくしたら出し直せる（前のコードは使えなくなる）</p>'+(J17.code?'<div class="codebox"><p class="code" id="jcodeShow">'+esc(J17.code)+'</p><button class="sub" data-a="jumin:copy">コピーする</button></div>':'<div class="row"><button class="sub" data-a="my:code">引き継ぎコードを出し直す</button></div>')+
     '<h3>住民票を消す</h3><p class="note">消すと、推し・投票・差し入れの記録、住人の記憶の中のあなたの言葉、役場の記録のあなたの名前が消える。分身は森を出ていく。元に戻せない（バックアップからは14日で消える）</p>'+
     (J17.sure?'<div class="row"><button class="bad" data-a="my:delGo">住民票を消す（元に戻せない）</button><button class="sub" data-a="my:keep">やめる</button></div>':'<div class="row"><button class="sub" data-a="my:del">住民票を消す…</button></div>')+
@@ -1614,12 +1610,304 @@ function myDraw(msg){var m=J17.me,d=function(t){return new Date(t+9*3600e3).toIS
 function myAct(a){
   if(a==='name'){var nm=(($('#myname')||{}).value||'').trim();if(!nm)return;fetch(MORI+'/api/account/name?w=live',{method:'POST',headers:MH(),body:JSON.stringify({name:nm})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.acct.name=j.name;S.pname=j.name;J17.me.name=j.name;save();myDraw('呼び名を「'+j.name+'」にした')}else myDraw(JERR[j&&j.reason]||'変えられなかった')},function(){myDraw('役場につながらなかった')});return}
   if(a==='code'){fetch(MORI+'/api/account/code?w=live',{method:'POST',headers:MH(),body:'{}'}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){J17.code=j.code;myDraw('新しい引き継ぎコードを出した。前のコードはもう使えない')}else myDraw('出し直せなかった')},function(){myDraw('役場につながらなかった')});return}
+  if(a==='pw'){var id=(($('#myid')||{}).value||'').trim(),p1=($('#mypw')||{}).value||'',p2=($('#mypw2')||{}).value||'';J17.lid=id;if(p1!==p2){myDraw(JERR.mismatch);return}
+    fetch(MORI+'/api/account/password?w=live',{method:'POST',headers:MH(),body:JSON.stringify({loginId:id,password:p1})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){J17.me.loginId=j.loginId;J17.me.devices=J17.me.devices||1;logEv('acct:pw');myDraw('ID「'+j.loginId+'」とパスワードを決めた。どの端末からでもログインできる')}else myDraw(JERR[j&&j.reason]||'決められなかった')},function(){myDraw('役場につながらなかった')});return}
+  if(a==='logout'){fetch(MORI+'/api/account/logout?w=live',{method:'POST',headers:MH(),body:'{}'}).then(function(){},function(){});S.acct=null;S.oshi=null;S.clone=null;S.pname='';save();tagsPaint();show('my','<h2>ログアウトした</h2><p>この端末から住民票を外した。IDとパスワードでいつでも戻れる</p><div class="row"><button data-a="jumin">ログインする</button><button class="sub" data-a="close">とじる</button></div>');return}
   if(a==='del'){J17.sure=true;myDraw();return}
   if(a==='keep'){J17.sure=false;myDraw();return}
   if(a==='delGo'){fetch(MORI+'/api/account/delete?w=live',{method:'POST',headers:MH(),body:JSON.stringify({confirm:'消す'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){
       S.acct=null;S.oshi=null;S.clone=null;S.vote=null;S.gift=0;S.pname='';S.j17s=1;save();tagsPaint();logEv('acct:delete');J17.me=null;J17.code='';
       show('my','<h2>住民票を消した</h2><p>あなたの記録を森から消した（住人の記憶 '+j.removed.memories+'件・役場の記録 '+j.removed.hall+'件'+(j.removed.clone?'・分身の'+esc(j.removed.clone)+'は森を出ていった':'')+'）</p><p class="note">また遊ぶ時は、新しく住民票を作れる</p><div class="row"><button data-a="close">とじる</button></div>')}
     else myDraw('消せなかった。もう一度ためしてね')},function(){myDraw('役場につながらなかった')});return}}
+/* 畑（v0.18 作り直し）: 10/9 主「畑今こうなってるの？やばくない、？デザイン確認した？」
+   見た目はチャッピー「畑改修仕様書」（10/9）: 9区画3×3・区画3.2m角・通路0.6m・木枠 高0.22 厚0.12・盛り土・畝3本（南北）・状態ごとの土と野菜・水やりの光沢と水滴・番号札01〜09・丸太柵0.45m・入口は南の真ん中1.4m・水がめ・看板・白い花・暖色の灯り1つ
+   Claude が足した所: 土地が坂（4m近い高低差）なので、区画ごとに盛り土の高さを変えて段々畑にした（板が坂に刺さって見えていた原因）。
+   畑全体を1つの向きにそろえる（前は区画ごとに向きが違っていた）。部品は種類ごとにまとめて描く（9区画で描く回数 約20回） */
+var FARM={plots:[],grp:null,P:3.2,STEP:3.8,H:6.2},
+  FARMC={'荒地':0x49372C,'耕した':0x65452F,'芽':0x59402E,'育ち中':0x60452F,'収穫できる':0x68482F,'収穫済み':0x76563A,'枯れた':0x49362C};
+function farmXY(no){var l=LOTS[FARM_LOT],i=(no-1)%3,j=Math.floor((no-1)/3);return {x:l.cx+(i-1)*FARM.STEP,z:l.cz+(j-1)*FARM.STEP}}
+function farmInst(geo,color,n,opt){opt=opt||{};var m=new THREE.InstancedMesh(geo,opt.basic?new THREE.MeshBasicMaterial({color:col(color),transparent:!!opt.op,opacity:opt.op||1,depthWrite:!opt.op}):new THREE.MeshLambertMaterial({color:0xffffff}),n);
+  m.frustumCulled=false;m.count=n;var c=col(color);for(var i=0;i<n;i++){m.setMatrixAt(i,FARM.zero);if(!opt.basic)m.setColorAt(i,c)}FARM.grp.add(m);return m}
+function buildFarm(){var l=LOTS[FARM_LOT],g=new THREE.Group(),wc=warp(l.cx,l.cz);g.position.set(wc[0],0,wc[1]);g.rotation.y=-angAt(l.cx,l.cz);scene.add(g);g.updateMatrixWorld(true);FARM.grp=g;
+  var D=new THREE.Object3D(),v=new THREE.Vector3();FARM.D=D;FARM.zero=new THREE.Matrix4().makeScale(0,0,0);
+  var gy=function(lx,lz){v.set(lx,0,lz).applyMatrix4(g.matrixWorld);return height(v.x,v.z)}; /* 畑の中の点（ローカル）→ 地面の高さ */
+  FARM.gy=gy;
+  var B=new THREE.BoxGeometry(1,1,1),S=new THREE.SphereGeometry(1,7,5),C=new THREE.CylinderGeometry(1,1,1,7),R=new THREE.BoxGeometry(1,1,1);R.translate(0,0,.5);
+  FARM.soil=farmInst(B,0x49372C,9);FARM.frame=farmInst(B,0x916741,36);FARM.ridge=farmInst(B,0x65452F,27);FARM.stone=farmInst(S,0x7a7266,54);
+  FARM.stem=farmInst(C,0x2F7A3A,81);FARM.leaf=farmInst(S,0x39964A,243);FARM.fruit=farmInst(S,0xF28C28,81);
+  FARM.gloss=farmInst(new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),0x8EB7B0,9,{basic:1,op:.18});FARM.drop=farmInst(S,0xA5DDE5,36,{basic:1});
+  var P=FARM.P,h=P/2;
+  for(var no=1;no<=9;no++){var i=(no-1)%3,j=Math.floor((no-1)/3),px=(i-1)*FARM.STEP,pz=(j-1)*FARM.STEP;
+    var hs=[gy(px-h,pz-h),gy(px+h,pz-h),gy(px-h,pz+h),gy(px+h,pz+h),gy(px,pz)],top=Math.max.apply(null,hs)+.18,bot=Math.min.apply(null,hs)-.15;
+    FARM.plots.push({no:no,px:px,pz:pz,bed:top,bot:bot,state:'荒地',water:false,plants:0,fruit:0,seed:no*7.13});
+    /* 木枠: 上端は土より0.04上。坂の低い側まで下ろして浮かせない */
+    var ft=top+.04,fh=ft-bot,fc=ft-fh/2,fr=[[px,pz-h+.06,P,.12],[px,pz+h-.06,P,.12],[px-h+.06,pz,.12,P-.24],[px+h-.06,pz,.12,P-.24]];
+    fr.forEach(function(b,k){D.position.set(b[0],fc,b[1]);D.rotation.set(0,0,0);D.scale.set(b[2],fh,b[3]);D.updateMatrix();FARM.frame.setMatrixAt((no-1)*4+k,D.matrix)});
+    D.position.set(px,(top+bot)/2,pz);D.scale.set(P-.24,top-bot,P-.24);D.updateMatrix();FARM.soil.setMatrixAt(no-1,D.matrix);
+    /* 番号札（南側の真ん中・区画の外寄り） */
+    var cv=textTex(('0'+no),{fs:56,pill:0,body:1,fg:'#49372C',bg:'#E7D6A4'}),sb=new THREE.Mesh(new THREE.BoxGeometry(.32,.22,.04),[0,0,0,0,new THREE.MeshLambertMaterial({map:cv}),0].map(function(m){return m||new THREE.MeshLambertMaterial({color:col(0xE7D6A4)})}));
+    var sy=gy(px,pz+h+.18);sb.position.set(px,sy+.36,pz+h+.18);g.add(sb);
+    var post=new THREE.Mesh(C,new THREE.MeshLambertMaterial({color:col(0x6b4a2c)}));post.scale.set(.02,.28,.02);post.position.set(px,sy+.14,pz+h+.2);g.add(post)}
+  FARM.frame.instanceMatrix.needsUpdate=true;FARM.soil.instanceMatrix.needsUpdate=true;
+  /* 丸太柵（0.45m）。入口は南（+z）の真ん中 1.4m */
+  var H=FARM.H,pts=[],side=function(x0,z0,x1,z1,gate){var L=Math.hypot(x1-x0,z1-z0),n=Math.max(2,Math.round(L/1.25)),a=[];for(var k=0;k<=n;k++){var t=k/n,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;if(gate&&Math.abs(x)<.7)x=x<0?-.7:.7;a.push([x,z])}return a};
+  var runs=[side(-H,-H,H,-H),side(H,-H,H,H),side(-H,-H,-H,H),side(-H,H,-.7,H),side(.7,H,H,H)];
+  var nPost=0,nRail=0;runs.forEach(function(r){nPost+=r.length;nRail+=(r.length-1)*2});
+  var posts=farmInst(C,0x7a5634,nPost),rails=farmInst(R,0x8a6440,nRail),ip=0,ir=0;
+  runs.forEach(function(r){r.forEach(function(q,k){var y=gy(q[0],q[1]);D.rotation.set(0,0,0);D.position.set(q[0],y+.25,q[1]);D.scale.set(.07,.5,.07);D.updateMatrix();posts.setMatrixAt(ip++,D.matrix);
+    if(k){var p0=r[k-1],y0=gy(p0[0],p0[1]);[.18,.38].forEach(function(hh){D.position.set(p0[0],y0+hh,p0[1]);D.scale.set(1,1,1);D.lookAt(q[0],y+hh,q[1]);var L=Math.hypot(q[0]-p0[0],y-y0,q[1]-p0[1]);D.scale.set(.06,.06,L);D.updateMatrix();rails.setMatrixAt(ir++,D.matrix)})}})});
+  posts.instanceMatrix.needsUpdate=true;rails.instanceMatrix.needsUpdate=true;
+  [[-H,-H,H,-H,0,-1],[H,-H,H,H,1,0],[-H,-H,-H,H,-1,0],[-H,H,-.7,H,0,1],[.7,H,H,H,0,1]].forEach(function(e){var cx=(e[0]+e[2])/2,cz=(e[1]+e[3])/2,hw=Math.abs(e[2]-e[0])/2+.1,hd=Math.abs(e[3]-e[1])/2+.1;
+    fixCols.push({x:l.cx+cx,z:l.cz+cz,hw:Math.max(hw,.2),hd:Math.max(hd,.2),a:0,auto:1})});
+  /* 水がめとじょうろ（北東の角）、白い花（入口の左右）、看板 */
+  var jx=H-.9,jz=-H+.9,jy=gy(jx,jz),jar=new THREE.Mesh(new THREE.CylinderGeometry(.3,.24,.65,10),new THREE.MeshLambertMaterial({color:col(0x9a6b4a)}));jar.position.set(jx,jy+.32,jz);g.add(jar);
+  var wtr=new THREE.Mesh(new THREE.CircleGeometry(.27,10).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:col(0x3f6d7a)}));wtr.position.set(jx,jy+.6,jz);g.add(wtr);
+  var can=new THREE.Group(),cm=new THREE.MeshLambertMaterial({color:col(0x6f8fa8)});var cb=new THREE.Mesh(new THREE.CylinderGeometry(.12,.13,.22,8),cm);cb.position.y=.11;can.add(cb);var sp=new THREE.Mesh(new THREE.CylinderGeometry(.015,.03,.3,6),cm);sp.position.set(.16,.2,0);sp.rotation.z=-1;can.add(sp);
+  can.position.set(jx-.55,gy(jx-.55,jz+.1),jz+.1);g.add(can);
+  var fl=farmInst(S,0xF4F1E6,6),fs=farmInst(C,0x4f8a44,6);[-1.2,-1.7,-2.2,1.2,1.7,2.2].forEach(function(x,k){var z=H+.35,y=gy(x,z);D.rotation.set(0,0,0);D.position.set(x,y+.2,z);D.scale.set(.09,.07,.09);D.updateMatrix();fl.setMatrixAt(k,D.matrix);D.position.set(x,y+.08,z);D.scale.set(.015,.16,.015);D.updateMatrix();fs.setMatrixAt(k,D.matrix)});
+  fl.instanceMatrix.needsUpdate=true;fs.instanceMatrix.needsUpdate=true;
+  bill(has('signboard')?'signboard':'sign',1.2,l.cx-1.8,l.cz+H+.9,{});label(textTex('みんなの畑',{fs:52,pill:1,fg:'#173a2c'}),.42,l.cx-1.8,l.cz+H+.9,0,1.2,{far:40});
+  /* 暖色の灯り1つ（畑の真ん中の上） */
+  var lt=new THREE.PointLight(0xFFD9A0,.9,13,1.6);lt.position.set(0,gy(0,0)+4,0);g.add(lt);FARM.light=lt;
+  farmPaint()}
+/* 状態ごとの見た目（チャッピーの表）。芽9株・ほかは6株 */
+var FARMV={'芽':{n:9,h:.08,stem:0x4f9a3a,leaf:0x77C957,lr:.035,leaves:2},'育ち中':{n:6,h:.22,stem:0x2F7A3A,leaf:0x39964A,lr:.09,leaves:3},'収穫できる':{n:6,h:.26,stem:0x2F7A3A,leaf:0x39964A,lr:.1,leaves:3,fruit:1},
+  '収穫済み':{n:6,h:.04,stem:0x8a6a3a,leaf:0,lr:0,leaves:0,stub:1},'枯れた':{n:6,h:.2,stem:0x7a5a32,leaf:0x987044,lr:.06,leaves:2,dead:1}};
+function farmPaint(){if(!FARM.grp)return;var D=FARM.D,Z=FARM.zero;
+  FARM.plots.forEach(function(f,pi){var st=f.state,v=FARMV[st],c=col(FARMC[st]||FARMC['荒地']).clone(),top=f.bed,rnd=function(k){var s=Math.sin(f.seed*12.9898+k*78.233)*43758.5453;return s-Math.floor(s)};
+    if(f.water)c.multiplyScalar(.88);FARM.soil.setColorAt(pi,c);
+    /* 畝3本（南北）。荒地は無し */
+    for(var r=0;r<3;r++){var x=f.px+(r-1)*.9;if(st==='荒地'){FARM.ridge.setMatrixAt(pi*3+r,Z)}else{D.rotation.set(0,0,0);D.position.set(x,top+.035,f.pz);D.scale.set(.55,.07,FARM.P-.5);D.updateMatrix();FARM.ridge.setMatrixAt(pi*3+r,D.matrix);FARM.ridge.setColorAt(pi*3+r,c.clone().multiplyScalar(1.12))}}
+    /* 小石: 荒地6・ほかは3 */
+    for(var s=0;s<6;s++){if(s>=(st==='荒地'?6:3)){FARM.stone.setMatrixAt(pi*6+s,Z);continue}var r1=rnd(s)*2.4-1.2,r2=rnd(s+9)*2.4-1.2,sz=.06+rnd(s+3)*.06;D.rotation.set(0,rnd(s+5)*3,0);D.position.set(f.px+r1,top+.02,f.pz+r2);D.scale.set(sz,sz*.6,sz);D.updateMatrix();FARM.stone.setMatrixAt(pi*6+s,D.matrix)}
+    /* 野菜 */
+    var n=v?v.n:0;f.plants=n;f.fruit=v&&v.fruit?n:0;
+    for(var k=0;k<9;k++){var si=pi*9+k;
+      if(k>=n){FARM.stem.setMatrixAt(si,Z);FARM.fruit.setMatrixAt(si,Z);for(var q=0;q<3;q++)FARM.leaf.setMatrixAt(si*3+q,Z);continue}
+      var row=n===9?k%3:k%3,col3=n===9?Math.floor(k/3):Math.floor(k/3),bx=f.px+(row-1)*.9,bz=f.pz+(n===9?(col3-1)*.8:(col3?.6:-.6)),by=top+.07,tilt=v.dead?.45+rnd(k)*.3:rnd(k)*.12-.06;
+      D.rotation.set(0,0,tilt);D.position.set(bx,by+v.h/2,bz);D.scale.set(v.stub?.03:(v.h>.1?.02:.012),v.h,v.stub?.03:(v.h>.1?.02:.012));D.updateMatrix();FARM.stem.setMatrixAt(si,D.matrix);FARM.stem.setColorAt(si,col(v.stem));
+      for(q=0;q<3;q++){if(q>=v.leaves){FARM.leaf.setMatrixAt(si*3+q,Z);continue}var ang=q*2.1+rnd(k+q),rr=v.lr*.9,lx=bx+Math.cos(ang)*rr+(v.dead?Math.sin(tilt)*-v.h*.6:0),ly=by+v.h*(v.leaves===2?.95:.75+q*.12),lz=bz+Math.sin(ang)*rr;
+        D.rotation.set(0,0,0);D.position.set(lx,ly,lz);D.scale.set(v.lr,v.lr*(v.dead?.6:.85),v.lr);D.updateMatrix();FARM.leaf.setMatrixAt(si*3+q,D.matrix);FARM.leaf.setColorAt(si*3+q,col(v.leaf))}
+      if(v.fruit){D.rotation.set(0,0,0);D.position.set(bx,by+.1,bz+.12);D.scale.set(.08,.075,.08);D.updateMatrix();FARM.fruit.setMatrixAt(si,D.matrix)}else FARM.fruit.setMatrixAt(si,Z)}
+    /* 水をやった日: 光沢と水滴 */
+    if(f.water){D.rotation.set(0,0,0);D.position.set(f.px,top+.075,f.pz);D.scale.set(FARM.P-.4,1,FARM.P-.4);D.updateMatrix();FARM.gloss.setMatrixAt(pi,D.matrix);
+      for(var w=0;w<4;w++){D.position.set(f.px+(w%2?.45:-.45)+rnd(w+20)*.2,top+.11,f.pz+(w<2?-.7:.7));D.scale.set(.03,.04,.03);D.updateMatrix();FARM.drop.setMatrixAt(pi*4+w,D.matrix)}}
+    else{FARM.gloss.setMatrixAt(pi,Z);for(w=0;w<4;w++)FARM.drop.setMatrixAt(pi*4+w,Z)}});
+  ['soil','ridge','stone','stem','leaf','fruit','gloss','drop'].forEach(function(k){var m=FARM[k];m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true})}
+/* 橋（v0.18 作り直し）: 10/9 主「変なところに柵がある」「あるくところに」→ 前の橋の絵は、渡り口に横木（柵）があって歩く所をふさいでいた。
+   形は歩く高さ（BR.yEnd・yMid・xh の放物線）にぴったり合わせて組み立てる。渡り口は開けて、手すりは両側だけ。色は落ち着いた木の色 */
+function bridge18(){if(!BR.ok||!BR.m)return;BR.m.visible=false;BR.m.userData.off=true;
+  var g=new THREE.Group(),wc=warp(BR.cx,BR.z);g.position.set(wc[0],BR.y0,wc[1]);g.rotation.y=-angAt(BR.cx,BR.z);scene.add(g);BR.g18=g;
+  var half=BR.xh*BR.s,dy=function(x){var u=x/half;return (BR.yEnd+(BR.yMid-BR.yEnd)*Math.max(0,1-u*u))*BR.s},W=BR.hw*2+.5;
+  var mDeck=new THREE.MeshLambertMaterial({color:col(0x8B6A45)}),mRail=new THREE.MeshLambertMaterial({color:col(0x6E4E31)}),mPost=new THREE.MeshLambertMaterial({color:col(0x5E4129)}),B=new THREE.BoxGeometry(1,1,1);
+  var add=function(m,x,y,z,sx,sy,sz,rz){var o=new THREE.Mesh(B,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);if(rz)o.rotation.z=rz;g.add(o);return o};
+  /* 床板: 歩く高さの少し下に、坂に沿って並べる */
+  var n=16,ext=half+.6;for(var k=0;k<n;k++){var x=-ext+(k+.5)*(2*ext/n),x0=x-.3,x1=x+.3,y0=dy(x0),y1=dy(x1);add(mDeck,x,(y0+y1)/2-.07,0,2*ext/n-.05,.12,W,Math.atan2(y1-y0,.6))}
+  /* 床を支える桁（両側） */
+  [-1,1].forEach(function(sd){for(var k=0;k<n;k++){var x=-ext+(k+.5)*(2*ext/n),x0=x-.3,x1=x+.3;add(mPost,x,(dy(x0)+dy(x1))/2-.2,sd*(W/2-.08),2*ext/n,.16,.14,Math.atan2(dy(x1)-dy(x0),.6))}});
+  /* 手すり: 両側だけ。柱は1.3mおき、渡り口の柱は少し太く。端と端をつなぐ横木は無し */
+  var pts=[];for(var x=-half;x<=half+.01;x+=half/4)pts.push(x);
+  [-1,1].forEach(function(sd){var z=sd*(W/2-.04);pts.forEach(function(x,i){var end=i===0||i===pts.length-1;add(mPost,x,dy(x)+.4,z,end?.2:.11,.8,end?.2:.11)});
+    for(var i=1;i<pts.length;i++){var a=pts[i-1],b=pts[i];[.78,.42].forEach(function(hh){var ya=dy(a)+hh,yb=dy(b)+hh;add(mRail,(a+b)/2,(ya+yb)/2,z,Math.hypot(b-a,yb-ya)+.05,hh>.6?.09:.06,hh>.6?.12:.06,Math.atan2(yb-ya,b-a))})}})}
+
+/* 釣り（v0.18）: 10/9 主「釣りのところよく見直して(モンハンみたいにちゃんと食いついてほしい)」「ウキが2Dなんよ」
+   ウキ・糸・竿を立体に。魚の影が寄ってくる→つつく（ウキがちょんちょん沈む・小さい波紋）→本気で食いつく（ウキが一気に沈む・水しぶき・大きい波紋・スマホが震える）→その瞬間に合わせる
+   流れと時間（待つ2〜8秒・小さいアタリ2回・本アタリ0.3秒）は v0.14 のチャッピーの決まりのまま。見た目と手ごたえだけ足した */
+var F3={g:null};
+function fish3dInit(){if(F3.g)return;var g=new THREE.Group();scene.add(g);F3.g=g;g.visible=false;
+  var red=new THREE.MeshLambertMaterial({color:col(0xE2412F)}),wht=new THREE.MeshLambertMaterial({color:col(0xF4F0E4)});
+  var fl=new THREE.Group(),top=new THREE.Mesh(new THREE.SphereGeometry(.085,12,8,0,6.2832,0,1.5708),red),bot=new THREE.Mesh(new THREE.SphereGeometry(.085,12,8,0,6.2832,1.5708,1.5708),wht),stick=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.2,6),red),tail=new THREE.Mesh(new THREE.CylinderGeometry(.008,.004,.14,5),wht);
+  stick.position.y=.16;tail.position.y=-.13;fl.add(top,bot,stick,tail);fl.scale.setScalar(1.7);g.add(fl);F3.fl=fl; /* 夜の池でも見えるように、本物より大きめ */
+  F3.rod=new THREE.Mesh(new THREE.CylinderGeometry(.012,.022,1,6),new THREE.MeshLambertMaterial({color:col(0x5a3a22)}));g.add(F3.rod);
+  F3.lineG=new THREE.BufferGeometry();F3.lineG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(16*3),3));F3.line=new THREE.Line(F3.lineG,new THREE.LineBasicMaterial({color:0xeef3f6,transparent:true,opacity:.75}));F3.line.frustumCulled=false;g.add(F3.line);
+  F3.shadow=new THREE.Mesh(new THREE.CircleGeometry(.5,14).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0x06141a,transparent:true,opacity:0,depthWrite:false}));F3.shadow.scale.set(.5,1,1.3);g.add(F3.shadow);
+  F3.rings=[];for(var i=0;i<4;i++){var r=new THREE.Mesh(new THREE.RingGeometry(.9,1,24).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0xdff3f8,transparent:true,opacity:0,depthWrite:false}));r.visible=false;g.add(r);F3.rings.push({m:r,t:9,big:0})}
+  F3.drops=[];for(i=0;i<8;i++){var d=new THREE.Mesh(new THREE.SphereGeometry(.03,5,4),new THREE.MeshBasicMaterial({color:0xe8f7fb}));d.visible=false;g.add(d);F3.drops.push({m:d,v:[0,0,0],t:9})}
+  F3.last='';F3.peck=0;F3.wt=0}
+function fishRing(x,z,big){var r=F3.rings.find(function(q){return q.t>=1})||F3.rings[0];r.t=0;r.big=big;r.x=x;r.z=z}
+function fishSplash(x,y,z){F3.drops.forEach(function(d,i){var a=i/8*6.2832;d.t=0;d.p=[x,y,z];d.v=[Math.cos(a)*.9,1.6+Math.random()*1.2,Math.sin(a)*.9]})}
+function fish3d(fx,fz,dy,jx,t,dt){fish3dInit();if(!F3.cam){F3.cam={h:CAM.h,back:CAM.back,look:CAM.look}}CAM.h+=(4.2-CAM.h)*Math.min(1,dt*3);CAM.back+=(6.5-CAM.back)*Math.min(1,dt*3);var g=F3.g;g.visible=true;var st=FS.st,p=RODS[FS.ix],w=warp(fx,fz),x=w[0],z=w[1],y=WS+.02,sink=0,tw=0;
+  /* 2Dのウキと糸は消す */
+  var f=$('#fsf'),sv=$('#fsl');if(f)f.style.display='none';if(sv)sv.style.display='none';
+  if(st==='cast'){y+=Math.max(0,-dy/46*2.2)} /* 投げた時の放物線 */
+  if(st!==F3.last){ /* 段階が変わった瞬間の手ごたえ */
+    if(st==='wait'){fishRing(x,z,0);F3.wt=0}
+    if(st==='nib'){F3.peck=-1}
+    if(st==='bite'){fishRing(x,z,1);fishSplash(x,WS,z);try{navigator.vibrate&&navigator.vibrate([60,30,90])}catch(e){}}
+    if(st==='reel'){fishRing(x,z,1);fishSplash(x,WS,z)}
+    F3.last=st}
+  if(st==='wait'){F3.wt+=dt;if(F3.wt>2.2){F3.wt=0;fishRing(x,z,0)} /* 待っている間も、ときどき小さい波紋 */
+    tw=Math.sin(t*.0025)*.012}
+  if(st==='nib'){var pk=FS.dip?1:0;if(pk&&F3.peck!==Math.floor(FS.t/.7)){F3.peck=Math.floor(FS.t/.7);fishRing(x,z,0);try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}}sink=FS.dip?.07:0} /* つつく: ちょんと沈む */
+  if(st==='bite'){sink=.22+Math.sin(t*.06)*.03} /* 本気で食いついた: 一気に沈む */
+  if(st==='reel'){sink=.12;tw=Math.sin(t*.03)*(FS.run?.05:.015)}
+  F3.fl.position.set(x+(jx?jx*.01:0),y-sink+tw,z);F3.fl.rotation.z=st==='reel'?Math.sin(t*.02)*.35:(st==='bite'?.5:0);
+  /* 魚の影: 待つの終わりごろに寄ってきて、つつく時はウキの真下、食いついたら潜って引く */
+  var sh=F3.shadow,op=0,d=1.6;if(st==='wait'){var left=FS.w-FS.t;if(left<2.4){op=.28*(1-left/2.4);d=.3+left*.6}}else if(st==='nib'){op=.32;d=FS.dip?.1:.35}else if(st==='bite'){op=.4;d=0}else if(st==='reel'){op=.35;d=.15}
+  var ang=t*.0011+FS.ix;sh.position.set(x+Math.cos(ang)*d,WS-.18,z+Math.sin(ang)*d);sh.rotation.y=-ang;sh.material.opacity=op;sh.visible=op>0;
+  /* 竿と糸: 手元から竿先、竿先から少したるませてウキへ */
+  var hx=me.wx,hy=(me.wy||0)+1.0,hz=me.wz,dx=x-hx,dz=z-hz,l=Math.hypot(dx,dz)||1,tipx=hx+dx/l*1.5,tipz=hz+dz/l*1.5,tipy=hy+1.1;
+  var rod=F3.rod;var rv=new THREE.Vector3(tipx-hx,tipy-hy,tipz-hz),rl=rv.length();rod.position.set((hx+tipx)/2,(hy+tipy)/2,(hz+tipz)/2);rod.scale.set(1,rl,1);rod.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),rv.normalize());
+  var pos=F3.lineG.attributes.position.array,ty=F3.fl.position.y+.25,tight=st==='reel'||st==='bite'?.05:.5;
+  for(var i=0;i<16;i++){var k=i/15,sag=Math.sin(k*Math.PI)*tight;pos[i*3]=tipx+(F3.fl.position.x-tipx)*k;pos[i*3+1]=tipy+(ty-tipy)*k-sag;pos[i*3+2]=tipz+(F3.fl.position.z-tipz)*k}F3.lineG.attributes.position.needsUpdate=true;
+  /* 波紋と水しぶき */
+  F3.rings.forEach(function(r){if(r.t>=1){r.m.visible=false;return}r.t+=dt/(r.big?1.1:.8);var s=(r.big?.25:.12)+r.t*(r.big?1.3:.6);r.m.visible=true;r.m.position.set(r.x,WS+.03,r.z);r.m.scale.set(s,1,s);r.m.material.opacity=(1-r.t)*(r.big?.7:.45)});
+  F3.drops.forEach(function(q){if(q.t>=.7){q.m.visible=false;return}q.t+=dt;q.v[1]-=9.8*dt;q.p[0]+=q.v[0]*dt;q.p[1]+=q.v[1]*dt;q.p[2]+=q.v[2]*dt;q.m.visible=q.p[1]>WS-.05;q.m.position.set(q.p[0],q.p[1],q.p[2])})}
+function fish3dOff(){if(F3.g)F3.g.visible=false;F3.last='';if(F3.cam){CAM.h=F3.cam.h;CAM.back=F3.cam.back;CAM.look=F3.cam.look;F3.cam=null}}
+
+/* 自分のおなかとリュック（v0.18）: 10/9 主「自分は空腹とかにならないの？ 自分のリュックがほしい」
+   おなかは現実の時間で減る（10時間で空っぽ）。減ると少し歩くのが遅くなるだけで、倒れたりはしない（子どもも遊ぶので）
+   リュックには釣った魚・買ったパンなどが入る。食べる・推しに差し入れる・売る。食べ物は住人と同じ日数で傷む（魚1日・パン2日・野菜3日・木の実7日） */
+var BAG={MAX:20,SHELF:{'魚':1,'パン':2,'野菜':3,'木の実':7},EAT:{'魚':30,'パン':35,'野菜':25,'木の実':12},SELL:{'パン':7,'野菜':8,'木の実':3},BREAD:15,warn:0};
+function bagList(){if(!Array.isArray(S.bag))S.bag=[];return S.bag}
+function dayNo(){var d=new Date(Date.now()+9*3600e3);return Math.floor(d.getTime()/864e5)} /* 日本時間の日付（傷む日数を数える） */
+function bagAdd(it){var b=bagList();it.day=dayNo();if(b.length>=BAG.MAX){var p=it.price||BAG.SELL[it.k]||0;S.coin+=p;save();toast('リュックがいっぱい。'+it.name+'はその場で売った　＋'+p+'フカ');return false}b.push(it);save();return true}
+function bagSpoil(){var b=bagList(),now=dayNo(),gone=[];S.bag=b.filter(function(it){var ok=now-it.day<(BAG.SHELF[it.k]||99);if(!ok)gone.push(it.name);return ok});if(gone.length){save();toast(gone.join('・')+'が傷んだので捨てた')}}
+function hunNow(){var now=Date.now();if(S.hun==null){S.hun=10;S.hunT=now}var d=(now-(S.hunT||now))/36e5;if(d>0){S.hun=Math.min(100,S.hun+d*10);S.hunT=now}return S.hun}
+function hunK(){if(!V15.on)return 1;var h=S.hun||0;return h>=90?.7:h>=70?.85:1}
+function hunTick(){if(!V15.on)return;var h=hunNow(),full=Math.round(100-h),el=$('#hunv');if(el)el.textContent=full+'%';var c=$('#hunb');if(c)c.className=h>=90?'bad':h>=70?'warn':'';
+  var lv=h>=90?2:h>=70?1:0;if(lv>BAG.warn&&!intro)toast(lv===2?'おなかぺこぺこ。歩くのがおそくなった（リュックから食べられる）':'おなかがすいてきた。リュックから食べられる');BAG.warn=lv;if(Math.random()<.2)save()}
+function bagEat(i){var b=bagList(),it=b[i];if(!it)return;var v=BAG.EAT[it.k]||10;hunNow();S.hun=Math.max(0,S.hun-v);b.splice(i,1);BAG.warn=S.hun>=90?2:S.hun>=70?1:0;save();hunTick();logEv('bag:eat:'+it.k);toast(it.name+'を食べた。おなか '+Math.round(100-S.hun)+'%');bagOpen()}
+function bagSell(i){var b=bagList(),it=b[i];if(!it)return;var p=it.price||BAG.SELL[it.k]||0;S.coin+=p;b.splice(i,1);save();logEv('bag:sell:'+it.k);toast(it.name+'を売った　＋'+p+'フカ');bagOpen()}
+function bagGift(i){var b=bagList(),it=b[i];if(!it||!S.oshi)return;if(!S.acct){juminOpen();return}var item=['パン','野菜','魚'].indexOf(it.k)>=0?it.k:'';if(!item){toast(it.name+'は差し入れできない（パン・野菜・魚だけ）');return}
+  var gd=V15.wday||V15.day;if(S.gift===gd){toast('今日の差し入れはもうした（1日1回）');return}
+  b.splice(i,1);S.gift=gd;save();
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'gift',to:S.oshi.id,item:item})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){toast(S.oshi.name+'に'+it.name+'を差し入れた');logEv('gift:bag')}else{b.push(it);if(!(j&&j.reason==='today'))S.gift=0;save();toast(j&&j.reason==='today'?'今日はもう差し入れした':'差し入れできなかった（リュックに戻した）')}if(sheetOpen==='bag')bagOpen()},function(){b.push(it);S.gift=0;save();toast('役場につながらなかった（リュックに戻した）')})}
+function bagBuy(){if(S.coin<BAG.BREAD){toast('フカが足りない（'+BAG.BREAD+'フカ）');return}if(bagList().length>=BAG.MAX){toast('リュックがいっぱい');return}S.coin-=BAG.BREAD;bagAdd({k:'パン',name:'パン'});logEv('bag:buy');toast('パンを買った（リュックへ）');if(sheetOpen==='bag')bagOpen();else if(sheetOpen==='yakuba')yakubaOpen()}
+function bagOpen(){bagSpoil();var b=bagList(),h=hunNow(),full=Math.round(100-h),now=dayNo(),gd=V15.wday||V15.day;
+  var rows=b.map(function(it,i){var left=(BAG.SHELF[it.k]||99)-(now-it.day),p=it.price||BAG.SELL[it.k]||0;
+    return '<div class="bagrow"><div class="bagn"><b>'+esc(it.name)+'</b>'+(it.cm?' <span class="note">'+it.cm+'cm</span>':'')+'<span class="note">'+(left<=1?'今日中に傷む':'あと'+left+'日で傷む')+'</span></div><div class="row"><button data-a="bag:eat:'+i+'">食べる</button>'+
+      (S.oshi&&['パン','野菜','魚'].indexOf(it.k)>=0?'<button class="sub" data-a="bag:gift:'+i+'"'+(S.gift===gd?' disabled':'')+'>'+esc(S.oshi.name)+'に差し入れ</button>':'')+'<button class="sub" data-a="bag:sell:'+i+'">売る ＋'+p+'</button></div></div>'}).join('');
+  show('bag','<h2>リュック</h2><div class="hunbar" role="meter" aria-label="おなか" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+full+'"><i style="width:'+full+'%"></i></div><p class="note">おなか '+full+'%　'+(h>=90?'ぺこぺこで歩くのがおそい':h>=70?'すいてきた':'まだ大丈夫')+'（10時間で空っぽになる・倒れることはない）</p>'+
+    (rows||'<p class="note">からっぽ。池で釣った魚がここに入る</p>')+'<p class="note">'+b.length+' / '+BAG.MAX+'こ　食べ物は日がたつと傷む（魚1日・パン2日・野菜3日・木の実7日）'+(S.oshi&&S.gift===gd?'　今日の差し入れはもうした':'')+'</p>'+
+    '<div class="row"><button class="sub" data-a="bag:buy">パンを買う（'+BAG.BREAD+'フカ・いま '+S.coin+'フカ）</button></div>')}
+function bagAct(a){var p=a.split(':');if(p[0]==='eat')bagEat(+p[1]);else if(p[0]==='sell')bagSell(+p[1]);else if(p[0]==='gift')bagGift(+p[1]);else if(p[0]==='buy')bagBuy()}
+/* 釣れた魚はリュックへ（v0.15 の森のとき）。前の「その場でフカ」は #v14 のまま */
+function bagCatch(D,cm){var ok=bagAdd({k:'魚',name:D.n,cm:cm,price:D.price,fk:D.k});return ok?'リュックへ（売ると＋'+D.price+'フカ）':'その場で売った　＋'+D.price+'フカ'}
+
+/* 役場の中（v0.18）: 10/9 主「役場の中は入れないの？」→「もっとリアルにしてほしい」「役場の中も歩き回りたい」「部署ごとに色々よういしてほしい」
+   広さ・間取り・色・家具・カメラはチャッピー「森の役場内部設計仕様書」（10/9）: 内寸16×12m・入口は手前中央2m・奥の列に 記録室/住民課/選挙管理委員会・手前の列に 産業課/福祉課/会計課/交番出張所
+   Claude が変えた所: 入口から奥へ通れるよう、福祉課を左へ寄せて幅2.2に／ベンチと番号札機を通り道の外へ／中央の掲示板は「案内板」として自立させた
+   座標: 仕様の (X, Z)（原点は南西角・Z は奥） → 部屋の中の (X-8, 6-Z)。カメラは後ろから追いかけ、壁の外へは出さない */
+var HALL={W:16,D:12,X:2600,Z:2600,deps:[],cols:[],staff:[],cache:null,ct:0};
+var HDEP=[ /* id, 名前, 中心X, 中心Z, 幅, カウンター, 天板, 札の背景, 札の字, ボタンの文字 */
+  ['kiroku','記録室',2.5,9.4,3.6,0x72523B,0xA98157,'#655044','#F7E8C8','記録室（日誌・役場の記録）'],
+  ['jumin','住民課',6.8,9.4,3.6,0x876344,0xB68A5B,'#315C3A','#FFF4D9','住民課（自分のデータ・ID）'],
+  ['senkyo','選挙管理委員会',12.0,9.4,4.0,0x80654A,0xB68A5B,'#596B7A','#FFF9EC','選挙管理委員会（投票）'],
+  ['sangyo','産業課',2.4,3.5,3.6,0x76563A,0xAE8251,'#527744','#FFF4D9','産業課（畑・売店）'],
+  ['fukushi','福祉課',5.7,3.5,2.2,0x927454,0xC2A17A,'#7A8560','#FFF8E8','福祉課（食糧庫）'],
+  ['kaikei','会計課',10.4,3.5,2.6,0x76543B,0xB68A5B,'#806638','#FFF2CF','会計課（役場のお金）'],
+  ['koban','交番出張所',13.8,3.5,2.8,0x634B39,0x97704C,'#315C3A','#FFF5DF','交番出張所（事件の記録）']];
+function hl(x,z){return [x-HALL.W/2,HALL.D/2-z]} /* 仕様の座標 → 部屋の中 */
+function hMat(c,opt){opt=opt||{};return new THREE.MeshLambertMaterial({color:col(c),fog:false,emissive:col(c).multiplyScalar(opt.glow||.22)})}
+function hTex(txt,w,h,bg,fg,fs){var c=document.createElement('canvas');c.width=w;c.height=h;var g=c.getContext('2d');g.fillStyle=bg;g.fillRect(0,0,w,h);g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';
+  var lines=String(txt).split('\n');lines.forEach(function(l,i){var f=i?fs*.62:fs;g.font='900 '+f+'px '+(typeof FB!=='undefined'?FB:'sans-serif');g.fillText(l,w/2,h/2+(i-(lines.length-1)/2)*fs*1.05)});var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t}
+function hFloorTex(){var c=document.createElement('canvas');c.width=256;c.height=256;var g=c.getContext('2d'),r=rnd(77);for(var y=0;y<8;y++){var off=(y%2)*96;for(var x=-1;x<3;x++){var v=.92+r()*.14;g.fillStyle='rgb('+Math.round(0xB6*v)+','+Math.round(0x9A*v)+','+Math.round(0x70*v)+')';g.fillRect(x*128+off,y*32,126,30)}}
+  g.fillStyle='rgba(60,40,20,.35)';for(y=0;y<8;y++)g.fillRect(0,y*32+30,256,2);var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(8,6);t.encoding=THREE.sRGBEncoding;return t}
+function hallBuild(){var O=ROOM.objs;O.forEach(function(m){scene.remove(m);if(m.material&&m.material.dispose)m.material.dispose()});O.length=0;HALL.cols=[];HALL.deps=[];HALL.staff=[];
+  var X=HALL.X,Z=HALL.Z,B=new THREE.BoxGeometry(1,1,1),C=new THREE.CylinderGeometry(1,1,1,12),S=new THREE.SphereGeometry(1,10,8);
+  var put=function(geo,mat,x,y,z,sx,sy,sz,ry){var m=new THREE.Mesh(geo,mat);m.position.set(X+x,y,Z+z);m.scale.set(sx,sy,sz);if(ry)m.rotation.y=ry;scene.add(m);O.push(m);return m};
+  var box=function(c,x,y,z,sx,sy,sz){return put(B,hMat(c),x,y,z,sx,sy,sz)},solid=function(x,z,hw,hd){HALL.cols.push({x:x,z:z,hw:hw,hd:hd})};
+  var plate=function(tex,x,y,z,w,h){return put(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,fog:false}),x,y,z,1,1,1)};
+  var W=HALL.W,D=HALL.D,hw=W/2,hd=D/2;
+  /* 床（板張り）と、壁（漆喰＋腰板0.8m）。入口は手前中央 2m */
+  var fl=put(new THREE.PlaneGeometry(W,D),new THREE.MeshLambertMaterial({map:hFloorTex(),fog:false,emissive:col(0x3a2a18)}),0,0,0,1,1,1);fl.rotation.x=-Math.PI/2;
+  var wall=function(x,z,len,rot,inward){put(B,hMat(0xD8C39A),x,1.7,z,len,3.4,.2,rot);var o=inward*.11;put(B,hMat(0x86684B),x+(rot?o:0),.4,z+(rot?0:o),len,.8,.04,rot)};
+  wall(0,-hd,W,0,1);wall(-hw,0,D,Math.PI/2,1);wall(hw,0,D,Math.PI/2,-1);wall(-(1+(hw-1)/2),hd,hw-1,0,-1);wall(1+(hw-1)/2,hd,hw-1,0,-1);
+  box(0x78573D,0,2.25,hd,2.3,.18,.24);box(0x78573D,-1.1,1.1,hd,.14,2.3,.26);box(0x78573D,1.1,1.1,hd,.14,2.3,.26); /* 入口の枠 */
+  /* 窓（左右の壁）・柱・時計 */
+  [-3,1,4].forEach(function(z){[[-hw+.11,1],[hw-.11,-1]].forEach(function(q){box(0x78573D,q[0],1.75,z,.08,1.36,1.56);box(0x354B48,q[0]+q[1]*.03,1.75,z,.06,1.2,1.4)})});
+  [[-hw+.2,-hd+.2],[hw-.2,-hd+.2],[-hw+.2,hd-.2],[hw-.2,hd-.2]].forEach(function(p){box(0x8B6847,p[0],1.7,p[1],.18,3.4,.18)});
+  var ck=put(C,hMat(0x76543B),0,2.75,-hd+.14,.24,.08,.24);ck.rotation.x=Math.PI/2;
+  put(new THREE.CircleGeometry(.2,24),new THREE.MeshBasicMaterial({map:hTex(new Date(Date.now()+9*3600e3).toISOString().slice(11,16),128,128,'#F4E8CE','#3a2a1a',40),fog:false}),0,2.75,-hd+.19,1,1,1);
+  /* 部署ごとの窓口（カウンター・天板・札・書類・卓上ランプ） */
+  HDEP.forEach(function(d){var p=hl(d[2],d[3]),cx=p[0],cz=p[1],w=d[4],sw=Math.min(2.4,w*.7);
+    box(d[5],cx,.41,cz,w,.82,.65);box(d[6],cx,.9,cz,w+.08,.1,.75);solid(cx,cz,w/2+.04,.38);
+    box(0x5e4129,cx,2.25,cz-.08,sw+.08,.58,.04);plate(hTex(d[1],512,108,d[7],d[8],70),cx,2.25,cz-.05,sw,.5);
+    box(0x5e4129,cx-sw*.42,2.9,cz-.08,.03,.7,.03);box(0x5e4129,cx+sw*.42,2.9,cz-.08,.03,.7,.03);
+    for(var k=0;k<3;k++)box([0xF4EEDC,0xE9DFC4,0xF8F3E6][k],cx-w/2+.45,.97+k*.025,cz+.05,.32,.02,.24);
+    put(C,hMat(0x2f2a24),cx+w/2-.4,1.1,cz-.05,.02,.24,.02);put(S,hMat(0xFFD99A,{glow:.9}),cx+w/2-.4,1.25,cz-.05,.1,.07,.1);
+    HALL.deps.push({id:d[0],name:d[1],label:d[9],x:cx,z:cz+.95})});
+  var P=function(id){var d=HDEP.find(function(q){return q[0]===id}),p=hl(d[2],d[3]);return {x:p[0],z:p[1],w:d[4]}};
+  /* 記録室: 高さ2.1mの記録棚を2つ（本の背は5色） */
+  var k1=P('kiroku'),cs=[0x2f5c84,0xa83c32,0x3e8a55,0xd8a85b,0x6b4bb0];[-1,1].forEach(function(s){var sx=k1.x+s*.9,sz=-hd+.3;box(0x78563C,sx,1.05,sz,1.6,2.1,.35);solid(sx,sz,.8,.2);
+    for(var r=0;r<4;r++)for(var b=0;b<6;b++)box(cs[(b+r+s+3)%5],sx-.62+b*.25,.3+r*.48,sz+.12,.18,.3+((b*5+r)%3)*.04,.16)});
+  /* 住民課: 住民票ファイル棚と「IDとパスワード」の案内板 */
+  var j1=P('jumin');box(0x7a5634,j1.x-.9,.9,-hd+.3,1.2,1.8,.35);solid(j1.x-.9,-hd+.3,.6,.2);for(var i=0;i<8;i++)box(0xEDE3C8,j1.x-1.38+i*.14,1.2,-hd+.45,.1,.3,.06);
+  plate(hTex('IDとパスワード\nどの端末からでも入れる',512,256,'#F4ECD4','#315C3A',64),j1.x+.9,1.6,-hd+.13,1.1,.55);
+  /* 選挙管理委員会: 投票箱と候補の掲示板 */
+  var s1=P('senkyo'),bx=hl(13.5,7.2);box(0x5C5145,bx[0],.45,bx[1],.55,.9,.55);box(0x2f2a24,bx[0],.91,bx[1],.3,.02,.05);solid(bx[0],bx[1],.3,.3);
+  var cands=(V15.ballot&&V15.ballot.cands||[]).slice(0,5),btxt=cands.length?'投票中\n'+cands.map(function(c,i){return (i+1)+'. '+String(c.title).slice(0,9)}).join('　'):'いまは投票していない';
+  box(0x755237,s1.x,1.75,-hd+.16,2.1,1.35,.12);plate(hTex(btxt,600,380,'#E8D9B9','#2c3b2f',52),s1.x,1.75,-hd+.23,2.0,1.25);
+  /* 産業課: 市場の黒板・野菜の木箱・パンかご（売店） */
+  var g1=P('sangyo');box(0x304538,g1.x,1.75,g1.z-.55,1.6,.9,.05);plate(hTex('市場の値段\nパン15・野菜8・木の実3',512,280,'#304538','#F4F1E6',58),g1.x,1.75,g1.z-.52,1.5,.8);
+  box(0x8B6A45,g1.x-1.1,1.02,g1.z+.05,.45,.16,.3);for(i=0;i<3;i++)put(S,hMat(0xD77A3A),g1.x-1.25+i*.15,1.13,g1.z+.05,.07,.07,.07);
+  box(0xA77B50,g1.x+1.15,1.0,g1.z+.05,.5,.1,.32);for(i=0;i<3;i++)put(S,hMat(0xB97942),g1.x+1.0+i*.15,1.1,g1.z+.05,.09,.06,.07);
+  /* 福祉課: 食糧庫の残り表示と配給かご */
+  var f1=P('fukushi'),food=HALL.cache&&HALL.cache.town&&HALL.cache.town.food!=null?HALL.cache.town.food:(V15.food!=null?V15.food:40);
+  plate(hTex('食糧庫\nのこり '+food+'食',512,256,'#F4ECD4','#7A8560',70),f1.x,1.6,f1.z-.36,1.2,.6);box(0x9B6E4C,f1.x+.7,1.03,f1.z+.05,.4,.18,.3);
+  /* 会計課: 予算の表示板とコインの小皿・税金の箱 */
+  var a1=P('kaikei');plate(hTex('役場のお金\n'+((HALL.cache&&HALL.cache.town&&HALL.cache.town.coin)||0)+' フカ',512,256,'#F4ECD4','#806638',70),a1.x,1.6,a1.z-.36,1.3,.6);
+  put(C,hMat(0xC9A24A),a1.x+.6,.97,a1.z+.05,.12,.02,.12);box(0x5C5145,a1.x-.7,1.1,a1.z+.05,.3,.3,.25);
+  /* 交番出張所: 事件の記録ボード・警察帽・ケイの椅子 */
+  var c1=P('koban'),open1=((HALL.cache&&HALL.cache.cases)||[]).filter(function(c){return c.status!=='解決'}).length;
+  box(0x2b3f66,c1.x,1.75,c1.z-.55,1.5,.9,.05);plate(hTex('事件の記録\n'+open1+'件 調べ中',512,280,'#2b3f66','#F4F1E6',62),c1.x,1.75,c1.z-.52,1.4,.8);
+  put(C,hMat(0x2B3F66),c1.x-.9,1.0,c1.z+.05,.12,.06,.12);box(0x5e4129,c1.x+.6,.45,c1.z-.75,.45,.9,.45);
+  /* 待合: ベンチ2つ・番号札の機械・植物・案内板・ごみ箱 */
+  [[5.0,1.0],[11.5,1.0]].forEach(function(b){var p=hl(b[0],b[1]);box(0xA77B50,p[0],.46,p[1],2.4,.06,.45);box(0xA77B50,p[0],.7,p[1]+.2,2.4,.45,.05);[-1,1].forEach(function(s){box(0x594333,p[0]+s*1.05,.22,p[1],.08,.44,.4)});solid(p[0],p[1],1.25,.28)});
+  var nm=hl(6.2,.6);box(0xBCA785,nm[0],.55,nm[1],.35,1.1,.35);box(0x315C3A,nm[0],.95,nm[1]-.18,.25,.16,.02);solid(nm[0],nm[1],.2,.2);
+  [[.8,1.0],[15.2,1.0],[.8,11.2],[15.2,11.2]].forEach(function(q){var p=hl(q[0],q[1]);put(C,hMat(0x9B6E4C),p[0],.15,p[1],.18,.3,.18);[[0,.75,0,.32],[.18,.95,.05,.22],[-.15,1.05,-.05,.2],[.05,.6,.15,.22]].forEach(function(l){put(S,hMat(0x527744),p[0]+l[0],l[1],p[1]+l[2],l[3],l[3],l[3])});solid(p[0],p[1],.3,.3)});
+  var gb=hl(8,6.5);box(0x755237,gb[0],1.25,gb[1],2.1,1.35,.12);box(0x594333,gb[0]-.8,.3,gb[1],.08,.6,.08);box(0x594333,gb[0]+.8,.3,gb[1],.08,.6,.08);
+  plate(hTex('森の役場 案内\n奥: 記録室・住民課・選挙管理委員会\n手前: 産業課・福祉課・会計課・交番',600,380,'#E8D9B9','#2c3b2f',50),gb[0],1.25,gb[1]+.07,2.0,1.25);solid(gb[0],gb[1],1.08,.15);
+  var tb=hl(15.4,6);put(C,hMat(0x6B715C),tb[0],.22,tb[1],.15,.45,.15);
+  /* 灯り: 暖色の光だまりと、灯り4つ（光源は4つまで） */
+  [[4,6],[12,6],[4,10],[12,10]].forEach(function(q){var p=hl(q[0],q[1]),pool=put(new THREE.CircleGeometry(2.2,28),new THREE.MeshBasicMaterial({color:0xFFD99A,transparent:true,opacity:.12,depthWrite:false,fog:false}),p[0],.012,p[1],1,1,1);pool.rotation.x=-Math.PI/2});
+  [[4,6],[12,6],[8,9.5],[8,2.5]].forEach(function(q){var p=hl(q[0],q[1]),L=new THREE.PointLight(0xFFD39A,1.2,9,1.4);L.position.set(X+p[0],2.9,Z+p[1]);scene.add(L);O.push(L)}); /* 天井は描かないので、吊り照明の形は置かない（カメラの通り道に入って視界をふさいだ） */
+  [[2.5,11.9],[12,11.9],[0.1,6],[15.9,6]].forEach(function(q){var p=hl(q[0],q[1]),ax=Math.abs(p[0])>7;put(S,hMat(0xFFD99A,{glow:1}),p[0]+(ax?(p[0]<0?.12:-.12):0),2.6,p[1]+(ax?0:.12),.12,.16,.12);box(0xD9B875,p[0]+(ax?(p[0]<0?.08:-.08):0),2.82,p[1]+(ax?0:.08),.26,.06,.26)}); /* 壁の灯り */
+  /* 職員（森の住人と同じ帽子の人たち）と、ときどき座っているケイ */
+  var staff=[['jumin','g'],['sangyo','b'],['kaikei','p'],['senkyo','r']];if(Math.random()<.35||((V15.slot||0)>=10&&(V15.slot||0)<=16))staff.push(['koban','kei']);HALL.kei=staff.some(function(s){return s[1]==='kei'});
+  staff.forEach(function(s){var p=P(s[0]);if(!MDL.kino)return;var m=s[1]==='kei'?mesh3('kino',1,0,0,{h3:1.9,live:1,tint:0xd8dcf0,map:hatTex('b'),far:90,yaw:0}):chara('kino_'+s[1]);m.userData.off=true;m.position.set(X+p.x+(s[1]==='kei'?.6:.3),0,Z+p.z-.75);m.rotation.y=0;if(m.parent!==scene)scene.add(m);O.push(m);HALL.staff.push(m)});
+  ROOM.cols=[]}
+function hallData(cb){var now=Date.now();if(HALL.cache&&now-HALL.ct<60000){cb&&cb(HALL.cache);return}fetch(MORI+'/api/world?w=live',{cache:'no-store'}).then(function(r){return r.json()}).then(function(w){HALL.cache=w;HALL.ct=Date.now();V15.ballot=w.ballot||null;cb&&cb(w)},function(){cb&&cb(null)})}
+function yakEnter(){close();ROOM.kind='yakuba';document.body.classList.add('inroom');ROOM.x=HALL.X;ROOM.z=HALL.Z;ROOM.fy=0;bills.forEach(function(b){b.visible=false});if(G.talk)G.talk.visible=false;SAYS.forEach(function(q){q.s.visible=false});hallBuild();ROOM.on=true;ROOM.yaw0=CAM.yaw;ROOM.tilt0=CAM.tilt;CAM.yaw=0;CAM.tilt=0;ROOM.path=null;
+  var e=hl(8,.8);me.rx=e[0];me.rz=e[1];me.path=[];me.go=null;HALL.cam=null;
+  me.sp.visible=true;me.sp.rotation.x=0;me.yawT=Math.PI;if(uw)uw.style.opacity=0;
+  $('#mapbtn').textContent='外に出る';actBtn.textContent='案内（役場の全部）';actBtn.hidden=false;actOn=null;if(typeof rst!=='undefined'&&rst)rst.hidden=true;$('#hint').textContent='森の役場の中　丸で歩く・なぞると見回せる・窓口に近づくと使える';$('#hint').hidden=false;logEv('yakuba:in');
+  hallData(function(w){if(w&&ROOM.on&&ROOM.kind==='yakuba'){var rx=me.rx,rz=me.rz;hallBuild();me.rx=rx;me.rz=rz}})}
+function yakNear(){var best=null,bd=1.7;HALL.deps.forEach(function(d){var dd=Math.hypot(me.rx-d.x,me.rz-d.z);if(dd<bd){bd=dd;best=d}});return best}
+function yakLabel(){var n=yakNear();return n?n.label:'案内（役場の全部）'}
+function stepHall(dt,t){var jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y+(keys.d?1:0)-(keys.u?1:0),jl=Math.hypot(jx,jz),mv=false,dx=0,dz=0;
+  CAM.yaw+=((keys.q?1:0)-(keys.e?1:0))*dt*1.8;
+  if(jl>.15&&land.hidden){if(jl>1){jx/=jl;jz/=jl}if(sheetOpen)close();ROOM.path=null;var yc=Math.cos(CAM.yaw),ys=Math.sin(CAM.yaw);dx=jx*yc+jz*ys;dz=-jx*ys+jz*yc;mv=true}
+  else if(ROOM.path&&!sheetOpen){dx=ROOM.path.x-me.rx;dz=ROOM.path.z-me.rz;var dd=Math.hypot(dx,dz);if(dd<.12)ROOM.path=null;else{dx/=dd;dz/=dd;mv=true}}
+  var hw=HALL.W/2-.35,hd=HALL.D/2-.35,ox=me.rx,oz=me.rz;
+  if(mv){var sp=SPEED*.55*hunK();me.rx+=dx*sp*dt;me.rz+=dz*sp*dt;
+    HALL.cols.forEach(function(c){var px=c.hw+.28-Math.abs(me.rx-c.x),pz=c.hd+.28-Math.abs(me.rz-c.z);if(px>0&&pz>0){if(px<pz)me.rx+=(me.rx<c.x?-px:px);else me.rz+=(me.rz<c.z?-pz:pz)}});
+    if(me.rz>hd&&Math.abs(me.rx)<.9&&dz>0){exitRoom();return} /* 入口から外へ出る */
+    me.rx=Math.max(-hw,Math.min(hw,me.rx));me.rz=Math.max(-hd,Math.min(hd,me.rz));if(ROOM.path&&Math.hypot(me.rx-ox,me.rz-oz)<SPEED*.55*dt*.3)ROOM.path=null}
+  var hop=dirPose(me,dx,dz,mv,dt,7.5),wx=HALL.X+me.rx,wz=HALL.Z+me.rz;me.sp.visible=true;me.sp.material.opacity=1;me.sp.rotation.x=0;me.sp.position.set(wx,hop,wz);me.moving=mv;
+  /* 後ろから追いかけるカメラ（高さ2.8・後ろ3.6・注視0.85）。壁の外に出そうなら手前に寄せる */
+  var sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),lim=function(v,m){return Math.max(-m,Math.min(m,v))},tx=lim(me.rx+sy*4.2,HALL.W/2-.25),tz=lim(me.rz+cy*4.2,HALL.D/2-.25),dist=Math.hypot(tx-me.rx,tz-me.rz),up=Math.max(0,2.6-dist)*1.3; /* 壁ぎわで近づいた分だけ上から見下ろす */
+  var k=Math.min(1,dt*8);if(!HALL.cam)HALL.cam={x:tx,z:tz};HALL.cam.x+=(tx-HALL.cam.x)*k;HALL.cam.z+=(tz-HALL.cam.z)*k;
+  var sh=sheetOpen?1.6:0;HALL.up=(HALL.up||0)+(up-(HALL.up||0))*k;camera.position.set(HALL.X+HALL.cam.x,3.1+sh+HALL.up,HALL.Z+HALL.cam.z);camera.lookAt(wx-sy*sh*1.2,.85,wz-cy*sh*1.2);camera.updateMatrixWorld();
+  if(!sheetOpen&&land.hidden){var al=yakLabel();if(actBtn.hidden||actBtn.textContent!==al){actBtn.textContent=al;actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
+/* 部署ごとの板 */
+function hallSheet(id){var w=HALL.cache;
+  if(id==='jumin'){myOpen();return}if(id==='senkyo'){yakubaOpen();return}
+  if(!w){show('yaku2','<h2>森の役場</h2><p class="note">読み込み中…</p>');hallData(function(x){if(x)hallSheet(id);else show('yaku2','<h2>森の役場</h2><p>役場につながらなかった</p>')});return}
+  var h='',R=w.residents||[],ppl=R.filter(function(r){return r.alive}),nm=function(id){var r=R.find(function(x){return x.id===id});return r?r.name:id};
+  if(id==='kiroku'){h='<h2>記録室</h2><p class="note">住人が毎晩22時に書く日誌と、役場の記録</p>'+ppl.map(function(r){var d=(r.diary||[]).slice(-1)[0];return '<p><b>'+esc(r.name)+'</b>　<span class="note">'+(d?d.day+'日目':'')+'</span><br>'+esc(d?d.text:'まだ日誌がない')+'</p>'}).join('')+
+    '<h3>役場の記録</h3>'+(w.hall||[]).slice(-10).reverse().map(function(x){return '<p class="note">'+x.day+'日 '+x.slot+'時 ['+esc(x.kind)+'] '+esc(x.text)+'</p>'}).join('')+'<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">記録を全部見る</a></div>'}
+  else if(id==='sangyo'){h='<h2>産業課</h2><p class="note">みんなの畑と売店</p><table class="mytab">'+(w.plots||[]).map(function(p){return '<tr><th>畑'+p.no+'</th><td>'+esc(p.state)+(p.water?'・水やり済み':'')+'　<span class="note">'+(p.owner?esc(nm(p.owner))+'の土地':'')+(p.user&&p.user!==p.owner?'（'+esc(nm(p.user))+'が借りている）':'')+'</span></td></tr>'}).join('')+'</table>'+
+    '<h3>売店</h3><p>焼きたてのパン　'+BAG.BREAD+'フカ（いま '+S.coin+'フカ）</p><div class="row"><button data-a="bag:buy">パンを1つ買う</button><button class="sub" data-a="bag">リュックを見る</button></div>'}
+  else if(id==='fukushi'){var f=(w.town&&w.town.food!=null)?w.town.food:40;h='<h2>福祉課</h2><p>役場の食糧庫　のこり <b>'+f+'食</b></p><p class="note">おなかが80をこえて食べ物が無い住人は、1日1回ここからもらえる。住人が余った食べ物を入れると増える。空になったら、もう助けは無い</p>'+
+    '<h3>おなかがすいている住人</h3>'+(ppl.filter(function(r){return r.hunger>=70}).map(function(r){return '<p>'+esc(r.name)+'　おなか '+r.hunger+'</p>'}).join('')||'<p class="note">いまはいない</p>')}
+  else if(id==='kaikei'){h='<h2>会計課</h2><p>役場のお金　<b>'+((w.town&&w.town.coin)||0)+' フカ</b></p><p class="note">大人の住人1人につき、毎晩1フカの税金。警察官ケイの給料（1日8フカ）はここから払う</p>'+
+    '<h3>お金の貸し借り</h3>'+((w.loans||[]).slice(-6).reverse().map(function(l){return '<p class="note">'+esc(nm(l.lender||l.from))+' → '+esc(nm(l.borrower||l.to))+'　'+(l.amount||l.principal||'')+'フカ　'+esc(l.status||'')+'</p>'}).join('')||'<p class="note">いまは無い</p>')}
+  else if(id==='koban'){var cs=(w.cases||[]).slice(-8).reverse();h='<h2>交番出張所</h2>'+(HALL.kei?'<p>ケイ「本日もここで見回りの記録をつけておるであります」</p>':'')+'<p class="note">盗みなどの事件。犯人は解決するまで分からない</p>'+
+    (cs.map(function(c){return '<p>'+c.day+'日目　'+esc(c.text||c.what||'事件')+'　<b>'+esc(c.status||'')+'</b>'+(c.culprit?'（'+esc(nm(c.culprit))+'）':'')+'</p>'}).join('')||'<p class="note">事件はまだ起きていない。森は平和</p>')}
+  show('yaku2',h)}
+function yakAct(){var n=yakNear();$('#hint').hidden=true;if(!n){yakubaOpen();return}logEv('yakuba:'+n.id);hallSheet(n.id)}
 
 function landPrice(l){return PLACEV[l.ring]*l.area}
 function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.ring]*l.area/10)*10:0}
@@ -1667,7 +1955,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.17',APP_BUILD='1009-0017',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.18',APP_BUILD='1009-0018',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -1731,7 +2019,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
