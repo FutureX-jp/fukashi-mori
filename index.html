@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#071c18">
-<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.18）">
+<meta name="description" content="フカシGames の入口になる夜の森（試作 v0.19）">
 <meta property="og:title" content="フカシの森（試作）">
 <meta property="og:description" content="夜の森を歩く・家を買う・住人と話す　フカシGames の入口の試作">
 <script>window.__earlyErr=[];window.addEventListener('error',function(e){if(window.__earlyErr)window.__earlyErr.push([e.message||((e.target&&e.target.tagName||'')+' '+String(e.target&&(e.target.src||e.target.href)||'').replace(/^.*\//,''))||'load',e.error&&e.error.stack||''])},true)</script>
@@ -54,6 +54,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 #sheet h2{font-family:var(--display);font-weight:400;font-size:19px;margin:0;color:var(--ink);text-wrap:balance;padding-right:92px}
 #sheet p{margin:0;font-size:14px;line-height:1.6}
 #sheet .note{font-size:12px;color:var(--dim)}
+.plan19{border:2px dashed #cdbf8f;border-radius:14px;padding:8px 12px;margin:0 0 8px;display:grid;gap:4px;font-size:14px}.plan19 p{margin:0}.plan19 .tm{display:inline-block;min-width:4.2em;color:var(--dim);font-size:12px}.plan19 .now{font-weight:700}.plan19 .nw{margin-left:6px;font-size:11px;background:#f6dc8c;border-radius:8px;padding:1px 6px}
 #sheet{max-height:calc(100% - 64px);overflow-y:auto;overscroll-behavior:contain} /* v0.16 役場が長いと上が画面の外に切れていた */
 .qz{display:flex;flex-direction:column;gap:8px}.qz .qa{text-align:left;width:100%}.qz.two .qa{padding:10px 12px}.qa.on{outline:3px solid var(--leaf)}.row.col{flex-direction:column;align-items:stretch;gap:2px}
 .qres{text-align:center;border:2px dashed #cdbf8f;border-radius:14px;padding:10px}.qtype{font-size:22px!important;font-weight:700}.qname{font-size:20px!important;font-weight:700;color:var(--leaf)}.qmsg{color:var(--danger);font-weight:700}
@@ -230,7 +231,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.18';
+var VERSION='v0.19';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1052,7 +1053,7 @@ function step(dt,t){ /* 歩く */
     bu.t+=dt*(.55+bi2*.04);if(bu.t>=1||!bb.visible){bu.t=bu.t%1;bu.x=mw[0]+(Math.sin(bi2*12.9+t*.001)*.5);bu.z=mw[1]+(Math.cos(bi2*7.3+t*.0013)*.5);bu.y0=mh+1.1}
     bb.visible=true;bb.position.set(bu.x+Math.sin(bu.t*9+bi2)*.12,Math.min(WS-.03,bu.y0+bu.t*(WS-bu.y0)),bu.z);bb.material.opacity=.75*(1-bu.t*bu.t)}
   if(G.waterT){G.waterT.offset.x=t*.000012;G.waterT.offset.y=t*.000007}
-  stepPeople(dt,t,mw,mh);stepAI(dt,t,mw);stepFish(dt,t);
+  stepPeople(dt,t,mw,mh);stepAI(dt,t,mw);act19Step(dt,t);stepFish(dt,t);
   var nTalk=(chatWho===npc&&sheetOpen==='chat')||Math.hypot(npc.x-me.x,npc.z-me.z)<3.2;if(nTalk)npc.hold=3;else if(npc.hold>0)npc.hold-=dt; /* v0.15: 話している間と閉じて3秒は止まって主人公を向く */
   if(nTalk||npc.hold>0){var npw=[npc.x,npc.z];npc.yawT=Math.atan2(mw[0]-npw[0],mw[1]-npw[1]);hop=dirPose(npc,0,0,false,dt,5)}
   else{var na=npc.a+dt*.2,nx2=Math.cos(na)*7.5,nz2=Math.sin(na)*7.5+2;hop=dirPose(npc,nx2-npc.x,nz2-npc.z,true,dt,5);npc.a=na;npc.x=nx2;npc.z=nz2}npc.sp.position.set(npc.x,hop,npc.z);npc.tag.position.set(npc.x,npc.tag.userData.oy,npc.z);
@@ -1365,10 +1366,10 @@ var AIDEF=[ /* id はサーバーと同じ。lot=家の土地番号、hat/tint=�
   {id:'rin',name:'リン',tier:2,lot:3,hat:'p',tint:0xffd8e8},
   {id:'popo',name:'ポポ',tier:2,lot:17,hat:'b',tint:0xdde0ff},
   {id:'jiro',name:'ジロ',tier:1,lot:46,hat:'r',tint:0xffe6a8}];
-var AIL={},AIBY={},AI=[],FARM_LOT=82,YAKUBA_LOT=52,SHOP_LOTS=[30,80],SKIPLOT={};SKIPLOT[FARM_LOT]=1;SKIPLOT[YAKUBA_LOT]=1;
+var AIL={},AIBY={},AI=[],FARM_LOT=82,YAKUBA_LOT=52,SHOP_LOTS=[30,80],SKIPLOT={};SKIPLOT[FARM_LOT]=1;SKIPLOT[YAKUBA_LOT]=1;SKIPLOT[85]=1; /* v0.19 南の畑（役場の畑） */
 AIDEF.forEach(function(d){AIL[d.lot]=d});
 /* 自分の家が立入禁止の外なら、範囲の中の空き地へ家ごと移す（1回だけ） */
-(function(){if(!V15.on||S.lot==null||lotInZone(S.lot))return;var c=[80,30].concat(LOTS.map(function(l){return l.id})).filter(function(id){return lotInZone(id)&&!AIL[id]&&!SKIPLOT[id]&&SHOP_LOTS.indexOf(id)<0})[0];
+(function(){if(!V15.on||S.lot==null||(lotInZone(S.lot)&&!SKIPLOT[S.lot]))return; /* v0.19 85番が自分の家だったら引っ越し */var c=[80,30].concat(LOTS.map(function(l){return l.id})).filter(function(id){return lotInZone(id)&&!AIL[id]&&!SKIPLOT[id]&&SHOP_LOTS.indexOf(id)<0})[0];
   if(c===undefined)c=80;S.lotOld=S.lot;S.lot=c;S.v15moved=1;save()})();
 function resOf(id){if(!V15.on)return S.res2[id]||0;if(AIL[id])return AIL[id].tier;if(SKIPLOT[id]||lotInZone(id))return 0;return S.res2[id]||0}
 /* 畑: 82番の土地に 3×3（1区画 3.6m） */
@@ -1403,7 +1404,7 @@ function buildAI(){AIDEF.forEach(function(d){mkAI(d,LOTS[d.lot])});
   if(cop.tag){cop.name='ケイ';cop.tier=4}}
 function placeXY(o,pl){var l=o.L,h=(o.id.charCodeAt(0)*7+o.id.length*13)%360*Math.PI/180;
   if(pl==='家')return {x:l.fx,z:l.fz};
-  if(pl==='畑'){var mine=V15.plots.filter(function(p){return p.user===o.id})[0],p=farmXY(mine?mine.no:5);return {x:p.x+1.9,z:p.z+.2}} /* v0.18 区画の間の通路に立つ */
+  if(pl==='畑'){var mine=V15.plots.filter(function(p){return p.user===o.id})[0],p=farmXY(mine?mine.no:5,1.9,.2);return {x:p.x,z:p.z}} /* v0.18 区画の間の通路に立つ */
   if(pl==='池'){var f=LOTS[FARM_LOT];return {x:f.x0+1.2,z:f.cz+(h%1)*6-3}}
   if(pl==='森')return {x:lineX(8)+Math.cos(h)*5,z:lineX(5)-1.4};
   if(pl==='役場'){var y=LOTS[YAKUBA_LOT];return {x:y.fx+Math.cos(h)*1.5,z:y.fz+1.2}}
@@ -1417,8 +1418,8 @@ function aiApply(d){if(!d||!d.people)return;var night=d.slot>=22||d.slot<6,first
     var o=AIBY[p.id];if(!o&&p.clone)o=cloneAI(p);if(!o)return;o.fans=p.fans||0;o.ownerName=p.ownerName;o.hunger=p.hunger;o.jail=p.jail;o.home=p.home;o.age=p.age;o.dead=false;
     var pl=p.jail?'交番':p.place,sleep=night&&pl==='家'&&p.home>0;o.sleep=sleep;
     if(pl!==o.place||first){o.place=pl;var tg=placeXY(o,pl);if(first){o.x=tg.x;o.z=tg.z;o.path=[]}else{o.path=route({x:o.x,z:o.z},tg)}}
-    if(p.say&&p.say!==o.lastSay){o.lastSay=p.say;sayOver(o,p.say.slice(0,22),7000)}});
-  AI.forEach(function(o){if(!d.people.some(function(p){return p.id===o.id})){o.dead=true}});V15.people=d.people;tagsPaint();oshiWatch(d)}
+    if(p.say&&p.say!==o.lastSay){o.lastSay=p.say;sayOver(o,p.say.slice(0,32),7000)}});
+  AI.forEach(function(o){if(!d.people.some(function(p){return p.id===o.id})){o.dead=true}});V15.people=d.people;tagsPaint();oshiWatch(d);act19Apply(d)}
 function aiPoll(){if(!V15.on||typeof fetch!=='function')return;fetch(MORI+'/api/forest?w=live',{cache:'no-store'}).then(function(r){return r.json()}).then(aiApply).catch(function(e){logEv('ai:off')})} /* つながらないのは不具合ではない（記録を送らない） */
 function stepAI(dt,t,mw){var i,o,p,y,a,c,s2,gx,gz,mv,hop,d;
   for(i=0;i<AI.length;i++){o=AI[i];var vis=!o.sleep&&!o.dead;if(o.sp.visible!==vis)o.sp.visible=vis;if(o.tag.visible!==vis)o.tag.visible=vis;if(!vis)continue;
@@ -1446,7 +1447,8 @@ function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み
   h+='<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">役場の記録を全部見る</a></div>';show('yakuba','<h2>森の役場</h2>'+h);sheet.scrollTop=0},function(){if(sheetOpen==='yakuba')show('yakuba','<h2>森の役場</h2><p>役場に人がいないみたい（つながらなかった）</p>')})}
 function news15(){if(S.n15||!V15.on)return;S.n15=1;save();toast('森が狭くなった。広場のまわりと池だけ歩ける');toast('AIで動く住人が7人になった。話しかけると覚えている');if(S.v15moved)toast('家が立入禁止の外だったので、広場の近くへ引っ越しました')}
 function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500);juminSync();var hb=$('#hunb');if(hb){hb.hidden=false;hb.onclick=bagOpen}hunTick();setInterval(hunTick,5000)}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
-function nameRow(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.acct?'<div class="row say"><button data-a="jumin">森の住民票を作って話す</button></div><p class="note">住人と話すには住民票（呼び名だけ）が要る</p>':''} /* v0.17: 名前は住民票の呼び名 */
+function nameRow(w){return plan19(w)+nameRow0(w)}
+function nameRow0(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.acct?'<div class="row say"><button data-a="jumin">森の住民票を作って話す</button></div><p class="note">住人と話すには住民票（呼び名だけ）が要る</p>':''} /* v0.17: 名前は住民票の呼び名 */
 function voteSend(n,c){if(!S.acct){juminOpen();return}
   fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
 
@@ -1619,36 +1621,42 @@ function myAct(a){
       S.acct=null;S.oshi=null;S.clone=null;S.vote=null;S.gift=0;S.pname='';S.j17s=1;save();tagsPaint();logEv('acct:delete');J17.me=null;J17.code='';
       show('my','<h2>住民票を消した</h2><p>あなたの記録を森から消した（住人の記憶 '+j.removed.memories+'件・役場の記録 '+j.removed.hall+'件'+(j.removed.clone?'・分身の'+esc(j.removed.clone)+'は森を出ていった':'')+'）</p><p class="note">また遊ぶ時は、新しく住民票を作れる</p><div class="row"><button data-a="close">とじる</button></div>')}
     else myDraw('消せなかった。もう一度ためしてね')},function(){myDraw('役場につながらなかった')});return}}
-/* 畑（v0.18 作り直し）: 10/9 主「畑今こうなってるの？やばくない、？デザイン確認した？」
+/* v0.19: 10/9 主「畑もっと広くした方がいいんじゃないか」→ 畑を2面に（北＝みんなの畑 82番・1〜9／南＝役場の畑 85番・10〜18、役場から30フカで買える）。南の畑は入口を北（道の側）に向けて、2面の入口が同じ道で向かい合う
+   畑（v0.18 作り直し）: 10/9 主「畑今こうなってるの？やばくない、？デザイン確認した？」
    見た目はチャッピー「畑改修仕様書」（10/9）: 9区画3×3・区画3.2m角・通路0.6m・木枠 高0.22 厚0.12・盛り土・畝3本（南北）・状態ごとの土と野菜・水やりの光沢と水滴・番号札01〜09・丸太柵0.45m・入口は南の真ん中1.4m・水がめ・看板・白い花・暖色の灯り1つ
    Claude が足した所: 土地が坂（4m近い高低差）なので、区画ごとに盛り土の高さを変えて段々畑にした（板が坂に刺さって見えていた原因）。
    畑全体を1つの向きにそろえる（前は区画ごとに向きが違っていた）。部品は種類ごとにまとめて描く（9区画で描く回数 約20回） */
-var FARM={plots:[],grp:null,P:3.2,STEP:3.8,H:6.2},
+var FIELDS=[{lot:82,start:1,turn:0,title:'みんなの畑'},{lot:85,start:10,turn:Math.PI,title:'役場の畑'}];
+var FARM={plots:[],fields:[],grp:null,P:3.2,STEP:3.8,H:6.2},
   FARMC={'荒地':0x49372C,'耕した':0x65452F,'芽':0x59402E,'育ち中':0x60452F,'収穫できる':0x68482F,'収穫済み':0x76563A,'枯れた':0x49362C};
-function farmXY(no){var l=LOTS[FARM_LOT],i=(no-1)%3,j=Math.floor((no-1)/3);return {x:l.cx+(i-1)*FARM.STEP,z:l.cz+(j-1)*FARM.STEP}}
-function farmInst(geo,color,n,opt){opt=opt||{};var m=new THREE.InstancedMesh(geo,opt.basic?new THREE.MeshBasicMaterial({color:col(color),transparent:!!opt.op,opacity:opt.op||1,depthWrite:!opt.op}):new THREE.MeshLambertMaterial({color:0xffffff}),n);
-  m.frustumCulled=false;m.count=n;var c=col(color);for(var i=0;i<n;i++){m.setMatrixAt(i,FARM.zero);if(!opt.basic)m.setColorAt(i,c)}FARM.grp.add(m);return m}
-function buildFarm(){var l=LOTS[FARM_LOT],g=new THREE.Group(),wc=warp(l.cx,l.cz);g.position.set(wc[0],0,wc[1]);g.rotation.y=-angAt(l.cx,l.cz);scene.add(g);g.updateMatrixWorld(true);FARM.grp=g;
+function farmXY(no,dx,dz){var f=FARM.plots[no-1];if(!f){var l=LOTS[FARM_LOT],i=(no-1)%3,j=Math.floor((no-1)/3)%3;return {x:l.cx+(i-1)*FARM.STEP,z:l.cz+(j-1)*FARM.STEP}}
+  var F=f.F,lx=f.px+(dx||0),lz=f.pz+(dz||0),c=Math.cos(F.turn),s=Math.sin(F.turn);return {x:F.l.cx+lx*c+lz*s,z:F.l.cz-lx*s+lz*c}} /* 区画の真ん中（dx,dz は区画の中の向きでずらす量） */
+function farmLocal(F,lx,lz){var c=Math.cos(F.turn),s=Math.sin(F.turn);return {x:F.l.cx+lx*c+lz*s,z:F.l.cz-lx*s+lz*c}}
+function farmInst(geo,color,n,opt,F){F=F||FARM.cur||FARM;opt=opt||{};var m=new THREE.InstancedMesh(geo,opt.basic?new THREE.MeshBasicMaterial({color:col(color),transparent:!!opt.op,opacity:opt.op||1,depthWrite:!opt.op}):new THREE.MeshLambertMaterial({color:0xffffff}),n);
+  m.frustumCulled=false;m.count=n;var c=col(color);for(var i=0;i<n;i++){m.setMatrixAt(i,FARM.zero);if(!opt.basic)m.setColorAt(i,c)}F.grp.add(m);return m}
+function buildFarm(){FIELDS.forEach(function(d){buildField(d)});var F0=FARM.fields[0];['grp','soil','frame','ridge','stone','stem','leaf','fruit','gloss','drop','gy','light'].forEach(function(k){FARM[k]=F0[k]});farmPaint()}
+function buildField(d){var l=LOTS[d.lot],g=new THREE.Group(),wc=warp(l.cx,l.cz);g.position.set(wc[0],0,wc[1]);g.rotation.y=-angAt(l.cx,l.cz)+d.turn;scene.add(g);g.updateMatrixWorld(true);
+  var FF={lot:d.lot,l:l,turn:d.turn,grp:g,start:d.start,title:d.title};FARM.fields.push(FF);FARM.cur=FF;
   var D=new THREE.Object3D(),v=new THREE.Vector3();FARM.D=D;FARM.zero=new THREE.Matrix4().makeScale(0,0,0);
   var gy=function(lx,lz){v.set(lx,0,lz).applyMatrix4(g.matrixWorld);return height(v.x,v.z)}; /* 畑の中の点（ローカル）→ 地面の高さ */
-  FARM.gy=gy;
+  FF.gy=gy;
   var B=new THREE.BoxGeometry(1,1,1),S=new THREE.SphereGeometry(1,7,5),C=new THREE.CylinderGeometry(1,1,1,7),R=new THREE.BoxGeometry(1,1,1);R.translate(0,0,.5);
-  FARM.soil=farmInst(B,0x49372C,9);FARM.frame=farmInst(B,0x916741,36);FARM.ridge=farmInst(B,0x65452F,27);FARM.stone=farmInst(S,0x7a7266,54);
-  FARM.stem=farmInst(C,0x2F7A3A,81);FARM.leaf=farmInst(S,0x39964A,243);FARM.fruit=farmInst(S,0xF28C28,81);
-  FARM.gloss=farmInst(new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),0x8EB7B0,9,{basic:1,op:.18});FARM.drop=farmInst(S,0xA5DDE5,36,{basic:1});
+  FF.soil=farmInst(B,0x49372C,9,0,FF);FF.frame=farmInst(B,0x916741,36,0,FF);FF.ridge=farmInst(B,0x65452F,27,0,FF);FF.stone=farmInst(S,0x7a7266,54,0,FF);
+  FF.stem=farmInst(C,0x2F7A3A,81,0,FF);FF.leaf=farmInst(S,0x39964A,243,0,FF);FF.fruit=farmInst(S,0xF28C28,81,0,FF);
+  FF.gloss=farmInst(new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),0x8EB7B0,9,{basic:1,op:.18},FF);FF.drop=farmInst(S,0xA5DDE5,36,{basic:1},FF);
   var P=FARM.P,h=P/2;
-  for(var no=1;no<=9;no++){var i=(no-1)%3,j=Math.floor((no-1)/3),px=(i-1)*FARM.STEP,pz=(j-1)*FARM.STEP;
+  for(var k9=1;k9<=9;k9++){var no=d.start+k9-1,i=(k9-1)%3,j=Math.floor((k9-1)/3),px=(i-1)*FARM.STEP,pz=(j-1)*FARM.STEP;
     var hs=[gy(px-h,pz-h),gy(px+h,pz-h),gy(px-h,pz+h),gy(px+h,pz+h),gy(px,pz)],top=Math.max.apply(null,hs)+.18,bot=Math.min.apply(null,hs)-.15;
-    FARM.plots.push({no:no,px:px,pz:pz,bed:top,bot:bot,state:'荒地',water:false,plants:0,fruit:0,seed:no*7.13});
+    FARM.plots.push({no:no,F:FF,i:k9-1,px:px,pz:pz,bed:top,bot:bot,state:'荒地',water:false,plants:0,fruit:0,seed:no*7.13});
     /* 木枠: 上端は土より0.04上。坂の低い側まで下ろして浮かせない */
     var ft=top+.04,fh=ft-bot,fc=ft-fh/2,fr=[[px,pz-h+.06,P,.12],[px,pz+h-.06,P,.12],[px-h+.06,pz,.12,P-.24],[px+h-.06,pz,.12,P-.24]];
-    fr.forEach(function(b,k){D.position.set(b[0],fc,b[1]);D.rotation.set(0,0,0);D.scale.set(b[2],fh,b[3]);D.updateMatrix();FARM.frame.setMatrixAt((no-1)*4+k,D.matrix)});
-    D.position.set(px,(top+bot)/2,pz);D.scale.set(P-.24,top-bot,P-.24);D.updateMatrix();FARM.soil.setMatrixAt(no-1,D.matrix);
+    fr.forEach(function(b,k){D.position.set(b[0],fc,b[1]);D.rotation.set(0,0,0);D.scale.set(b[2],fh,b[3]);D.updateMatrix();FF.frame.setMatrixAt((k9-1)*4+k,D.matrix)});
+    D.position.set(px,(top+bot)/2,pz);D.scale.set(P-.24,top-bot,P-.24);D.updateMatrix();FF.soil.setMatrixAt(k9-1,D.matrix);
     /* 番号札（南側の真ん中・区画の外寄り） */
-    var cv=textTex(('0'+no),{fs:56,pill:0,body:1,fg:'#49372C',bg:'#E7D6A4'}),sb=new THREE.Mesh(new THREE.BoxGeometry(.32,.22,.04),[0,0,0,0,new THREE.MeshLambertMaterial({map:cv}),0].map(function(m){return m||new THREE.MeshLambertMaterial({color:col(0xE7D6A4)})}));
+    var cv=textTex((no<10?'0'+no:''+no),{fs:56,pill:0,body:1,fg:'#49372C',bg:'#E7D6A4'}),sb=new THREE.Mesh(new THREE.BoxGeometry(.32,.22,.04),[0,0,0,0,new THREE.MeshLambertMaterial({map:cv}),0].map(function(m){return m||new THREE.MeshLambertMaterial({color:col(0xE7D6A4)})}));
     var sy=gy(px,pz+h+.18);sb.position.set(px,sy+.36,pz+h+.18);g.add(sb);
     var post=new THREE.Mesh(C,new THREE.MeshLambertMaterial({color:col(0x6b4a2c)}));post.scale.set(.02,.28,.02);post.position.set(px,sy+.14,pz+h+.2);g.add(post)}
-  FARM.frame.instanceMatrix.needsUpdate=true;FARM.soil.instanceMatrix.needsUpdate=true;
+  FF.frame.instanceMatrix.needsUpdate=true;FF.soil.instanceMatrix.needsUpdate=true;
   /* 丸太柵（0.45m）。入口は南（+z）の真ん中 1.4m */
   var H=FARM.H,pts=[],side=function(x0,z0,x1,z1,gate){var L=Math.hypot(x1-x0,z1-z0),n=Math.max(2,Math.round(L/1.25)),a=[];for(var k=0;k<=n;k++){var t=k/n,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;if(gate&&Math.abs(x)<.7)x=x<0?-.7:.7;a.push([x,z])}return a};
   var runs=[side(-H,-H,H,-H),side(H,-H,H,H),side(-H,-H,-H,H),side(-H,H,-.7,H),side(.7,H,H,H)];
@@ -1658,7 +1666,7 @@ function buildFarm(){var l=LOTS[FARM_LOT],g=new THREE.Group(),wc=warp(l.cx,l.cz)
     if(k){var p0=r[k-1],y0=gy(p0[0],p0[1]);[.18,.38].forEach(function(hh){D.position.set(p0[0],y0+hh,p0[1]);D.scale.set(1,1,1);D.lookAt(q[0],y+hh,q[1]);var L=Math.hypot(q[0]-p0[0],y-y0,q[1]-p0[1]);D.scale.set(.06,.06,L);D.updateMatrix();rails.setMatrixAt(ir++,D.matrix)})}})});
   posts.instanceMatrix.needsUpdate=true;rails.instanceMatrix.needsUpdate=true;
   [[-H,-H,H,-H,0,-1],[H,-H,H,H,1,0],[-H,-H,-H,H,-1,0],[-H,H,-.7,H,0,1],[.7,H,H,H,0,1]].forEach(function(e){var cx=(e[0]+e[2])/2,cz=(e[1]+e[3])/2,hw=Math.abs(e[2]-e[0])/2+.1,hd=Math.abs(e[3]-e[1])/2+.1;
-    fixCols.push({x:l.cx+cx,z:l.cz+cz,hw:Math.max(hw,.2),hd:Math.max(hd,.2),a:0,auto:1})});
+    var wq=farmLocal(FF,cx,cz);fixCols.push({x:wq.x,z:wq.z,hw:Math.max(hw,.2),hd:Math.max(hd,.2),a:0,auto:1})});
   /* 水がめとじょうろ（北東の角）、白い花（入口の左右）、看板 */
   var jx=H-.9,jz=-H+.9,jy=gy(jx,jz),jar=new THREE.Mesh(new THREE.CylinderGeometry(.3,.24,.65,10),new THREE.MeshLambertMaterial({color:col(0x9a6b4a)}));jar.position.set(jx,jy+.32,jz);g.add(jar);
   var wtr=new THREE.Mesh(new THREE.CircleGeometry(.27,10).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:col(0x3f6d7a)}));wtr.position.set(jx,jy+.6,jz);g.add(wtr);
@@ -1666,34 +1674,34 @@ function buildFarm(){var l=LOTS[FARM_LOT],g=new THREE.Group(),wc=warp(l.cx,l.cz)
   can.position.set(jx-.55,gy(jx-.55,jz+.1),jz+.1);g.add(can);
   var fl=farmInst(S,0xF4F1E6,6),fs=farmInst(C,0x4f8a44,6);[-1.2,-1.7,-2.2,1.2,1.7,2.2].forEach(function(x,k){var z=H+.35,y=gy(x,z);D.rotation.set(0,0,0);D.position.set(x,y+.2,z);D.scale.set(.09,.07,.09);D.updateMatrix();fl.setMatrixAt(k,D.matrix);D.position.set(x,y+.08,z);D.scale.set(.015,.16,.015);D.updateMatrix();fs.setMatrixAt(k,D.matrix)});
   fl.instanceMatrix.needsUpdate=true;fs.instanceMatrix.needsUpdate=true;
-  bill(has('signboard')?'signboard':'sign',1.2,l.cx-1.8,l.cz+H+.9,{});label(textTex('みんなの畑',{fs:52,pill:1,fg:'#173a2c'}),.42,l.cx-1.8,l.cz+H+.9,0,1.2,{far:40});
+  var sq=farmLocal(FF,-1.8,H+.9);bill(has('signboard')?'signboard':'sign',1.2,sq.x,sq.z,{});label(textTex(d.title,{fs:52,pill:1,fg:'#173a2c'}),.42,sq.x,sq.z,0,1.2,{far:40});
   /* 暖色の灯り1つ（畑の真ん中の上） */
-  var lt=new THREE.PointLight(0xFFD9A0,.9,13,1.6);lt.position.set(0,gy(0,0)+4,0);g.add(lt);FARM.light=lt;
-  farmPaint()}
+  var lt=new THREE.PointLight(0xFFD9A0,.9,13,1.6);lt.position.set(0,gy(0,0)+4,0);g.add(lt);FF.light=lt;
+}
 /* 状態ごとの見た目（チャッピーの表）。芽9株・ほかは6株 */
 var FARMV={'芽':{n:9,h:.08,stem:0x4f9a3a,leaf:0x77C957,lr:.035,leaves:2},'育ち中':{n:6,h:.22,stem:0x2F7A3A,leaf:0x39964A,lr:.09,leaves:3},'収穫できる':{n:6,h:.26,stem:0x2F7A3A,leaf:0x39964A,lr:.1,leaves:3,fruit:1},
   '収穫済み':{n:6,h:.04,stem:0x8a6a3a,leaf:0,lr:0,leaves:0,stub:1},'枯れた':{n:6,h:.2,stem:0x7a5a32,leaf:0x987044,lr:.06,leaves:2,dead:1}};
-function farmPaint(){if(!FARM.grp)return;var D=FARM.D,Z=FARM.zero;
-  FARM.plots.forEach(function(f,pi){var st=f.state,v=FARMV[st],c=col(FARMC[st]||FARMC['荒地']).clone(),top=f.bed,rnd=function(k){var s=Math.sin(f.seed*12.9898+k*78.233)*43758.5453;return s-Math.floor(s)};
-    if(f.water)c.multiplyScalar(.88);FARM.soil.setColorAt(pi,c);
+function farmPaint(){if(!FARM.fields.length)return;var D=FARM.D,Z=FARM.zero;
+  FARM.plots.forEach(function(f){var pi=f.i,F=f.F;var st=f.state,v=FARMV[st],c=col(FARMC[st]||FARMC['荒地']).clone(),top=f.bed,rnd=function(k){var s=Math.sin(f.seed*12.9898+k*78.233)*43758.5453;return s-Math.floor(s)};
+    if(f.water)c.multiplyScalar(.88);F.soil.setColorAt(pi,c);
     /* 畝3本（南北）。荒地は無し */
-    for(var r=0;r<3;r++){var x=f.px+(r-1)*.9;if(st==='荒地'){FARM.ridge.setMatrixAt(pi*3+r,Z)}else{D.rotation.set(0,0,0);D.position.set(x,top+.035,f.pz);D.scale.set(.55,.07,FARM.P-.5);D.updateMatrix();FARM.ridge.setMatrixAt(pi*3+r,D.matrix);FARM.ridge.setColorAt(pi*3+r,c.clone().multiplyScalar(1.12))}}
+    for(var r=0;r<3;r++){var x=f.px+(r-1)*.9;if(st==='荒地'){F.ridge.setMatrixAt(pi*3+r,Z)}else{D.rotation.set(0,0,0);D.position.set(x,top+.035,f.pz);D.scale.set(.55,.07,FARM.P-.5);D.updateMatrix();F.ridge.setMatrixAt(pi*3+r,D.matrix);F.ridge.setColorAt(pi*3+r,c.clone().multiplyScalar(1.12))}}
     /* 小石: 荒地6・ほかは3 */
-    for(var s=0;s<6;s++){if(s>=(st==='荒地'?6:3)){FARM.stone.setMatrixAt(pi*6+s,Z);continue}var r1=rnd(s)*2.4-1.2,r2=rnd(s+9)*2.4-1.2,sz=.06+rnd(s+3)*.06;D.rotation.set(0,rnd(s+5)*3,0);D.position.set(f.px+r1,top+.02,f.pz+r2);D.scale.set(sz,sz*.6,sz);D.updateMatrix();FARM.stone.setMatrixAt(pi*6+s,D.matrix)}
+    for(var s=0;s<6;s++){if(s>=(st==='荒地'?6:3)){F.stone.setMatrixAt(pi*6+s,Z);continue}var r1=rnd(s)*2.4-1.2,r2=rnd(s+9)*2.4-1.2,sz=.06+rnd(s+3)*.06;D.rotation.set(0,rnd(s+5)*3,0);D.position.set(f.px+r1,top+.02,f.pz+r2);D.scale.set(sz,sz*.6,sz);D.updateMatrix();F.stone.setMatrixAt(pi*6+s,D.matrix)}
     /* 野菜 */
     var n=v?v.n:0;f.plants=n;f.fruit=v&&v.fruit?n:0;
     for(var k=0;k<9;k++){var si=pi*9+k;
-      if(k>=n){FARM.stem.setMatrixAt(si,Z);FARM.fruit.setMatrixAt(si,Z);for(var q=0;q<3;q++)FARM.leaf.setMatrixAt(si*3+q,Z);continue}
+      if(k>=n){F.stem.setMatrixAt(si,Z);F.fruit.setMatrixAt(si,Z);for(var q=0;q<3;q++)F.leaf.setMatrixAt(si*3+q,Z);continue}
       var row=n===9?k%3:k%3,col3=n===9?Math.floor(k/3):Math.floor(k/3),bx=f.px+(row-1)*.9,bz=f.pz+(n===9?(col3-1)*.8:(col3?.6:-.6)),by=top+.07,tilt=v.dead?.45+rnd(k)*.3:rnd(k)*.12-.06;
-      D.rotation.set(0,0,tilt);D.position.set(bx,by+v.h/2,bz);D.scale.set(v.stub?.03:(v.h>.1?.02:.012),v.h,v.stub?.03:(v.h>.1?.02:.012));D.updateMatrix();FARM.stem.setMatrixAt(si,D.matrix);FARM.stem.setColorAt(si,col(v.stem));
-      for(q=0;q<3;q++){if(q>=v.leaves){FARM.leaf.setMatrixAt(si*3+q,Z);continue}var ang=q*2.1+rnd(k+q),rr=v.lr*.9,lx=bx+Math.cos(ang)*rr+(v.dead?Math.sin(tilt)*-v.h*.6:0),ly=by+v.h*(v.leaves===2?.95:.75+q*.12),lz=bz+Math.sin(ang)*rr;
-        D.rotation.set(0,0,0);D.position.set(lx,ly,lz);D.scale.set(v.lr,v.lr*(v.dead?.6:.85),v.lr);D.updateMatrix();FARM.leaf.setMatrixAt(si*3+q,D.matrix);FARM.leaf.setColorAt(si*3+q,col(v.leaf))}
-      if(v.fruit){D.rotation.set(0,0,0);D.position.set(bx,by+.1,bz+.12);D.scale.set(.08,.075,.08);D.updateMatrix();FARM.fruit.setMatrixAt(si,D.matrix)}else FARM.fruit.setMatrixAt(si,Z)}
+      D.rotation.set(0,0,tilt);D.position.set(bx,by+v.h/2,bz);D.scale.set(v.stub?.03:(v.h>.1?.02:.012),v.h,v.stub?.03:(v.h>.1?.02:.012));D.updateMatrix();F.stem.setMatrixAt(si,D.matrix);F.stem.setColorAt(si,col(v.stem));
+      for(q=0;q<3;q++){if(q>=v.leaves){F.leaf.setMatrixAt(si*3+q,Z);continue}var ang=q*2.1+rnd(k+q),rr=v.lr*.9,lx=bx+Math.cos(ang)*rr+(v.dead?Math.sin(tilt)*-v.h*.6:0),ly=by+v.h*(v.leaves===2?.95:.75+q*.12),lz=bz+Math.sin(ang)*rr;
+        D.rotation.set(0,0,0);D.position.set(lx,ly,lz);D.scale.set(v.lr,v.lr*(v.dead?.6:.85),v.lr);D.updateMatrix();F.leaf.setMatrixAt(si*3+q,D.matrix);F.leaf.setColorAt(si*3+q,col(v.leaf))}
+      if(v.fruit){D.rotation.set(0,0,0);D.position.set(bx,by+.1,bz+.12);D.scale.set(.08,.075,.08);D.updateMatrix();F.fruit.setMatrixAt(si,D.matrix)}else F.fruit.setMatrixAt(si,Z)}
     /* 水をやった日: 光沢と水滴 */
-    if(f.water){D.rotation.set(0,0,0);D.position.set(f.px,top+.075,f.pz);D.scale.set(FARM.P-.4,1,FARM.P-.4);D.updateMatrix();FARM.gloss.setMatrixAt(pi,D.matrix);
-      for(var w=0;w<4;w++){D.position.set(f.px+(w%2?.45:-.45)+rnd(w+20)*.2,top+.11,f.pz+(w<2?-.7:.7));D.scale.set(.03,.04,.03);D.updateMatrix();FARM.drop.setMatrixAt(pi*4+w,D.matrix)}}
-    else{FARM.gloss.setMatrixAt(pi,Z);for(w=0;w<4;w++)FARM.drop.setMatrixAt(pi*4+w,Z)}});
-  ['soil','ridge','stone','stem','leaf','fruit','gloss','drop'].forEach(function(k){var m=FARM[k];m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true})}
+    if(f.water){D.rotation.set(0,0,0);D.position.set(f.px,top+.075,f.pz);D.scale.set(FARM.P-.4,1,FARM.P-.4);D.updateMatrix();F.gloss.setMatrixAt(pi,D.matrix);
+      for(var w=0;w<4;w++){D.position.set(f.px+(w%2?.45:-.45)+rnd(w+20)*.2,top+.11,f.pz+(w<2?-.7:.7));D.scale.set(.03,.04,.03);D.updateMatrix();F.drop.setMatrixAt(pi*4+w,D.matrix)}}
+    else{F.gloss.setMatrixAt(pi,Z);for(w=0;w<4;w++)F.drop.setMatrixAt(pi*4+w,Z)}});
+  FARM.fields.forEach(function(F){['soil','ridge','stone','stem','leaf','fruit','gloss','drop'].forEach(function(k){var m=F[k];m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true})})}
 /* 橋（v0.18 作り直し）: 10/9 主「変なところに柵がある」「あるくところに」→ 前の橋の絵は、渡り口に横木（柵）があって歩く所をふさいでいた。
    形は歩く高さ（BR.yEnd・yMid・xh の放物線）にぴったり合わせて組み立てる。渡り口は開けて、手すりは両側だけ。色は落ち着いた木の色 */
 function bridge18(){if(!BR.ok||!BR.m)return;BR.m.visible=false;BR.m.userData.off=true;
@@ -1908,6 +1916,151 @@ function hallSheet(id){var w=HALL.cache;
     (cs.map(function(c){return '<p>'+c.day+'日目　'+esc(c.text||c.what||'事件')+'　<b>'+esc(c.status||'')+'</b>'+(c.culprit?'（'+esc(nm(c.culprit))+'）':'')+'</p>'}).join('')||'<p class="note">事件はまだ起きていない。森は平和</p>')}
   show('yaku2',h)}
 function yakAct(){var n=yakNear();$('#hint').hidden=true;if(!n){yakubaOpen();return}logEv('yakuba:'+n.id);hallSheet(n.id)}
+/* ===== v0.19 「住人が2時間の予定を森で演じる」 =====
+   10/8 主「2時間おきに考えるって何してんの？」→ サーバーが住人ごとに「次の2時間にやること」を最大2つ返す（/api/forest の doing。AI代は増えない）
+   画面では 1つ目（考えた刻）→ 2つ目（次の刻）の順に、その場所へ歩いて行って演じる。名前の札の下に「いま何をしているか」の札
+   動き・小物・粒・札の見た目はチャッピー（10/9「住人の行動演出」）: 札 #FFF3D6／#294A32・絵文字1つ＋8字以内／行動ごとの周期・前傾・跳ね・伸び縮み・小物・粒
+   Claude が変えた所: 鍬・竿などは体（1.9m）に対して小さすぎたので長さを1.5〜2倍に。盗みは画面に出さない（サーバーで「散歩」にしてある） */
+var A19={init:false,now:0,parts:[],pg:null,pm:{}};
+var ACT19={
+  '耕す':{l:'畑を耕す',i:'🌱',p:'hoe',c:2.4,tl:17,hp:.015,sq:.04,pc:[0x76513A,0xA9855A],pn:3,at:'plot',swing:1},
+  '種をまく':{l:'種をまく',i:'🌾',p:'seed',c:2.8,tl:12,hp:.01,sq:.02,pc:[0xD9B45B,0x8D6C3D],pn:3,at:'plot',walk:1},
+  '水をやる':{l:'水をやる',i:'💧',p:'can',c:3.2,tl:10,hp:.01,sq:.02,pc:[0x83D8F0,0xB8ECF5],pn:2,at:'plot',pour:1},
+  '水を汲む':{l:'水を汲む',i:'🪣',p:'bucket',c:3.6,tl:13,hp:.02,sq:.035,pc:[0x80D8F0,0xD7F6FF],pn:5,at:'pond'},
+  '収穫する':{l:'収穫する',i:'🥕',p:'basket',c:2.6,tl:18,hp:.025,sq:.045,pc:[0xE8C86B,0x83B96A],pn:2,at:'plot'},
+  '釣る':{l:'釣りをする',i:'🎣',p:'rod',c:5.5,tl:5,hp:.01,sq:.01,pc:[0xD7F6FF,0xffffff],pn:4,at:'pond',fish:1},
+  '木の実を拾う':{l:'木の実拾い',i:'🌰',p:'pouch',c:2.5,tl:22,hp:.015,sq:.04,pc:[0x8a5a32,0x6b8f3a],pn:2,at:'forest',walk:1},
+  '木を集める':{l:'木を集める',i:'🪵',p:'logs',c:3,tl:14,hp:.015,sq:.03,pc:[0xC9A06B],pn:3,at:'forest'},
+  '石を集める':{l:'石を集める',i:'🪨',p:'stone',c:2.8,tl:19,hp:.01,sq:.04,pc:[0xA8B0B2,0xC4B9A5],pn:2,at:'forest',walk:1},
+  '食べる':{l:'ごはん中',i:'🍎',p:'apple',c:2.2,tl:8,hp:.012,sq:.03,pc:[0xF6D36C],pn:2,at:'here',eat:1},
+  '買い物':{l:'買い物中',i:'🛍️',p:'bag',c:3,tl:8,hp:.025,sq:.02,pc:[0xF2D16B],pn:3,at:'plaza'},
+  '話す':{l:'おしゃべり',i:'💬',p:'',c:2,tl:6,hp:.015,sq:.015,pc:[],pn:0,at:'with',nod:1},
+  '渡す':{l:'手渡し中',i:'🎁',p:'gift',c:2.4,tl:12,hp:.025,sq:.03,pc:[0xF4D36F],pn:3,at:'with'},
+  '休む':{l:'ひと休み',i:'💤',p:'',c:4,tl:3,hp:.006,sq:.015,pc:[],pn:0,at:'home',breath:1},
+  '修理する':{l:'修理中',i:'🔨',p:'hammer',c:1.8,tl:14,hp:.012,sq:.03,pc:[0xC9A06B],pn:2,at:'home',swing:1},
+  '建てる':{l:'店を建てる',i:'🏗️',p:'plank',c:3.4,tl:16,hp:.02,sq:.03,pc:[0xC9A06B],pn:3,at:'shop',swing:1},
+  '店番':{l:'店番中',i:'🏪',p:'book',c:4.5,tl:4,hp:.01,sq:.01,pc:[],pn:0,at:'shop'},
+  '食糧庫':{l:'食糧を運ぶ',i:'📦',p:'box',c:2.7,tl:10,hp:.01,sq:.04,pc:[],pn:0,at:'yakuba'},
+  '手伝う':{l:'お手伝い',i:'🤝',p:'box',c:2.8,tl:12,hp:.015,sq:.03,pc:[0x76513A],pn:2,at:'plot'},
+  '迷う':{l:'迷い中',i:'❔',p:'',c:2.6,tl:10,hp:0,sq:.01,pc:[],pn:0,at:'here',look:1},
+  '散歩':{l:'お散歩中',i:'🍃',p:'',c:1.1,tl:3,hp:0,sq:0,pc:[],pn:0,at:'wander'},
+  '見回り':{l:'見回り中',i:'🔍',p:'stick',c:2.5,tl:5,hp:0,sq:0,pc:[],pn:0,at:'wander',look:1}};
+/* いまの行動: 考えた刻（at）から2時間ごとに次の行動へ。4時間より古い予定は使わない（夜・予算切れでAIを呼ばなかった時） */
+function act19List(o){var d=o.doing;if(!d||!d.list||!d.list.length)return [];var L=d.list.filter(function(a){return ACT19[a.k]});if(L.length>1&&L[0].k==='散歩')L=L.slice(1);return L} /* 「畑へ行った」→「耕した」なら、歩くのは演じる中に入っている */
+function act19Cur(o){var L=act19List(o),d=o.doing;if(!L.length||!A19.now)return null;var age=A19.now-d.at;if(age<0||age>=4)return null;return L[Math.min(L.length-1,Math.floor(age/2))]}
+function act19Night(){var s=V15.slot;return s>=22||s<6}
+/* どこに立って、どっちを向くか（森の座標） */
+function act19Spot(o,a){var D=ACT19[a.k],h=((o.id.charCodeAt(0)*7+o.id.length*13)%360)*Math.PI/180,pl,mine,no,p,q,i;
+  if(D.at==='plot'){no=a.plot;if(!no){mine=V15.plots.filter(function(p){return p.user===o.id})[0];no=mine?mine.no:5}
+    if(!FARM.plots[no-1])no=5;p=farmXY(no,1.9,0);q=farmXY(no,0,0);return {x:p.x,z:p.z,fx:q.x,fz:q.z,plot:no}}
+  if(D.at==='pond'){var R=RODS[0];if(!R){p=placeXY(o,'池');return {x:p.x,z:p.z,fx:p.x-3,fz:p.z,water:{x:p.x-3,z:p.z}}}
+    var k=((o.id.charCodeAt(0)+o.id.charCodeAt(1))%5)-2;if(!k)k=3; /* 真ん中は旅人の釣り場なので空けて、左右に並ぶ */
+    p={x:R.x-R.uz*k*1.2-R.ux*.6,z:R.z+R.ux*k*1.2-R.uz*.6};q={x:p.x+R.ux*5.3,z:p.z+R.uz*5.3};return {x:p.x,z:p.z,fx:q.x,fz:q.z,water:q}}
+  if(D.at==='forest'){p=placeXY(o,'森');return {x:p.x,z:p.z,fx:p.x+Math.cos(h)*2,fz:p.z+Math.sin(h)*2,r:2.2}}
+  if(D.at==='plaza'){p=placeXY(o,'広場');return {x:p.x,z:p.z,fx:0,fz:7}}
+  if(D.at==='with'){var w=a.with==='kei'?cop:AIBY[a.with];if(w&&w!==o&&w.sp&&w.sp.visible!==false){var ang=Math.atan2(o.z-w.z,o.x-w.x);if(!isFinite(ang))ang=h;return {x:w.x+Math.cos(ang)*1.1,z:w.z+Math.sin(ang)*1.1,fx:w.x,fz:w.z,who:w}}
+    p=placeXY(o,o.place);return {x:p.x,z:p.z,fx:p.x+1,fz:p.z}}
+  if(D.at==='home'){var l=o.L;return {x:l.fx,z:l.fz,fx:l.hx,fz:l.hz}}
+  if(D.at==='shop'){var sh=V15.shops.filter(function(s){return s.owner===o.id})[0];p=placeXY(o,sh?sh.name:'広場');return {x:p.x,z:p.z,fx:p.x-1.8,fz:p.z-1.8}}
+  if(D.at==='yakuba'){p=placeXY(o,'役場');var y=LOTS[YAKUBA_LOT];return {x:p.x,z:p.z,fx:y.hx,fz:y.hz}}
+  if(D.at==='wander'){p=placeXY(o,o.place||'広場');return {x:p.x,z:p.z,fx:p.x+Math.cos(h),fz:p.z+Math.sin(h),r:3}}
+  return {x:o.x,z:o.z,fx:o.x+Math.sin(o.sp.rotation.y||0),fz:o.z+Math.cos(o.sp.rotation.y||0)}} /* here: その場で */
+/* サーバーの読み込みのたび（aiApply の最後）: 予定が変わった人だけ歩き出す */
+function act19Apply(d){if(!V15.on||!d||!d.people)return;A19.now=d.now||(d.day*24+d.slot);
+  d.people.forEach(function(p){var o=AIBY[p.id];if(!o)return;o.doing=p.doing||null;act19Set(o,!A19.init)});A19.init=true}
+function act19Set(o,jump){var a=(o.sleep||o.dead||o.jail||act19Night())?null:act19Cur(o),key=a?a.k+'|'+(a.plot||'')+'|'+(a.with||''):'';
+  if(key===o.a19key&&!jump)return;o.a19key=key;o.a19=a;o.a19t=0;o.a19n=0;o.a19fun=0;act19Prop(o,a?ACT19[a.k].p:'');act19Label(o,a);
+  if(!a){o.a19s=null;return}var s=act19Spot(o,a);o.a19s=s;
+  if(jump){o.x=s.x;o.z=s.z;o.path=[]}else if(Math.hypot(s.x-o.x,s.z-o.z)>.6)o.path=route({x:o.x,z:o.z},{x:s.x,z:s.z})}
+/* 札「🌱 畑を耕す」: 名前の札のすぐ下 */
+function act19Label(o,a){var t=a?ACT19[a.k].i+' '+ACT19[a.k].l:'';if(o.a19lt===t)return;o.a19lt=t;
+  if(!t){if(o.a19lb)o.a19lb.visible=false;return}
+  var tx=textTex(t,{fs:40,pill:1,body:1,fg:'#294A32',bg:'rgba(255,243,214,.97)'});
+  if(!o.a19lb){o.a19lb=label(tx,.3,o.x,o.z,0,2.14,{far:30});o.a19lb.userData.off=true}else{o.a19lb.material.map.dispose();o.a19lb.material.map=tx;o.a19lb.material.needsUpdate=true;o.a19lb.scale.x=.3*tx.userData.asp;o.a19lb.userData.w=o.a19lb.scale.x}
+  o.a19lb.visible=true}
+/* 小物（手に持つ物）。★renderOrder=2 にする（0 だと地面の後に描かれて消える。住人の体も2・10/9 実測）。体の右前。lean の中に入れて、体と一緒に前へ傾く */
+function a19m(c){var k=String(c);return A19.pm[k]||(A19.pm[k]=new THREE.MeshLambertMaterial({color:col(c)}))}
+function a19box(g,c,sx,sy,sz,x,y,z,rx,rz){var m=new THREE.Mesh(A19.B||(A19.B=new THREE.BoxGeometry(1,1,1)),a19m(c));m.scale.set(sx,sy,sz);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;m.renderOrder=2;g.add(m);return m}
+function a19cyl(g,c,r,h,x,y,z,rx,rz,r2){var m=new THREE.Mesh(new THREE.CylinderGeometry(r2===undefined?r:r2,r,h,8),a19m(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;m.renderOrder=2;g.add(m);return m}
+function a19ball(g,c,r,x,y,z){var m=new THREE.Mesh(A19.S||(A19.S=new THREE.SphereGeometry(1,8,6)),a19m(c));m.scale.set(r,r,r);m.position.set(x,y,z);m.renderOrder=2;g.add(m);return m}
+function act19Prop(o,kind){if(o.a19kind===kind)return;o.a19kind=kind;
+  if(!o.a19g){o.a19g=new THREE.Group();o.a19lean=new THREE.Group();o.a19g.add(o.a19lean);scene.add(o.a19g)}
+  var L=o.a19lean;while(L.children.length)L.remove(L.children[0]);if(o.a19line){scene.remove(o.a19line);o.a19line.geometry.dispose()}if(o.a19bob)scene.remove(o.a19bob);o.a19hand=null;o.a19line=null;o.a19bob=null;o.a19w=null;if(!kind){o.a19g.visible=false;return}
+  var h=new THREE.Group();L.scale.setScalar(1.35);h.position.set(-.46,.68,.52);L.add(h);o.a19hand=h; /* 右手のあたり（正面が +z・右が -x）。体は幅1.7m・帽子まで2.1m（頭が大きい）ので、小物ごと1.35倍にして体の外・胸の高さに出す */
+  /* 太さは「390px の画面で4m先から見える」こと（細いと1px の線になって見えなかった・10/9 実測） */
+  if(kind==='hoe'){a19cyl(h,0x9B7350,.045,1.1,0,.12,.12,.55);a19box(h,0xC9C9BE,.3,.06,.3,0,-.34,.5,.55)}
+  else if(kind==='seed'){a19ball(h,0xD9B46B,.15,0,0,.08);a19ball(h,0xa9884f,.06,0,.15,.08)}
+  else if(kind==='can'){a19cyl(h,0x8CB8BD,.17,.28,0,0,.08);a19cyl(h,0x8CB8BD,.025,.42,0,.1,.34,1.0,0,.045);a19box(h,0x6f8fa8,.05,.05,.24,0,.18,-.04)}
+  else if(kind==='bucket'){a19cyl(h,0xA87B50,.16,.28,0,-.14,.08,0,0,.19);a19box(h,0x6b4a2c,.03,.22,.03,.18,0,.08);a19box(h,0x6b4a2c,.03,.22,.03,-.18,0,.08)}
+  else if(kind==='basket'){a19box(h,0xC99B5F,.42,.2,.32,0,-.1,.12);a19ball(h,0xF28C28,.09,-.09,.02,.1);a19ball(h,0x83B96A,.09,.1,.02,.16)}
+  else if(kind==='rod'){a19cyl(h,0x9B7350,.035,1.5,0,.45,.43,.9,0,.015);var lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,-1,1)]);o.a19line=new THREE.Line(lg,new THREE.LineBasicMaterial({color:0xf4f1e6}));o.a19line.renderOrder=2;scene.add(o.a19line);
+    var bob=new THREE.Group();a19ball(bob,0xE94B3C,.09,0,.05,0);a19ball(bob,0xffffff,.065,0,.14,0);scene.add(bob);o.a19bob=bob}
+  else if(kind==='pouch'){a19ball(h,0xB8875A,.16,0,-.06,.08)}
+  else if(kind==='logs'){a19cyl(h,0xA87B50,.09,.7,0,0,.12,0,1.57);a19cyl(h,0x96693f,.09,.7,0,.15,.12,0,1.57)}
+  else if(kind==='stone'){a19ball(h,0x9AA2A4,.14,0,-.05,.1)}
+  else if(kind==='apple'){h.position.set(-.12,.62,.52);a19ball(h,0xE0574A,.1,0,0,0);a19box(h,0x6b4a2c,.02,.07,.02,0,.11,0)}
+  else if(kind==='bag'){a19box(h,0xE0C080,.28,.32,.16,0,-.12,.06)}
+  else if(kind==='gift'){h.position.set(0,.6,.56);a19box(h,0xD97565,.3,.24,.24,0,0,0);a19box(h,0xF4D36F,.31,.05,.25,0,0,0)}
+  else if(kind==='hammer'){a19cyl(h,0x9B7049,.035,.6,0,.18,.1,.4);a19box(h,0x7a7a80,.26,.11,.11,0,.45,.22,.4)}
+  else if(kind==='plank'){h.position.set(-.45,.95,.1);a19box(h,0xB7865A,1.3,.08,.2,0,0,0,0,.25)}
+  else if(kind==='book'){a19box(h,0x8C6D4E,.28,.36,.05,0,.06,.14,-.5)}
+  else if(kind==='box'){h.position.set(0,.58,.56);a19box(h,0xC49A68,.46,.34,.34,0,0,0);a19box(h,0x8a6440,.47,.04,.35,0,.08,0)}
+  else if(kind==='stick'){a19cyl(h,0x9B7350,.035,.9,0,0,.06,.3)}
+  o.a19g.visible=true}
+/* 粒（土・水・キラキラ）。60個までを使い回す */
+function act19Puff(x,y,z,c,n,up,spread){if(!A19.pg){A19.pg=new THREE.SphereGeometry(1,5,4)}for(var i=0;i<n;i++){var q=A19.parts.length<60?null:A19.parts.shift();
+  if(!q){q={m:new THREE.Mesh(A19.pg,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true}))};scene.add(q.m)}
+  var cc=c[i%c.length];q.m.material.color.set(cc).convertSRGBToLinear();q.m.material.opacity=1;q.m.visible=true;var s=.03+Math.random()*.025;q.m.scale.set(s,s,s);q.m.position.set(x,y,z);
+  q.vx=(Math.random()*2-1)*(spread||.6);q.vz=(Math.random()*2-1)*(spread||.6);q.vy=(up||1.2)*(.6+Math.random()*.6);q.life=.9+Math.random()*.4;q.t=0;A19.parts.push(q)}}
+function act19Parts(dt){for(var i=0;i<A19.parts.length;i++){var q=A19.parts[i];if(!q.m.visible)continue;q.t+=dt;if(q.t>=q.life){q.m.visible=false;continue}
+  q.vy-=5*dt;q.m.position.x+=q.vx*dt;q.m.position.y+=q.vy*dt;q.m.position.z+=q.vz*dt;q.m.material.opacity=1-q.t/q.life}}
+/* 毎フレーム（stepAI の後）: 着いたら演じる。歩いている間・話しかけられている間は普通の姿勢 */
+var _a19v=new THREE.Vector3();
+function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);
+  for(var i=0;i<AI.length;i++){var o=AI[i],a=o.a19,vis=o.sp.visible&&!o.dead;
+    if(o.a19g)o.a19g.visible=vis&&!!o.a19kind;if(o.a19lb)o.a19lb.visible=vis&&!!o.a19lt;if(o.a19bob)o.a19bob.visible=false;if(o.a19line)o.a19line.visible=false;
+    if(!vis){continue}
+    if(!o.a19base)o.a19base=o.sp.scale.clone();
+    var p=warp(o.x,o.z),y=height(p[0],p[1]);if(o.a19lb)o.a19lb.position.set(p[0],y+2.14,p[1]);
+    var lean=0,hop=0,sq=0,swing=0,D=a&&ACT19[a.k],busy=o.hold>0||(chatWho===o&&sheetOpen==='chat');
+    if(D&&o.a19s&&!o.path.length&&!busy){
+      /* with: 相手が2m以上動いたら付いて行く */
+      if(o.a19s.who&&Math.hypot(o.a19s.who.x-o.a19s.fx,o.a19s.who.z-o.a19s.fz)>2){o.a19s=act19Spot(o,a);if(Math.hypot(o.a19s.x-o.x,o.a19s.z-o.z)>.6)o.path=[{x:o.a19s.x,z:o.a19s.z}]}
+      o.a19t+=dt;var ph=(o.a19t/D.c)%1,w=.5-.5*Math.cos(ph*6.2832),cyc=Math.floor(o.a19t/D.c);
+      var fp=warp(o.a19s.fx,o.a19s.fz),yaw=Math.atan2(fp[0]-p[0],fp[1]-p[1]);
+      if(D.look){var lk=Math.floor(o.a19t/1.3)%4;yaw+=[0,.55,0,-.55][lk]} /* 迷う・見回り: 右を見て、左を見て */
+      o.yawT=yaw;lean=D.tl*w*Math.PI/180;hop=D.hp*Math.abs(Math.sin(ph*6.2832));sq=D.sq*w;
+      if(D.swing)swing=-1.1*Math.max(0,Math.sin(ph*6.2832)); /* 振りかぶって→下ろす */
+      if(D.pour)swing=ph<.55?.45*Math.min(1,ph/.15):0;
+      if(D.nod)lean=(cyc%2?D.tl:0)*Math.max(0,Math.sin(ph*6.2832))*Math.PI/180;
+      if(D.breath){sq=D.sq*Math.sin(ph*6.2832);lean=D.tl*Math.PI/180}
+      if(D.eat&&cyc%3===2&&ph>.6)lean=-6*Math.PI/180; /* 3口目で満足してのけぞる */
+      /* 粒: 1周ごと（水やりは注いでいる間ずっと） */
+      if(cyc!==o.a19n||(D.pour&&swing>.3&&Math.random()<dt*12)){if(cyc!==o.a19n)o.a19n=cyc;
+        if(D.pn&&o.a19hand&&o.a19g.visible){o.a19hand.getWorldPosition(_a19v);var fx=Math.sin(o.sp.rotation.y),fz=Math.cos(o.sp.rotation.y);
+          if(D.pour)act19Puff(_a19v.x+fx*.45,_a19v.y+.05,_a19v.z+fz*.45,D.pc,1,.2,.15);
+          else if(D.fish){if(o.a19w)act19Puff(o.a19w.x,o.a19w.y,o.a19w.z,D.pc,D.pn,.7,.5)}
+          else act19Puff(_a19v.x+fx*.35,y+.15,_a19v.z+fz*.35,D.pc,D.pn,1.1,.5)}}
+      /* ちょっとした小技（チャッピー案）: 耕す・修理・建てるを3回やった後に、たまに胸を張る */
+      if(D.swing&&cyc>=3&&cyc%7===3&&ph<.3){sq=-.06;lean=0;swing=0}
+      /* 種まき・木の実・石: 少しずつ場所を変える */
+      if(D.walk&&cyc!==o.a19walk&&cyc%3===2&&ph>.9){o.a19walk=cyc;var base=act19Spot(o,a),r=D.at==='plot'?.9:(o.a19s.r||1.5);o.path=[{x:base.x+(Math.random()*2-1)*.3,z:base.z+(Math.random()*2-1)*r}]}
+      if(D.at==='wander'&&o.a19t>6+((o.id.charCodeAt(1)||3)%5)){o.a19t=0;var b2=act19Spot(o,a);o.path=[{x:b2.x+(Math.random()*2-1)*b2.r,z:b2.z+(Math.random()*2-1)*b2.r}]}
+    }
+    /* 体: 前へ傾ける・跳ねる・縮む（足元が支点） */
+    if(!o.sp.userData.m3){lean=0;sq=0}o.sp.rotation.x=lean;o.sp.position.y+=hop;var bs=o.a19base;o.sp.scale.set(bs.x*(1+sq*.5),bs.y*(1-sq),bs.z*(1+sq*.5));
+    if(o.a19g&&o.a19g.visible){o.a19g.position.set(o.sp.position.x,o.sp.position.y,o.sp.position.z);o.a19g.rotation.y=o.sp.rotation.y;o.a19lean.rotation.x=lean;if(o.a19hand)o.a19hand.rotation.x=swing;
+      /* 釣り: 竿の先から糸、ウキは水の上で揺れて、たまに沈む */
+      if(o.a19kind==='rod'&&D&&D.fish&&!o.path.length&&!busy&&o.a19s&&o.a19s.water){var wq=warp(o.a19s.water.x,o.a19s.water.z),wy=(typeof WS==='number'&&WS?WS:height(wq[0],wq[1]))+.02,dip=(Math.sin(o.a19t*1.7)>.97)?-.06:Math.sin(o.a19t*2.3)*.02;
+        o.a19w=new THREE.Vector3(wq[0],wy,wq[1]);o.a19bob.position.set(wq[0],wy+dip,wq[1]);o.a19bob.visible=true;
+        o.a19g.updateMatrixWorld(true);var tip=new THREE.Vector3(0,.45+.75*Math.cos(.9),.43+.75*Math.sin(.9)).applyMatrix4(o.a19hand.matrixWorld);
+        var pos=o.a19line.geometry.attributes.position;pos.setXYZ(0,tip.x,tip.y,tip.z);pos.setXYZ(1,wq[0],wy+dip+.1,wq[1]);pos.needsUpdate=true;o.a19line.geometry.computeBoundingSphere();o.a19line.visible=true}}
+  }}
+/* 住人と話す画面に「この2時間の予定」 */
+function plan19(w){if(!V15.on||!w||w.kind!=='ai')return '';var L=act19List(w),d=w.doing;if(!L.length)return '<p class="note">いまの予定はまだ無い（考えるのは 6・10・14・18時）</p>';
+  var cur=act19Cur(w);return '<div class="plan19"><b>この2時間の予定</b>'+L.map(function(a,i){var h=((d.at+2*i)%24),D=ACT19[a.k],now=cur===a;
+    return '<p'+(now?' class="now"':'')+'><span class="tm">'+h+'時〜</span>'+D.i+' '+esc(a.t||D.l)+(now?'<span class="nw">いま</span>':'')+'</p>'}).join('')+'</div>'}
+function news19(){if(S.n19||!V15.on)return;S.n19=1;save();toast('住人が、畑仕事や釣りをその場で本当にやるようになった（2時間ごとに予定が変わる）');toast('畑が2面に広がった。南の畑は役場が売っていて、住人が買える')}
 
 function landPrice(l){return PLACEV[l.ring]*l.area}
 function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.ring]*l.area/10)*10:0}
@@ -1955,7 +2108,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.18',APP_BUILD='1009-0018',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.19',APP_BUILD='1009-0019',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -2019,13 +2172,13 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
   screenOf:function(x,y,z){step(0,performance.now());R.render(scene,camera);var p=warp(x,z),q=scr(p[0],y+height(p[0],p[1]),p[1]);return [q.x,q.y,q.ppm]}};
 document.addEventListener('visibilitychange',function(){if(!document.hidden)pkSync()});window.addEventListener('focus',pkSync);
-function start(){pkSync();gearApply();qNow();news14();news15();init3d();if(!R)logPush('load','3Dを始められなかった（three='+(ok3d?1:0)+'）','');else{try{var gl=R.getContext(),gx=gl.getExtension('WEBGL_debug_renderer_info');LOG.gl=String(gx?gl.getParameter(gx.UNMASKED_RENDERER_WEBGL):'').slice(0,80)}catch(e){}}mmSync();if(R&&!S.intro)startIntro();requestAnimationFrame(frame)}
+function start(){pkSync();gearApply();qNow();news14();news15();news19();init3d();if(!R)logPush('load','3Dを始められなかった（three='+(ok3d?1:0)+'）','');else{try{var gl=R.getContext(),gx=gl.getExtension('WEBGL_debug_renderer_info');LOG.gl=String(gx?gl.getParameter(gx.UNMASKED_RENDERER_WEBGL):'').slice(0,80)}catch(e){}}mmSync();if(R&&!S.intro)startIntro();requestAnimationFrame(frame)}
 function loadImgs(cb){var jobs=[];Object.keys(IMG).forEach(function(k){jobs.push([IM,k,IMG[k]])});
   Object.keys(MDLDEF).forEach(function(k){jobs.push([MIM,k,MDLDEF[k].t]);var hs=MDLDEF[k].hats||{};Object.keys(hs).forEach(function(c){jobs.push([MIM,k+'@'+c,hs[c]])})});
   var n=jobs.length;if(!n){cb();return}jobs.forEach(function(j){var im=new Image();im.onload=function(){j[0][j[1]]=im;if(!--n)cb()};im.onerror=function(){if(!--n)cb()};im.src=j[2]})}
