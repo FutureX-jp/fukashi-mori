@@ -1096,12 +1096,12 @@ function collide(o){var i,c,dx,dz,d,rr,L=allCols(),ca,sa,lx,lz,px,pz;o.x=Math.ma
 var actBtn=$('#act'),actOn=null,actTick=0;
 function nearAct(){ if(DV.on||FS.on)return;if(++actTick%6)return;var best=null,bd=1e9,i,h,d,x,z,lim;
   if(!intro&&!sheetOpen&&land.hidden&&!me.path.length)for(i=0;i<hits.length;i++){h=hits[i];
-    if(h.who){x=h.who.x;z=h.who.z;lim=2.3}else if(h.type==='plot'){x=h.fx;z=h.fz;lim=2.7}else{x=h.px;z=h.pz+.6;lim=3.4}
+    if(h.who){if(h.who.sp&&h.who.sp.visible===false)continue;x=h.who.x;z=h.who.z;lim=2.3}else if(h.type==='plot'){x=h.fx;z=h.fz;lim=2.7}else{x=h.px;z=h.pz+.6;lim=3.4}
     d=Math.hypot(me.x-x,me.z-z);if(d<lim&&d<bd){bd=d;best=h}}
-  var key=best?(best.type==='plot'?'p'+best.id:best.id):'';if(key===(actOn?actOn.key:''))return;
+  var key=best?(best.type==='plot'?'p'+best.id:best.id+(best.who&&best.who.name||'')):'';if(key===(actOn?actOn.key:''))return;
   if(!best){actOn=null;actBtn.hidden=true;return}
   var t;if(best.type==='plot'){var tr=resOf(best.id);t=isMine(best.id)?'自分の家に入る':(tr?tr+'段の家を見る':'空き地を見る')}
-  else if(best.type==='res')t='住人に話しかける';else if(best.id==='chest')t='宝箱を見る';else if(best.id==='npc')t='森の住人に話しかける';else if(best.who)t='警察官に話しかける';else if(ACT[best.id])t=ACT[best.id];else t=PLACES.filter(function(q){return q.id===best.id})[0].name+'を見る';
+  else if(best.type==='res')t='住人に話しかける';else if(best.id==='chest')t='宝箱を見る';else if(best.id==='npc')t='森の住人に話しかける';else if(best.who)t=(best.who===cop?(V15.on?'警察官のケイ':'警察官'):(best.who.name||'住人'))+'に話しかける';else if(ACT[best.id])t=ACT[best.id];else t=PLACES.filter(function(q){return q.id===best.id})[0].name+'を見る';
   actOn={key:key,h:best};actBtn.textContent=t;actBtn.hidden=false}
 actBtn.addEventListener('pointerdown',function(e){if(FS.on){e.preventDefault();try{actBtn.setPointerCapture(e.pointerId)}catch(_){}fishDown();return}if(!DV.on)return;e.preventDefault();try{actBtn.setPointerCapture(e.pointerId)}catch(_){}spearDown()});
 actBtn.addEventListener('pointerup',function(e){fishUp();if(DV.on)spearUp(false)});actBtn.addEventListener('pointercancel',function(e){fishUp();if(DV.on)spearUp(true)});
@@ -2178,7 +2178,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.19',APP_BUILD='1009-1730',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.19',APP_BUILD='1009-1745',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
