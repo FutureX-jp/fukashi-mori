@@ -850,22 +850,22 @@ function fishStart(ix){var p=RODS[ix];if(!p||FS.on||DV.on||ROOM.on||intro)return
   var a=warp(me.x,me.z),b=warp(p.fx,p.fz);CAM.yaw=Math.atan2(-(b[0]-a[0]),-(b[1]-a[1]))+.3;CAM.tilt=0; /* 池の方を向く（少し斜めから） */
   $('#fs').hidden=false;$('#fsg').hidden=true;fsMsg('');$('#hint').hidden=true;actOn=null;actBtn.hidden=true;logEv('rod:cast')}
 function fishEnd(msg,gold){if(!FS.on)return;FS.on=false;if(V15.on)fish3dOff();FS.st='';FS.pull=false;$('#fs').hidden=true;actOn=null;actBtn.hidden=true;if(msg)toast(msg,gold)}
-function fishTap(){if(!FS.on)return;if(FS.st==='nib'){logEv('rod:early');fishEnd('魚のほうが上手でした');return} /* 早合わせ */
+function fishTap(){if(!FS.on)return;if(FS.st==='nib'||FS.st==='wait'){logEv('rod:early');fsMsg('まだ早い　ウキがズボッと沈んだら');return} /* 早合わせは失敗にしない（v0.19.1） */
   if(FS.st!=='bite')return;var r=Math.random()*100,acc=0,i,D=FISHDEF[0];for(i=0;i<FISHDEF.length;i++){acc+=RODW[i];if(r<acc){D=FISHDEF[i];break}}
   FS.fish=D;FS.cm=Math.round(D.len*100*fishK(D,Math.random()));FS.st='reel';FS.t=0;FS.total=0;FS.tens=.3;FS.prog=.25;FS.run=false;FS.rt=.9+Math.random()*.6;FS.pull=false;$('#fsg').hidden=false;fsMsg('引く');logEv('rod:hook')}
-function fishDown(){if(!FS.on)return;if(FS.st==='reel')FS.pull=true;else fishTap()}
+function fishDown(){if(!FS.on)return;if(FS.st==='reel')FS.pull=true;else{fishTap();if(FS.st==='reel')FS.pull=true}} /* 合わせた指を離さなければ、そのまま引く */
 function fishUp(){FS.pull=false}
 function fishLand(){var D=FS.fish,cm=FS.cm,bt=V15.on?bagCatch(D,cm):(S.coin+=D.price,'＋'+D.price+'フカ');S.fish=(S.fish||0)+1;S.rod=(S.rod||0)+1;save();
   fishEnd(D.mode==='nushi'?'池の大地主が、釣れました　'+cm+'cm　'+bt:'釣れました。実力です　'+D.n+' '+cm+'cm　'+bt,D.mode==='nushi');bookAdd(D.k,cm);qEv('catch',D.k,'rod');logEv('rod:got:'+D.k)}
 function fishStep(dt,t){if(!FS.on)return;var p=RODS[FS.ix],sx=FS.x+p.ux*1.1,sz=FS.z+p.uz*1.1,fx=p.fx,fz=p.fz,k,str,w,q,q2,dy=0,jx=0,lbl='';FS.t+=dt;FS.dip=false;
   if(FS.st==='cast'){k=Math.min(1,FS.t/.5);fx=sx+(p.fx-sx)*k;fz=sz+(p.fz-sz)*k;dy=-Math.sin(k*3.1416)*46;if(k>=1){FS.st='wait';FS.t=0;FS.w=2+Math.random()*6;fsMsg('待ちます')}}
-  else if(FS.st==='wait'){lbl='合わせる';if(FS.t>=FS.w){FS.st='nib';FS.t=0;fsMsg('……何かいます')}}
-  else if(FS.st==='nib'){lbl='合わせる';FS.dip=(FS.t<.3)||(FS.t>=.7&&FS.t<1);if(FS.t>=1.4){FS.st='bite';FS.t=0;fsMsg('来ました',1);if(navigator.vibrate)try{navigator.vibrate(30)}catch(e){}}} /* 小さいアタリは0秒と0.7秒、本アタリは1.4秒（同じ間あい） */
-  else if(FS.st==='bite'){lbl='合わせる';FS.dip=true;dy=6;if(FS.t>.3){logEv('rod:miss');fishEnd('魚のほうが上手でした');return}}
+  else if(FS.st==='wait'){lbl='沈んだら押す';if(FS.t>=FS.w){FS.st='nib';FS.t=0;fsMsg('……何かいます')}}
+  else if(FS.st==='nib'){lbl='沈んだら押す';FS.dip=(FS.t<.3)||(FS.t>=.7&&FS.t<1);if(FS.t>=1.4){FS.st='bite';FS.t=0;fsMsg('来ました',1);if(navigator.vibrate)try{navigator.vibrate(30)}catch(e){}}} /* 小さいアタリは0秒と0.7秒、本アタリは1.4秒（同じ間あい） */
+  else if(FS.st==='bite'){lbl='今！合わせる';FS.dip=true;dy=6;if(FS.t>1.0){logEv('rod:miss');fishEnd('魚のほうが上手でした');return}}
   else if(FS.st==='reel'){lbl='引く';str=RODS_STR[FS.fish.k];FS.total+=dt;FS.rt-=dt;if(FS.rt<=0){FS.run=!FS.run;FS.rt=FS.run?.5+Math.random()*.5:.9+Math.random()*.9;fsMsg(FS.run?'緩める':'引く',FS.run)}
-    if(FS.pull){FS.prog+=dt*(FS.run?.05:.3)/Math.pow(str,.7);FS.tens+=dt*(FS.run?1.1*Math.min(str,1.5):.18)}else{FS.prog-=dt*(FS.run?.12:.04);FS.tens-=dt*.8}
+    if(FS.pull){FS.prog+=dt*(FS.run?.05:.34)/Math.pow(str,.7);FS.tens+=dt*(FS.run?.6*Math.min(str,1.5):.1)}else{FS.prog-=dt*(FS.run?.06:.03);FS.tens-=dt*.9}
     FS.tens=Math.max(0,FS.tens);k=Math.max(0,Math.min(1,(FS.prog-.25)/.75));fx=p.fx+(sx-p.fx)*k;fz=p.fz+(sz-p.fz)*k;if(FS.run)jx=Math.sin(t*.045)*5;
-    if(FS.tens>=1||FS.prog<=0||FS.total>15){logEv('rod:lost');fishEnd('魚のほうが上手でした');return}
+    if(FS.tens>=1||FS.prog<=0||FS.total>25){logEv('rod:lost');fishEnd('魚のほうが上手でした');return}
     if(FS.prog>=1){fishLand();return}
     w=$('#fsgf');w.style.width=Math.round(Math.min(1,FS.tens)*100)+'%';w.style.background=FS.prog>.85?'#FFC83D':(FS.tens>=.7?'#E94B3C':'#8FD694')}
   if(V15.on)fish3d(fx,fz,dy,jx,t,dt);else{q=warp(fx,fz);q=scr(q[0],WS+.03,q[1]);q2=scr(me.wx,(me.wy||0)+1.75,me.wz);var f=$('#fsf'),ln=$('#fsln');if(FS.dip&&!dy)dy=5;
@@ -1734,7 +1734,7 @@ function fish3dInit(){if(F3.g)return;var g=new THREE.Group();scene.add(g);F3.g=g
   F3.last='';F3.peck=0;F3.wt=0}
 function fishRing(x,z,big){var r=F3.rings.find(function(q){return q.t>=1})||F3.rings[0];r.t=0;r.big=big;r.x=x;r.z=z}
 function fishSplash(x,y,z){F3.drops.forEach(function(d,i){var a=i/8*6.2832;d.t=0;d.p=[x,y,z];d.v=[Math.cos(a)*.9,1.6+Math.random()*1.2,Math.sin(a)*.9]})}
-function fish3d(fx,fz,dy,jx,t,dt){fish3dInit();if(!F3.cam){F3.cam={h:CAM.h,back:CAM.back,look:CAM.look}}CAM.h+=(4.2-CAM.h)*Math.min(1,dt*3);CAM.back+=(6.5-CAM.back)*Math.min(1,dt*3);var g=F3.g;g.visible=true;var st=FS.st,p=RODS[FS.ix],w=warp(fx,fz),x=w[0],z=w[1],y=WS+.02,sink=0,tw=0;
+function fish3d(fx,fz,dy,jx,t,dt){fish3dInit();var fw0=warp(fx,fz);if(FS.st!=='cast')me.yawT=Math.atan2(fw0[0]-me.wx,fw0[1]-me.wz); /* v0.19.1 竿を出したらウキの方を向く */if(!F3.cam){F3.cam={h:CAM.h,back:CAM.back,look:CAM.look}}CAM.h+=(4.2-CAM.h)*Math.min(1,dt*3);CAM.back+=(6.5-CAM.back)*Math.min(1,dt*3);var g=F3.g;g.visible=true;var st=FS.st,p=RODS[FS.ix],w=warp(fx,fz),x=w[0],z=w[1],y=WS+.02,sink=0,tw=0;
   /* 2Dのウキと糸は消す */
   var f=$('#fsf'),sv=$('#fsl');if(f)f.style.display='none';if(sv)sv.style.display='none';
   if(st==='cast'){y+=Math.max(0,-dy/46*2.2)} /* 投げた時の放物線 */
@@ -1947,7 +1947,15 @@ var ACT19={
   '見回り':{l:'見回り中',i:'🔍',p:'stick',c:2.5,tl:5,hp:0,sq:0,pc:[],pn:0,at:'wander',look:1}};
 /* いまの行動: 考えた刻（at）から2時間ごとに次の行動へ。4時間より古い予定は使わない（夜・予算切れでAIを呼ばなかった時） */
 function act19List(o){var d=o.doing;if(!d||!d.list||!d.list.length)return [];var L=d.list.filter(function(a){return ACT19[a.k]});if(L.length>1&&L[0].k==='散歩')L=L.slice(1);return L} /* 「畑へ行った」→「耕した」なら、歩くのは演じる中に入っている */
-function act19Cur(o){var L=act19List(o),d=o.doing;if(!L.length||!A19.now)return null;var age=A19.now-d.at;if(age<0||age>=4)return null;return L[Math.min(L.length-1,Math.floor(age/2))]}
+function act19Cur(o){var L=act19List(o),d=o.doing;if(L.length&&A19.now){var age=A19.now-d.at;if(age>=0&&age<4)return L[Math.min(L.length-1,Math.floor(age/2))]}return act19Here(o)}
+/* 予定が無い・古い時は、いる場所でできることをする（10/9 16:50 主「なんもやってなくね？？？？」→ 14時の予定は直す前に決まっていて空だった。次に考えるのは18時） */
+function act19Here(o){var pl=o.place,mine,a=null;if(!pl)return null;
+  if(pl==='畑'){mine=V15.plots.filter(function(p){return p.user===o.id});var st=function(s){return mine.filter(function(p){return p.state===s})[0]},q;
+    if((q=st('収穫できる')))a={k:'収穫する',plot:q.no};else if((q=mine.filter(function(p){return (p.state==='芽'||p.state==='育ち中')&&!p.water})[0]))a={k:'水をやる',plot:q.no};
+    else if((q=st('耕した')))a={k:'種をまく',plot:q.no};else if((q=st('荒地')||st('収穫済み')||st('枯れた')))a={k:'耕す',plot:q.no};else a={k:'手伝う',plot:(mine[0]||{}).no}}
+  else if(pl==='池')a={k:'釣る'};else if(pl==='森')a={k:'木の実を拾う'};else if(pl==='家')a={k:'休む'};else if(pl==='広場')a={k:'散歩'};else if(pl==='役場')a={k:'食糧庫'};
+  else if(V15.shops.some(function(s){return s.name===pl&&s.owner===o.id}))a={k:'店番'};else a={k:'散歩'};
+  a.here=1;a.t='';return a}
 function act19Night(){var s=V15.slot;return s>=22||s<6}
 /* どこに立って、どっちを向くか（森の座標） */
 function act19Spot(o,a){var D=ACT19[a.k],h=((o.id.charCodeAt(0)*7+o.id.length*13)%360)*Math.PI/180,pl,mine,no,p,q,i;
@@ -2057,8 +2065,10 @@ function act19Step(dt,t){if(!V15.on)return;act19Parts(dt);
         var pos=o.a19line.geometry.attributes.position;pos.setXYZ(0,tip.x,tip.y,tip.z);pos.setXYZ(1,wq[0],wy+dip+.1,wq[1]);pos.needsUpdate=true;o.a19line.geometry.computeBoundingSphere();o.a19line.visible=true}}
   }}
 /* 住人と話す画面に「この2時間の予定」 */
-function plan19(w){if(!V15.on||!w||w.kind!=='ai')return '';var L=act19List(w),d=w.doing;if(!L.length)return '<p class="note">いまの予定はまだ無い（考えるのは 6・10・14・18時）</p>';
-  var cur=act19Cur(w);return '<div class="plan19"><b>この2時間の予定</b>'+L.map(function(a,i){var h=((d.at+2*i)%24),D=ACT19[a.k],now=cur===a;
+function act19Next(){var s=V15.slot,n=[6,10,14,18].filter(function(h){return h>s})[0];return n===undefined?6:n}
+function plan19(w){if(!V15.on||!w||w.kind!=='ai')return '';var L=act19List(w),d=w.doing;
+  var cur=act19Cur(w);if(cur&&cur.here)return '<div class="plan19"><b>いまやっていること</b><p class="now">'+ACT19[cur.k].i+' '+esc(w.place||'')+'で'+ACT19[cur.k].l+'</p><p class="note">次の予定を考えるのは '+act19Next()+'時</p></div>';
+  return '<div class="plan19"><b>この2時間の予定</b>'+L.map(function(a,i){var h=((d.at+2*i)%24),D=ACT19[a.k],now=cur===a;
     return '<p'+(now?' class="now"':'')+'><span class="tm">'+h+'時〜</span>'+D.i+' '+esc(a.t||D.l)+(now?'<span class="nw">いま</span>':'')+'</p>'}).join('')+'</div>'}
 function news19(){if(S.n19||!V15.on)return;S.n19=1;save();toast('住人が、畑仕事や釣りをその場で本当にやるようになった（2時間ごとに予定が変わる）');toast('畑が2面に広がった。南の畑は役場が売っていて、住人が買える')}
 
@@ -2108,7 +2118,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.19',APP_BUILD='1009-0019',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.19',APP_BUILD='1009-1700',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
