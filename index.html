@@ -226,7 +226,7 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
 .plot.own{background:var(--cream);color:var(--night);box-shadow:0 0 0 2px var(--danger) inset}
 #sheet td.nw19{white-space:nowrap}
 /* v0.20 ほかの旅人 */
-#netb{position:absolute;left:8px;top:92px;flex:none;min-height:32px;padding:4px 12px;font-size:13px;background:#d6f0ff;color:var(--ink);z-index:3}#netb.on{background:#9be0b4}body.inroom #netb{top:52px}
+#netb{position:absolute;left:8px;top:92px;flex:none;min-height:32px;padding:4px 12px;font-size:13px;background:#d6f0ff;color:var(--ink);z-index:3}#netb.on{background:#9be0b4}body.inroom #netb{top:92px} /* v0.39 おなかの札と重なっていた */
 #sheet{z-index:5} /* 板は左上の札（リュック・旅人）より手前。前は札が板の題名に重なっていた */
 #netlog{max-height:min(24vh,190px)}#sheet table.netc td{text-align:left;color:var(--ink)}
 .netp{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px}.netp button{flex:0 0 auto;min-height:34px;padding:4px 12px;font-size:12px}
@@ -1532,13 +1532,13 @@ function roomBuild(){ROOM.objs.forEach(function(m){scene.remove(m);if(m.userData
     var pb=M.prof[Math.min(7,Math.max(0,Math.ceil(Math.min(1,1.75/h)*8)-1))],c=Math.cos(yaw),sn=Math.sin(yaw),ox=(pb[0]+pb[1])*.5*h,oz=(pb[2]+pb[3])*.5*h;
     ROOM.cols.push({x:lx+ox*c+oz*sn,z:lz-ox*sn+oz*c,hw:Math.max(.12,(pb[1]-pb[0])*h*.46),hd:Math.max(.12,(pb[3]-pb[2])*h*.46),a:-yaw})});
   ROOM.shown=cnt}
-function rzmSet(v){S.rzm=Math.max(.45,Math.min(1.05,+v.toFixed(3)));try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function rzmSet(v){S.rzm2=Math.max(.7,Math.min(1.6,+v.toFixed(3)));try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 (function(){var d=document.createElement('div');d.id='rzm';d.innerHTML='<button type="button" aria-label="近づく">＋</button><button type="button" aria-label="離れる">－</button>';$('#stage').appendChild(d);
-  var b=d.querySelectorAll('button');b[0].addEventListener('click',function(e){e.stopPropagation();rzmSet((S.rzm||.62)-.12)});b[1].addEventListener('click',function(e){e.stopPropagation();rzmSet((S.rzm||.62)+.12)});
-  var pz=null;document.addEventListener('touchstart',function(e){if(ROOM.on&&!ROOM.kind&&e.touches.length===2){var a=e.touches[0],c=e.touches[1];pz={d:Math.hypot(a.clientX-c.clientX,a.clientY-c.clientY),z:S.rzm||.62}}},{passive:true});
-  document.addEventListener('touchmove',function(e){if(pz&&e.touches.length===2){var a=e.touches[0],c=e.touches[1],d2=Math.hypot(a.clientX-c.clientX,a.clientY-c.clientY);if(d2>10)S.rzm=Math.max(.45,Math.min(1.05,pz.z*pz.d/d2))}},{passive:true});
-  document.addEventListener('touchend',function(e){if(pz&&e.touches.length<2){rzmSet(S.rzm||.62);pz=null}},{passive:true});
-  addEventListener('wheel',function(e){if(ROOM.on&&!ROOM.kind&&!sheetOpen)rzmSet((S.rzm||.62)*(e.deltaY>0?1.08:1/1.08))},{passive:true})})();
+  var b=d.querySelectorAll('button');b[0].addEventListener('click',function(e){e.stopPropagation();rzmSet((S.rzm2||1.25)-.15)});b[1].addEventListener('click',function(e){e.stopPropagation();rzmSet((S.rzm2||1.25)+.15)});
+  var pz=null;document.addEventListener('touchstart',function(e){if(ROOM.on&&!ROOM.kind&&e.touches.length===2){var a=e.touches[0],c=e.touches[1];pz={d:Math.hypot(a.clientX-c.clientX,a.clientY-c.clientY),z:S.rzm2||1.25}}},{passive:true});
+  document.addEventListener('touchmove',function(e){if(pz&&e.touches.length===2){var a=e.touches[0],c=e.touches[1],d2=Math.hypot(a.clientX-c.clientX,a.clientY-c.clientY);if(d2>10)S.rzm2=Math.max(.7,Math.min(1.6,pz.z*pz.d/d2))}},{passive:true});
+  document.addEventListener('touchend',function(e){if(pz&&e.touches.length<2){rzmSet(S.rzm2||1.25);pz=null}},{passive:true});
+  addEventListener('wheel',function(e){if(ROOM.on&&!ROOM.kind&&!sheetOpen)rzmSet((S.rzm2||1.25)*(e.deltaY>0?1.08:1/1.08))},{passive:true})})();
 function enterRoom(){if(!MDL.room)return;close();ROOM.kind='';document.body.classList.add('inroom');roomBuild();ROOM.on=true;ROOM.yaw0=CAM.yaw;ROOM.tilt0=CAM.tilt;CAM.yaw=-.82;CAM.tilt=0;ROOM.path=null;me.rx=.36*ROOM.s;me.rz=.02*ROOM.s;me.path=[];me.go=null;
   bills.forEach(function(b){b.visible=false});if(G.talk)G.talk.visible=false;SAYS.forEach(function(q){q.s.visible=false});me.sp.visible=true;me.sp.rotation.x=0;me.yawT=-1.57;if(uw)uw.style.opacity=0;
   $('#mapbtn').textContent='外に出る';actBtn.textContent='着せ替え・家具';actBtn.hidden=false;actOn=null;if(rst)rst.hidden=true;$('#hint').textContent='自分の家の中　丸で歩く・なぞると見回せる';$('#hint').hidden=false}
@@ -1558,7 +1558,9 @@ function stepRoom(dt,t){if(ROOM.kind==='yakuba'){stepHall(dt,t);return}var s=ROO
   var hop=dirPose(me,dx,dz,mv,dt,7.5),wx=ROOM.x+me.rx,wz=ROOM.z+me.rz;me.sp.visible=true;me.sp.material.opacity=1;me.sp.rotation.x=0;me.sp.position.set(wx,ROOM.fy+hop,wz);me.moving=mv;
   /* 視点: 部屋の真ん中と主人公のあいだを見る（部屋ごと画面に入るように）。板が開いている間は、主人公が板の上に見える所まで視点を手前へずらす */
   ROOM.shK=(ROOM.shK||0)+((sheetOpen?1:0)-(ROOM.shK||0))*Math.min(1,dt*6);
-  var zm=ROOM.zm=Math.max(.45,Math.min(1.05,S.rzm||.62)),fw=Math.min(.9,.45+(1-zm)*.8),sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),nar=(W<H*.62?1.17:1)*(1+(s/4.4-1)*.85)*zm,cb=(12.5-CAM.tilt*2.5)*nar,ch=(7.6+CAM.tilt*4)*nar,tx=ROOM.x+(-.13*s)*(1-fw)+me.rx*fw,tz=ROOM.z+(.13*s)*(1-fw)+me.rz*fw,off=(1.9+ROOM.shK*4.2)*Math.min(1,zm*1.3); /* v0.39 近づいて、主人公を追う（＋−とピンチで変えられる） */
+  var zm=ROOM.zm=Math.max(.7,Math.min(1.6,S.rzm2||1.25)),sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),nar=(W<H*.62?1.12:1)*zm,cb=(6.0-CAM.tilt*1.5)*nar,ch=(6.6+CAM.tilt*2)*nar,cl2=function(v,a,b){return a>b?(a+b)/2:Math.max(a,Math.min(b,v))};
+  var gx=cl2(me.rx,-.72*s+1.5,.46*s-1.1),gz=cl2(me.rz,-.46*s+1.1,.72*s-1.5),kk=Math.min(1,dt*5);if(!ROOM.cam||ROOM.cam.k!==ROOM.x){ROOM.cam={x:gx,z:gz,k:ROOM.x}}ROOM.cam.x+=(gx-ROOM.cam.x)*kk;ROOM.cam.z+=(gz-ROOM.cam.z)*kk;
+  var tx=ROOM.x+ROOM.cam.x,tz=ROOM.z+ROOM.cam.z,off=-.4+ROOM.shK*2.4; /* v0.39 公民館と同じ見下ろし（10/10 22:04 主「公民館と同じくらいでいい」）。自分を追う・部屋の外は映しすぎない */
   camera.position.set(tx+sy*cb,ROOM.fy+ch,tz+cy*cb);camera.lookAt(tx+sy*off,ROOM.fy+.6,tz+cy*off);camera.updateMatrixWorld();
   var rzE=$('#rzm');if(rzE){var rzV=sheetOpen||!land.hidden?'hidden':'';if(rzE.style.visibility!==rzV)rzE.style.visibility=rzV}
   if(!sheetOpen&&land.hidden){var al=ROOM.kind==='yakuba'?yakLabel():'着せ替え・家具';if(actBtn.hidden||actBtn.textContent!==al){actBtn.textContent=al;actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
