@@ -271,7 +271,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.21.1';
+var VERSION='v0.22';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1910,75 +1910,88 @@ function hTex(txt,w,h,bg,fg,fs){var c=document.createElement('canvas');c.width=w
   var lines=String(txt).split('\n');lines.forEach(function(l,i){var f=i?fs*.62:fs;g.font='900 '+f+'px '+(typeof FB!=='undefined'?FB:'sans-serif');g.fillText(l,w/2,h/2+(i-(lines.length-1)/2)*fs*1.05)});var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t}
 function hFloorTex(){var c=document.createElement('canvas');c.width=256;c.height=256;var g=c.getContext('2d'),r=rnd(77);for(var y=0;y<8;y++){var off=(y%2)*96;for(var x=-1;x<3;x++){var v=.92+r()*.14;g.fillStyle='rgb('+Math.round(0xB6*v)+','+Math.round(0x9A*v)+','+Math.round(0x70*v)+')';g.fillRect(x*128+off,y*32,126,30)}}
   g.fillStyle='rgba(60,40,20,.35)';for(y=0;y<8;y++)g.fillRect(0,y*32+30,256,2);var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(8,6);t.encoding=THREE.sRGBEncoding;return t}
+/* ===== v0.22 役場を広く・部署ごとの部屋（10/10 13:20 主「役所のなか狭すぎない？もっとでかく広くしてもいい。部屋を個別で用意するとか」）
+   見た目と家具はチャッピー「v0.22 役場の設計仕様」（10/10・chatgpt_v022_spec.json）。部屋の色・看板の色・家具の種類と大きさ・灯りはそのまま
+   Claude が変えた所: チャッピーの間取りは部屋が重なっていた（福祉課と記録室・廊下と住民課）ので、建物を 40×24m にして並べ直した
+   （手前: 産業課14×10｜ロビー12×10｜会計課14×10・真ん中: 東西に通る廊下4.5m・奥: 記録室/住民課/選挙管理委員会/福祉課/交番出張所 各8×9.5m）。
+   扉は体（幅1.7m）が通れるよう2m（チャッピーの注意どおり）。家具は部屋の向きに合わせて回し、扉→カウンターの通り道とカウンターの前後に入る物は壁ぎわへよけた（gen_rooms.py）
+   カメラは「いま居る部屋（ロビー・廊下も1つの部屋）」の中だけを動く＝壁がプレイヤーを隠さない */
+var HR={"W":40,"D":24,"wall_h":3.4,"entrance_w":2.4,"floor":"#C9B99A","wall":"#E8D9B8","wainscot":"#A7B88A","rooms":[{"id":"lobby","name":"森の役場・総合ロビー","x0":14,"z0":0,"x1":26,"z1":10,"side":"S","dc":20,"dw":2.4,"floor":"#DCC9A5","accent":"#6E9B72","sbg":"#315C3A","sfg":"#FFF3C7","f":[{"what":"総合案内カウンター","shape":"box","x":20.0,"z":7.89,"w":3.8,"d":0.8,"h":1.05,"c":"#B58B59","solid":true},{"what":"待合ベンチ","shape":"box","x":16.5,"z":5.33,"w":2.4,"d":0.65,"h":0.55,"c":"#C18A56","solid":true},{"what":"待合ベンチ","shape":"box","x":23.5,"z":5.33,"w":2.4,"d":0.65,"h":0.55,"c":"#C18A56","solid":true},{"what":"番号札発券機","shape":"box","x":17.0,"z":7.22,"w":0.45,"d":0.45,"h":1.25,"c":"#7899A0","solid":true},{"what":"観葉植物の鉢","shape":"cylinder","x":15.0,"z":1.67,"w":0.75,"d":0.75,"h":0.45,"c":"#A87550","solid":true},{"what":"観葉植物の葉","shape":"sphere","x":15.0,"z":1.67,"w":1.1,"d":1.1,"h":1.3,"c":"#54845A","solid":false},{"what":"掲示板","shape":"box","x":24.5,"z":7.78,"w":1.5,"d":0.15,"h":1.4,"c":"#E7B84B","solid":true}]},{"id":"corridor","name":"各課への連絡廊下","x0":0,"z0":10,"x1":40,"z1":14.5,"side":"S","dc":20,"dw":12,"floor":"#CBB994","accent":"#78966B","sbg":"#315C3A","sfg":"#FFF3C7","f":[]},{"id":"sangyo","name":"産業課・森の産物と売店","x0":0,"z0":0,"x1":14,"z1":10,"side":"E","dc":5,"dw":2.0,"floor":"#D9C69B","accent":"#E5B64C","sbg":"#E5B64C","sfg":"#173A2C","f":[{"what":"売店の商品棚","shape":"box","x":9.1,"z":1.55,"w":0.55,"d":2.5,"h":1.8,"c":"#8C6748","solid":true},{"what":"野菜の箱","shape":"box","x":3.5,"z":0.65,"w":0.8,"d":0.7,"h":0.45,"c":"#A9C76A","solid":true},{"what":"果物の箱","shape":"box","x":5.25,"z":0.65,"w":0.8,"d":0.7,"h":0.45,"c":"#D98558","solid":true},{"what":"収穫かご","shape":"cylinder","x":7.88,"z":3.12,"w":0.8,"d":0.8,"h":0.55,"c":"#C49B5C","solid":true},{"what":"農具収納棚","shape":"box","x":11.9,"z":1.1,"w":0.45,"d":1.6,"h":1.6,"c":"#A5A58A","solid":true},{"what":"掲示用黒板","shape":"box","x":12.08,"z":9.12,"w":1.3,"d":0.15,"h":1.1,"c":"#42684A","solid":true},{"what":"売店の小さな丸椅子","shape":"cylinder","x":8.75,"z":9.43,"w":0.55,"d":0.55,"h":0.45,"c":"#C18A56","solid":true}],"counter":{"u":0.5,"v":0.7,"w":4.0}},{"id":"fukushi","name":"福祉課・食糧支援室","x0":24,"z0":14.5,"x1":32,"z1":24,"side":"S","dc":28,"dw":2.0,"floor":"#D9D0B7","accent":"#83A76C","sbg":"#83A76C","sfg":"#173A2C","f":[{"what":"食糧庫の棚","shape":"box","x":30.4,"z":17.82,"w":2.6,"d":0.6,"h":2,"c":"#A68B64","solid":true},{"what":"保存食の箱","shape":"box","x":24.62,"z":21.62,"w":0.65,"d":0.75,"h":0.5,"c":"#D6B96D","solid":true},{"what":"穀物の袋","shape":"sphere","x":24.62,"z":20.2,"w":0.65,"d":0.7,"h":0.8,"c":"#D8C29A","solid":true},{"what":"配給用テーブル","shape":"box","x":26.5,"z":18.06,"w":0.8,"d":1.8,"h":0.85,"c":"#C49B72","solid":true},{"what":"支援物資のかご","shape":"cylinder","x":26.0,"z":16.28,"w":0.75,"d":0.75,"h":0.55,"c":"#BDA16E","solid":true},{"what":"相談用椅子","shape":"box","x":24.6,"z":18.06,"w":0.6,"d":0.6,"h":0.8,"c":"#83A76C","solid":true},{"what":"福祉案内板","shape":"box","x":31.0,"z":15.93,"w":0.15,"d":1.2,"h":1.2,"c":"#83A76C","solid":true}],"counter":{"u":0.5,"v":0.7,"w":4.0}},{"id":"kaikei","name":"会計課・役場の金庫","x0":26,"z0":0,"x1":40,"z1":10,"side":"W","dc":5,"dw":2.0,"floor":"#D4C5AC","accent":"#D9AA4B","sbg":"#D9AA4B","sfg":"#173A2C","f":[{"what":"金庫","shape":"box","x":37.38,"z":9.15,"w":1.3,"d":1.1,"h":1.8,"c":"#6E817A","solid":true},{"what":"会計帳簿の棚","shape":"box","x":28.1,"z":8.6,"w":0.6,"d":2.2,"h":1.9,"c":"#8B6C4B","solid":true},{"what":"帳簿の束","shape":"box","x":30.38,"z":6.5,"w":0.65,"d":0.45,"h":0.3,"c":"#7899A0","solid":true},{"what":"硬貨の展示瓶","shape":"cylinder","x":32.12,"z":6.5,"w":0.35,"d":0.35,"h":0.55,"c":"#E5B64C","solid":true},{"what":"事務机","shape":"box","x":30.38,"z":2.5,"w":1.5,"d":0.8,"h":0.8,"c":"#B58B59","solid":true},{"what":"事務椅子","shape":"cylinder","x":30.38,"z":1.62,"w":0.55,"d":0.55,"h":0.65,"c":"#6E817A","solid":true},{"what":"予算掲示板","shape":"box","x":37.38,"z":0.38,"w":1.4,"d":0.15,"h":1.1,"c":"#315C3A","solid":true}],"counter":{"u":0.5,"v":0.7,"w":4.0}},{"id":"koban","name":"交番出張所・事件記録","x0":32,"z0":14.5,"x1":40,"z1":24,"side":"S","dc":36,"dw":2.0,"floor":"#C7D0C2","accent":"#7899A0","sbg":"#315C3A","sfg":"#FFF3C7","f":[{"what":"事件記録棚","shape":"box","x":33.5,"z":17.82,"w":2.4,"d":0.55,"h":1.9,"c":"#8B6C4B","solid":true},{"what":"事件資料の箱","shape":"box","x":32.6,"z":21.03,"w":0.6,"d":0.8,"h":0.45,"c":"#D5C9AA","solid":true},{"what":"聞き取り用テーブル","shape":"box","x":37.5,"z":17.47,"w":0.8,"d":1.5,"h":0.8,"c":"#B58B59","solid":true},{"what":"聞き取り用椅子","shape":"box","x":39.4,"z":17.47,"w":0.6,"d":0.6,"h":0.8,"c":"#7899A0","solid":true},{"what":"掲示用事件地図","shape":"box","x":33.0,"z":15.69,"w":0.15,"d":1.6,"h":1.2,"c":"#D8C39A","solid":true},{"what":"証拠品保管箱","shape":"box","x":39.35,"z":21.62,"w":0.7,"d":0.8,"h":0.6,"c":"#6E817A","solid":true},{"what":"壁掛け時計","shape":"cylinder","x":32.5,"z":19.25,"w":0.12,"d":0.5,"h":0.5,"c":"#FFF3C7","solid":false}],"counter":{"u":0.5,"v":0.7,"w":4.0}},{"id":"kiroku","name":"記録室・森の公文書館","x0":0,"z0":14.5,"x1":8,"z1":24,"side":"S","dc":4,"dw":2.0,"floor":"#CBBCA4","accent":"#9B8EBA","sbg":"#76678F","sfg":"#FFF3C7","f":[{"what":"公文書棚","shape":"box","x":6.4,"z":17.82,"w":2.6,"d":0.6,"h":2.1,"c":"#8B6C4B","solid":true},{"what":"公文書棚","shape":"box","x":6.4,"z":16.61,"w":2.6,"d":0.6,"h":2.1,"c":"#8B6C4B","solid":true},{"what":"書類箱","shape":"box","x":0.57,"z":21.68,"w":0.55,"d":0.65,"h":0.4,"c":"#D8C39A","solid":true},{"what":"閲覧用机","shape":"box","x":2.5,"z":18.72,"w":0.8,"d":1.6,"h":0.8,"c":"#A78362","solid":true},{"what":"閲覧用椅子","shape":"cylinder","x":0.57,"z":18.72,"w":0.55,"d":0.55,"h":0.6,"c":"#9B8EBA","solid":true},{"what":"古い巻物の筒","shape":"cylinder","x":0.53,"z":17.67,"w":0.45,"d":0.45,"h":0.75,"c":"#D6B96D","solid":true},{"what":"年表掲示板","shape":"box","x":7.4,"z":19.25,"w":0.15,"d":1.8,"h":1.2,"c":"#76678F","solid":true}],"counter":{"u":0.5,"v":0.7,"w":4.0}},{"id":"jumin","name":"住民課・住民登録","x0":8,"z0":14.5,"x1":16,"z1":24,"side":"S","dc":12,"dw":2.0,"floor":"#D5CBB3","accent":"#E6A9A1","sbg":"#E6A9A1","sfg":"#173A2C","f":[{"what":"登録書類の棚","shape":"box","x":8.8,"z":18.06,"w":0.55,"d":2.2,"h":1.8,"c":"#9B8EBA","solid":true},{"what":"住民台帳","shape":"box","x":8.62,"z":20.2,"w":0.65,"d":0.5,"h":0.25,"c":"#D6B96D","solid":true},{"what":"申請用テーブル","shape":"box","x":14.7,"z":17.47,"w":2,"d":0.85,"h":0.8,"c":"#B58B59","solid":true},{"what":"申請用椅子","shape":"cylinder","x":8.55,"z":16.4,"w":0.5,"d":0.5,"h":0.6,"c":"#E6A9A1","solid":true},{"what":"申請用椅子","shape":"cylinder","x":15.45,"z":16.4,"w":0.5,"d":0.5,"h":0.6,"c":"#E6A9A1","solid":true},{"what":"住民案内板","shape":"box","x":15.2,"z":19.25,"w":0.15,"d":1.5,"h":1.3,"c":"#E6A9A1","solid":true},{"what":"記念写真用の額","shape":"box","x":8.85,"z":23.41,"w":1.1,"d":0.12,"h":0.8,"c":"#D6B96D","solid":false}],"counter":{"u":0.5,"v":0.7,"w":4.0}},{"id":"senkyo","name":"選挙管理委員会・投票室","x0":16,"z0":14.5,"x1":24,"z1":24,"side":"S","dc":20,"dw":2.0,"floor":"#D4CBB9","accent":"#8AA9C0","sbg":"#527A98","sfg":"#FFF3C7","f":[{"what":"投票箱","shape":"box","x":16.75,"z":17.67,"w":0.9,"d":0.9,"h":1,"c":"#527A98","solid":true},{"what":"記載台","shape":"box","x":16.7,"z":19.78,"w":0.8,"d":1.4,"h":1.05,"c":"#B58B59","solid":true},{"what":"選挙資料棚","shape":"box","x":22.7,"z":17.82,"w":2,"d":0.55,"h":1.8,"c":"#8B6C4B","solid":true},{"what":"候補者一覧板","shape":"box","x":23.62,"z":19.25,"w":0.15,"d":1.8,"h":1.3,"c":"#527A98","solid":true},{"what":"投票用紙の箱","shape":"box","x":16.6,"z":21.36,"w":0.6,"d":0.7,"h":0.5,"c":"#FFF3C7","solid":true},{"what":"待機椅子","shape":"box","x":16.6,"z":16.61,"w":0.6,"d":0.6,"h":0.8,"c":"#8AA9C0","solid":true},{"what":"壁掛け時計","shape":"cylinder","x":23.64,"z":21.89,"w":0.12,"d":0.5,"h":0.5,"c":"#FFF3C7","solid":false}],"counter":{"u":0.5,"v":0.7,"w":4.0}}],"lights":[{"x":7.14,"z":5.45,"c":"#FFE2A8","i":1.1},{"x":20.0,"z":4.36,"c":"#FFE8B8","i":1.2},{"x":32.86,"z":5.45,"c":"#FFE2A8","i":1.1},{"x":7.14,"z":19.64,"c":"#D8E8C6","i":1},{"x":20.0,"z":19.64,"c":"#FFE8B8","i":1.2},{"x":32.86,"z":19.64,"c":"#C9E5F2","i":1}]};
+HALL.W=HR.W;HALL.D=HR.D;HALL.zone=null;
+function hRoomAt(x,z){var p=[x+HALL.W/2,HALL.D/2-z];for(var i=0;i<HR.rooms.length;i++){var r=HR.rooms[i];if(p[0]>=r.x0-.05&&p[0]<=r.x1+.05&&p[1]>=r.z0-.05&&p[1]<=r.z1+.05)return r}return null}
 function hallBuild(){var O=ROOM.objs;O.forEach(function(m){scene.remove(m);if(m.material&&m.material.dispose)m.material.dispose()});O.length=0;HALL.cols=[];HALL.deps=[];HALL.staff=[];
-  var X=HALL.X,Z=HALL.Z,B=new THREE.BoxGeometry(1,1,1),C=new THREE.CylinderGeometry(1,1,1,12),S=new THREE.SphereGeometry(1,10,8);
+  var X=HALL.X,Z=HALL.Z,B=new THREE.BoxGeometry(1,1,1),C=new THREE.CylinderGeometry(1,1,1,14),S=new THREE.SphereGeometry(1,12,9);
   var put=function(geo,mat,x,y,z,sx,sy,sz,ry){var m=new THREE.Mesh(geo,mat);m.position.set(X+x,y,Z+z);m.scale.set(sx,sy,sz);if(ry)m.rotation.y=ry;scene.add(m);O.push(m);return m};
   var box=function(c,x,y,z,sx,sy,sz){return put(B,hMat(c),x,y,z,sx,sy,sz)},solid=function(x,z,hw,hd){HALL.cols.push({x:x,z:z,hw:hw,hd:hd})};
-  var plate=function(tex,x,y,z,w,h){return put(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,fog:false}),x,y,z,1,1,1)};
-  var W=HALL.W,D=HALL.D,hw=W/2,hd=D/2;
-  /* 床（板張り）と、壁（漆喰＋腰板0.8m）。入口は手前中央 2m */
-  var fl=put(new THREE.PlaneGeometry(W,D),new THREE.MeshLambertMaterial({map:hFloorTex(),fog:false,emissive:col(0x3a2a18)}),0,0,0,1,1,1);fl.rotation.x=-Math.PI/2;
-  var wall=function(x,z,len,rot,inward){put(B,hMat(0xD8C39A),x,1.7,z,len,3.4,.2,rot);var o=inward*.11;put(B,hMat(0x86684B),x+(rot?o:0),.4,z+(rot?0:o),len,.8,.04,rot)};
-  wall(0,-hd,W,0,1);wall(-hw,0,D,Math.PI/2,1);wall(hw,0,D,Math.PI/2,-1);wall(-(1+(hw-1)/2),hd,hw-1,0,-1);wall(1+(hw-1)/2,hd,hw-1,0,-1);
-  box(0x78573D,0,2.25,hd,2.3,.18,.24);box(0x78573D,-1.1,1.1,hd,.14,2.3,.26);box(0x78573D,1.1,1.1,hd,.14,2.3,.26); /* 入口の枠 */
-  /* 窓（左右の壁）・柱・時計 */
-  [-3,1,4].forEach(function(z){[[-hw+.11,1],[hw-.11,-1]].forEach(function(q){box(0x78573D,q[0],1.75,z,.08,1.36,1.56);box(0x354B48,q[0]+q[1]*.03,1.75,z,.06,1.2,1.4)})});
-  [[-hw+.2,-hd+.2],[hw-.2,-hd+.2],[-hw+.2,hd-.2],[hw-.2,hd-.2]].forEach(function(p){box(0x8B6847,p[0],1.7,p[1],.18,3.4,.18)});
-  var ck=put(C,hMat(0x76543B),0,2.75,-hd+.14,.24,.08,.24);ck.rotation.x=Math.PI/2;
-  put(new THREE.CircleGeometry(.2,24),new THREE.MeshBasicMaterial({map:hTex(new Date(Date.now()+9*3600e3).toISOString().slice(11,16),128,128,'#F4E8CE','#3a2a1a',40),fog:false}),0,2.75,-hd+.19,1,1,1);
-  /* 部署ごとの窓口（カウンター・天板・札・書類・卓上ランプ） */
-  HDEP.forEach(function(d){var p=hl(d[2],d[3]),cx=p[0],cz=p[1],w=d[4],sw=Math.min(2.4,w*.7);
-    box(d[5],cx,.41,cz,w,.82,.65);box(d[6],cx,.9,cz,w+.08,.1,.75);solid(cx,cz,w/2+.04,.38);
-    box(0x5e4129,cx,2.25,cz-.08,sw+.08,.58,.04);plate(hTex(d[1],512,108,d[7],d[8],70),cx,2.25,cz-.05,sw,.5);
-    box(0x5e4129,cx-sw*.42,2.9,cz-.08,.03,.7,.03);box(0x5e4129,cx+sw*.42,2.9,cz-.08,.03,.7,.03);
-    for(var k=0;k<3;k++)box([0xF4EEDC,0xE9DFC4,0xF8F3E6][k],cx-w/2+.45,.97+k*.025,cz+.05,.32,.02,.24);
-    put(C,hMat(0x2f2a24),cx+w/2-.4,1.1,cz-.05,.02,.24,.02);put(S,hMat(0xFFD99A,{glow:.9}),cx+w/2-.4,1.25,cz-.05,.1,.07,.1);
-    HALL.deps.push({id:d[0],name:d[1],label:d[9],x:cx,z:cz+.95})});
-  var P=function(id){var d=HDEP.find(function(q){return q[0]===id}),p=hl(d[2],d[3]);return {x:p[0],z:p[1],w:d[4]}};
-  /* 記録室: 高さ2.1mの記録棚を2つ（本の背は5色） */
-  var k1=P('kiroku'),cs=[0x2f5c84,0xa83c32,0x3e8a55,0xd8a85b,0x6b4bb0];[-1,1].forEach(function(s){var sx=k1.x+s*.9,sz=-hd+.3;box(0x78563C,sx,1.05,sz,1.6,2.1,.35);solid(sx,sz,.8,.2);
-    for(var r=0;r<4;r++)for(var b=0;b<6;b++)box(cs[(b+r+s+3)%5],sx-.62+b*.25,.3+r*.48,sz+.12,.18,.3+((b*5+r)%3)*.04,.16)});
-  /* 住民課: 住民票ファイル棚と「IDとパスワード」の案内板 */
-  var j1=P('jumin');box(0x7a5634,j1.x-.9,.9,-hd+.3,1.2,1.8,.35);solid(j1.x-.9,-hd+.3,.6,.2);for(var i=0;i<8;i++)box(0xEDE3C8,j1.x-1.38+i*.14,1.2,-hd+.45,.1,.3,.06);
-  plate(hTex('IDとパスワード\nどの端末からでも入れる',512,256,'#F4ECD4','#315C3A',64),j1.x+.9,1.6,-hd+.13,1.1,.55);
-  /* 選挙管理委員会: 投票箱と候補の掲示板 */
-  var s1=P('senkyo'),bx=hl(13.5,7.2);box(0x5C5145,bx[0],.45,bx[1],.55,.9,.55);box(0x2f2a24,bx[0],.91,bx[1],.3,.02,.05);solid(bx[0],bx[1],.3,.3);
-  var cands=(V15.ballot&&V15.ballot.cands||[]).slice(0,5),btxt=cands.length?'投票中\n'+cands.map(function(c,i){return (i+1)+'. '+String(c.title).slice(0,9)}).join('　'):'いまは投票していない';
-  box(0x755237,s1.x,1.75,-hd+.16,2.1,1.35,.12);plate(hTex(btxt,600,380,'#E8D9B9','#2c3b2f',52),s1.x,1.75,-hd+.23,2.0,1.25);
-  /* 産業課: 市場の黒板・野菜の木箱・パンかご（売店） */
-  var g1=P('sangyo');box(0x304538,g1.x,1.75,g1.z-.55,1.6,.9,.05);plate(hTex('市場の値段\nパン15・野菜8・木の実3',512,280,'#304538','#F4F1E6',58),g1.x,1.75,g1.z-.52,1.5,.8);
-  box(0x8B6A45,g1.x-1.1,1.02,g1.z+.05,.45,.16,.3);for(i=0;i<3;i++)put(S,hMat(0xD77A3A),g1.x-1.25+i*.15,1.13,g1.z+.05,.07,.07,.07);
-  box(0xA77B50,g1.x+1.15,1.0,g1.z+.05,.5,.1,.32);for(i=0;i<3;i++)put(S,hMat(0xB97942),g1.x+1.0+i*.15,1.1,g1.z+.05,.09,.06,.07);
-  /* 福祉課: 食糧庫の残り表示と配給かご */
-  var f1=P('fukushi'),food=HALL.cache&&HALL.cache.town&&HALL.cache.town.food!=null?HALL.cache.town.food:(V15.food!=null?V15.food:40);
-  plate(hTex('食糧庫\nのこり '+food+'食',512,256,'#F4ECD4','#7A8560',70),f1.x,1.6,f1.z-.36,1.2,.6);box(0x9B6E4C,f1.x+.7,1.03,f1.z+.05,.4,.18,.3);
-  /* 会計課: 予算の表示板とコインの小皿・税金の箱 */
-  var a1=P('kaikei');plate(hTex('役場のお金\n'+((HALL.cache&&HALL.cache.town&&HALL.cache.town.coin)||0)+' フカ',512,256,'#F4ECD4','#806638',70),a1.x,1.6,a1.z-.36,1.3,.6);
-  put(C,hMat(0xC9A24A),a1.x+.6,.97,a1.z+.05,.12,.02,.12);box(0x5C5145,a1.x-.7,1.1,a1.z+.05,.3,.3,.25);
-  /* 交番出張所: 事件の記録ボード・警察帽・ケイの椅子 */
-  var c1=P('koban'),open1=((HALL.cache&&HALL.cache.cases)||[]).filter(function(c){return c.status!=='解決'}).length;
-  box(0x2b3f66,c1.x,1.75,c1.z-.55,1.5,.9,.05);plate(hTex('事件の記録\n'+open1+'件 調べ中',512,280,'#2b3f66','#F4F1E6',62),c1.x,1.75,c1.z-.52,1.4,.8);
-  put(C,hMat(0x2B3F66),c1.x-.9,1.0,c1.z+.05,.12,.06,.12);box(0x5e4129,c1.x+.6,.45,c1.z-.75,.45,.9,.45);
-  /* 待合: ベンチ2つ・番号札の機械・植物・案内板・ごみ箱 */
-  [[5.0,1.0],[11.5,1.0]].forEach(function(b){var p=hl(b[0],b[1]);box(0xA77B50,p[0],.46,p[1],2.4,.06,.45);box(0xA77B50,p[0],.7,p[1]+.2,2.4,.45,.05);[-1,1].forEach(function(s){box(0x594333,p[0]+s*1.05,.22,p[1],.08,.44,.4)});solid(p[0],p[1],1.25,.28)});
-  var nm=hl(6.2,.6);box(0xBCA785,nm[0],.55,nm[1],.35,1.1,.35);box(0x315C3A,nm[0],.95,nm[1]-.18,.25,.16,.02);solid(nm[0],nm[1],.2,.2);
-  [[.8,1.0],[15.2,1.0],[.8,11.2],[15.2,11.2]].forEach(function(q){var p=hl(q[0],q[1]);put(C,hMat(0x9B6E4C),p[0],.15,p[1],.18,.3,.18);[[0,.75,0,.32],[.18,.95,.05,.22],[-.15,1.05,-.05,.2],[.05,.6,.15,.22]].forEach(function(l){put(S,hMat(0x527744),p[0]+l[0],l[1],p[1]+l[2],l[3],l[3],l[3])});solid(p[0],p[1],.3,.3)});
-  var gb=hl(8,6.5);box(0x755237,gb[0],1.25,gb[1],2.1,1.35,.12);box(0x594333,gb[0]-.8,.3,gb[1],.08,.6,.08);box(0x594333,gb[0]+.8,.3,gb[1],.08,.6,.08);
-  plate(hTex('森の役場 案内\n奥: 記録室・住民課・選挙管理委員会\n手前: 産業課・福祉課・会計課・交番',600,380,'#E8D9B9','#2c3b2f',50),gb[0],1.25,gb[1]+.07,2.0,1.25);solid(gb[0],gb[1],1.08,.15);
-  var tb=hl(15.4,6);put(C,hMat(0x6B715C),tb[0],.22,tb[1],.15,.45,.15);
-  /* 灯り: 暖色の光だまりと、灯り4つ（光源は4つまで） */
-  [[4,6],[12,6],[4,10],[12,10]].forEach(function(q){var p=hl(q[0],q[1]),pool=put(new THREE.CircleGeometry(2.2,28),new THREE.MeshBasicMaterial({color:0xFFD99A,transparent:true,opacity:.12,depthWrite:false,fog:false}),p[0],.012,p[1],1,1,1);pool.rotation.x=-Math.PI/2});
-  [[4,6],[12,6],[8,9.5],[8,2.5]].forEach(function(q){var p=hl(q[0],q[1]),L=new THREE.PointLight(0xFFD39A,1.2,9,1.4);L.position.set(X+p[0],2.9,Z+p[1]);scene.add(L);O.push(L)}); /* 天井は描かないので、吊り照明の形は置かない（カメラの通り道に入って視界をふさいだ） */
-  [[2.5,11.9],[12,11.9],[0.1,6],[15.9,6]].forEach(function(q){var p=hl(q[0],q[1]),ax=Math.abs(p[0])>7;put(S,hMat(0xFFD99A,{glow:1}),p[0]+(ax?(p[0]<0?.12:-.12):0),2.6,p[1]+(ax?0:.12),.12,.16,.12);box(0xD9B875,p[0]+(ax?(p[0]<0?.08:-.08):0),2.82,p[1]+(ax?0:.08),.26,.06,.26)}); /* 壁の灯り */
+  var plate=function(tex,x,y,z,w,h,ry){return put(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,fog:false}),x,y,z,1,1,1,ry)};
+  var W=HALL.W,D=HALL.D,hw=W/2,hd=D/2,WH=HR.wall_h,hexc=function(h){return parseInt(String(h).slice(1),16)};
+  var bp=function(x,z){return hl(x,z)}; /* 建物の座標（南西が原点・z は北）→ 部屋の中 */
+  /* 床: 全体（板張り）＋部屋ごとの色 */
+  var fl=put(new THREE.PlaneGeometry(W,D),new THREE.MeshLambertMaterial({map:hFloorTex(),fog:false,emissive:col(0x3a2a18)}),0,0,0,1,1,1);fl.rotation.x=-Math.PI/2;fl.material.map.repeat.set(W/2,D/2);
+  HR.rooms.forEach(function(r){var c=bp((r.x0+r.x1)/2,(r.z0+r.z1)/2),m=put(new THREE.PlaneGeometry(r.x1-r.x0-.2,r.z1-r.z0-.2),new THREE.MeshLambertMaterial({color:col(hexc(r.floor)),transparent:true,opacity:.55,depthWrite:false,fog:false}),c[0],.006,c[1],1,1,1);m.rotation.x=-Math.PI/2});
+  /* 壁: 外まわり（入口は南の真ん中）＋部屋の壁（扉の所は開ける）。同じ所に2枚立てない */
+  var done={},seg=function(ax,az,bx,bz){var k=[ax,az,bx,bz].map(function(v){return v.toFixed(2)}).join(',');if(done[k]||ax===bx&&az===bz)return;done[k]=1;
+      var p0=bp(ax,az),p1=bp(bx,bz),cx=(p0[0]+p1[0])/2,cz=(p0[1]+p1[1])/2,len=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]),rot=Math.abs(p1[0]-p0[0])<.01?Math.PI/2:0;
+      put(B,hMat(hexc(HR.wall)),cx,WH/2,cz,len+.2,WH,.2,rot);put(B,hMat(hexc(HR.wainscot)),cx,.42,cz,len+.22,.84,.24,rot);put(B,hMat(0x8B6847),cx,WH+.04,cz,len+.24,.08,.26,rot);
+      if(rot)solid(cx,cz,.12,len/2);else solid(cx,cz,len/2,.12)},
+    edge=function(ax,az,bx,bz,gap){if(!gap){seg(ax,az,bx,bz);return} /* gap=[中心, 幅]（その辺に沿った座標） */
+      if(az===bz){var a=Math.min(ax,bx),b=Math.max(ax,bx);seg(a,az,gap[0]-gap[1]/2,az);seg(gap[0]+gap[1]/2,az,b,az)}else{var a2=Math.min(az,bz),b2=Math.max(az,bz);seg(ax,a2,ax,gap[0]-gap[1]/2);seg(ax,gap[0]+gap[1]/2,ax,b2)}};
+  edge(0,0,W,0,[W/2,HR.entrance_w]);edge(0,D,W,D);edge(0,0,0,D);edge(W,0,W,D);
+  var key=function(v){return Math.round(v*100)/100};
+  HR.rooms.forEach(function(r){if(r.id==='lobby'||r.id==='corridor')return;
+    [['S',r.x0,r.z0,r.x1,r.z0],['N',r.x0,r.z1,r.x1,r.z1],['W',r.x0,r.z0,r.x0,r.z1],['E',r.x1,r.z0,r.x1,r.z1]].forEach(function(e){
+      var onOuter=(e[2]===0&&e[4]===0)||(e[2]===D&&e[4]===D)||(e[1]===0&&e[3]===0)||(e[1]===W&&e[3]===W);if(onOuter)return;
+      edge(key(e[1]),key(e[2]),key(e[3]),key(e[4]),e[0]===r.side?[r.dc,r.dw]:null)})});
+  /* 入口の枠 */
+  var en=bp(W/2,0);box(0x78573D,en[0],2.45,en[1],HR.entrance_w+.3,.2,.3);box(0x78573D,en[0]-HR.entrance_w/2-.08,1.2,en[1],.16,2.4,.3);box(0x78573D,en[0]+HR.entrance_w/2+.08,1.2,en[1],.16,2.4,.3);
+  /* 部屋ごと: 扉の上の看板（外向き）・家具・窓口カウンター・奥の壁の表示板 */
+  var dyn={kiroku:function(){var R=(HALL.cache&&HALL.cache.residents)||[];return '日誌\n毎晩22時に書かれる（'+R.filter(function(r){return r.alive}).length+'人）'},
+    jumin:function(){return 'IDとパスワード\nどの端末からでも入れる'},
+    senkyo:function(){var cands=(V15.ballot&&V15.ballot.cands||[]).slice(0,4);return cands.length?'投票中\n'+cands.map(function(c,i){return (i+1)+'. '+String(c.title).slice(0,8)}).join('　'):'いまは投票していない'},
+    sangyo:function(){return '市場の値段\nパン15・野菜8・木の実3　畑は1区画30'},
+    fukushi:function(){var f=HALL.cache&&HALL.cache.town&&HALL.cache.town.food!=null?HALL.cache.town.food:(V15.food!=null?V15.food:40);return '食糧庫\nのこり '+f+'食'},
+    kaikei:function(){return '役場のお金\n'+((HALL.cache&&HALL.cache.town&&HALL.cache.town.coin)||0)+' フカ'},
+    koban:function(){return '事件の記録\n'+(((HALL.cache&&HALL.cache.cases)||[]).filter(function(c){return c.status!=='解決'}).length)+'件 調べ中'}};
+  HR.rooms.forEach(function(r){var dep=HDEP.find(function(q){return q[0]===r.id}),U=r.side==='E'||r.side==='W'?r.z1-r.z0:r.x1-r.x0,V=r.side==='E'||r.side==='W'?r.x1-r.x0:r.z1-r.z0;
+    /* 部屋の向き: 扉から奥へ進む向き(fx,fz)と、その右手(rx,rz)。建物の座標で */
+    var fx={S:0,N:0,E:-1,W:1}[r.side],fz={S:1,N:-1,E:0,W:0}[r.side],rx=fz,rz=-fx;
+    var dx0=r.side==='S'||r.side==='N'?r.dc:(r.side==='E'?r.x1:r.x0),dz0=r.side==='E'||r.side==='W'?r.dc:(r.side==='S'?r.z0:r.z1);
+    var at=function(u,v){return [dx0+rx*u+fx*v,dz0+rz*u+fz*v]},ang=Math.atan2(-fx,fz),nx=-fx,nz=fz; /* ang: 扉の方を向く向き（部屋の中の座標で） */ /* 扉から u（右へ）・v（奥へ）メートル */
+    r.f.forEach(function(f){var p=bp(f.x,f.z),c=hexc(f.c),wall=f.d<=.2||f.w<=.2;
+      var y=wall?Math.max(1.5,f.h/2+.6):f.h/2;
+      if(f.shape==='cylinder')put(C,hMat(c),p[0],y,p[1],f.w/2,f.h,f.d/2);else if(f.shape==='sphere')put(S,hMat(c),p[0],f.what.indexOf('葉')>=0||f.what.indexOf('花冠')>=0?.45+f.h/2:f.h/2,p[1],f.w/2,f.h/2,f.d/2);else box(c,p[0],y,p[1],f.w,f.h,f.d);
+      if(f.what.indexOf('棚')>=0&&f.h>=1.5){var cs=[0x2f5c84,0xa83c32,0x3e8a55,0xd8a85b,0x6b4bb0],long=f.w>f.d;for(var k=0;k<3;k++)for(var b=0;b<5;b++){var o=(b-2)*(Math.max(f.w,f.d)*.17);box(cs[(b+k)%5],p[0]+(long?o:0),.35+k*.5,p[1]+(long?0:o),long?.14:Math.min(f.w,.5)+.02,.3,long?Math.min(f.d,.5)+.02:.14)}}
+      if(f.solid)solid(p[0],p[1],f.w/2,f.d/2)});
+    if(r.id==='corridor'){[[1.2,12.25],[W-1.2,12.25],[W/2-6.5,14.0],[W/2+6.5,14.0]].forEach(function(q){var p=bp(q[0],q[1]);put(C,hMat(0x9B6E4C),p[0],.18,p[1],.22,.36,.22);put(S,hMat(0x527744),p[0],.75,p[1],.42,.5,.42);solid(p[0],p[1],.25,.25)});return}
+    if(r.id==='lobby'){var ib=bp(20,7.9);HALL.deps.push({id:'annai',name:'総合案内',label:'案内（役場の全部）',x:ib[0],z:ib[1]+1.15});
+      var gb=bp(16.2,3.2);box(0x315C3A,gb[0],1.3,gb[1],2.3,1.3,.1);box(0x594333,gb[0]-.9,.33,gb[1],.08,.66,.08);box(0x594333,gb[0]+.9,.33,gb[1],.08,.66,.08);solid(gb[0],gb[1],1.15,.1);plate(hTex('森の役場 案内\n左: 産業課　右: 会計課\n奥の廊下: 記録室・住民課・選挙管理委員会・福祉課・交番',720,380,'#315C3A','#FFF3C7',52),gb[0],1.3,gb[1]+.06,2.2,1.2); /* 案内板は入口の左に立てる（ロビーの奥に立てると、廊下にいる時にカメラの前をふさいだ） */
+      var ck=bp(24,.14);put(new THREE.CircleGeometry(.3,24),new THREE.MeshBasicMaterial({map:hTex(new Date(Date.now()+9*3600e3).toISOString().slice(11,16),128,128,'#F4E8CE','#3a2a1a',40),fog:false}),ck[0],2.8,ck[1],1,1,1,Math.PI);
+      return}
+    if(!dep)return;
+    /* 扉の上の看板（廊下・ロビーの側から読める向き） */
+    var lt=at(0,0),l1=bp(lt[0],lt[1]);put(B,hMat(0x78573D),l1[0],(2.4+WH)/2,l1[1],Math.abs(fx)?.26:r.dw+.3,WH-2.4,Math.abs(fx)?r.dw+.3:.26);var sp=at(0,-.2),sg=bp(sp[0],sp[1]);plate(hTex(dep[1],600,130,r.sbg,r.sfg,76),sg[0],2.75,sg[1],2.3,.5,ang);
+    /* 窓口カウンター（扉から奥へ cv の所）。職員はその奥 */
+    var cw=r.counter.w,cv=r.counter.v*V,cp=at(0,cv),c0=bp(cp[0],cp[1]),cr=Math.abs(fx)>0?Math.PI/2:0;
+    put(B,hMat(dep[5]),c0[0],.5,c0[1],cw,1.0,.7,cr);put(B,hMat(dep[6]),c0[0],1.05,c0[1],cw+.1,.1,.8,cr);if(cr)solid(c0[0],c0[1],.4,cw/2+.05);else solid(c0[0],c0[1],cw/2+.05,.4);
+    for(var k=0;k<3;k++){var dp=at(-cw/2+.45,cv),d0=bp(dp[0],dp[1]);box([0xF4EEDC,0xE9DFC4,0xF8F3E6][k],d0[0],1.12+k*.025,d0[1],.32,.02,.24)}
+    var lp=at(cw/2-.4,cv),l0=bp(lp[0],lp[1]);put(C,hMat(0x2f2a24),l0[0],1.25,l0[1],.02,.26,.02);put(S,hMat(0xFFD99A,{glow:.9}),l0[0],1.4,l0[1],.1,.07,.1);
+    var fp=at(0,cv-1.05),f0=bp(fp[0],fp[1]);HALL.deps.push({id:r.id,name:dep[1],label:dep[9],x:f0[0],z:f0[1],room:r.id});
+    var stp=at(0,cv+.85),st0=bp(stp[0],stp[1]);r.staff=[st0[0],st0[1],ang];
+    /* 奥の壁の表示板（部署の数字） */
+    var bpz=at(0,V-.16),b0=bp(bpz[0],bpz[1]),bq=at(0,V-.21),b1=bp(bq[0],bq[1]);put(B,hMat(hexc(r.sbg)),b0[0],1.95,b0[1],2.3,1.25,.06,ang);plate(hTex(dyn[r.id]?dyn[r.id]():dep[1],640,340,'#F4ECD4',r.sbg,60),b1[0],1.95,b1[1],2.15,1.1,ang);
+  });
+  /* 灯り（チャッピーの6つ）と光だまり */
+  HR.lights.forEach(function(L){var p=bp(L.x,L.z),li=new THREE.PointLight(hexc(L.c),L.i*1.1,14,1.3);li.position.set(X+p[0],3.0,Z+p[1]);scene.add(li);O.push(li);
+    var pool=put(new THREE.CircleGeometry(2.6,28),new THREE.MeshBasicMaterial({color:hexc(L.c),transparent:true,opacity:.1,depthWrite:false,fog:false}),p[0],.012,p[1],1,1,1);pool.rotation.x=-Math.PI/2});
   /* 職員（森の住人と同じ帽子の人たち）と、ときどき座っているケイ */
-  var staff=[['jumin','g'],['sangyo','b'],['kaikei','p'],['senkyo','r']];if(Math.random()<.35||((V15.slot||0)>=10&&(V15.slot||0)<=16))staff.push(['koban','kei']);HALL.kei=staff.some(function(s){return s[1]==='kei'});
-  staff.forEach(function(s){var p=P(s[0]);if(!MDL.kino)return;var m=s[1]==='kei'?mesh3('kino',1,0,0,{h3:1.9,live:1,tint:0xd8dcf0,map:hatTex('b'),far:90,yaw:0}):chara('kino_'+s[1]);m.userData.off=true;m.position.set(X+p.x+(s[1]==='kei'?.6:.3),0,Z+p.z-.75);m.rotation.y=0;if(m.parent!==scene)scene.add(m);O.push(m);HALL.staff.push(m)});
+  var staff=[['jumin','g'],['sangyo','b'],['kaikei','p'],['senkyo','r'],['fukushi','g'],['kiroku','b']];if(Math.random()<.35||((V15.slot||0)>=10&&(V15.slot||0)<=16))staff.push(['koban','kei']);HALL.kei=staff.some(function(s){return s[1]==='kei'});
+  staff.forEach(function(s){var r=HR.rooms.find(function(q){return q.id===s[0]});if(!r||!r.staff||!MDL.kino)return;var m=s[1]==='kei'?mesh3('kino',1,0,0,{h3:1.9,live:1,tint:0xd8dcf0,map:hatTex('b'),far:90,yaw:0}):chara('kino_'+s[1]);m.userData.off=true;m.position.set(X+r.staff[0],0,Z+r.staff[1]);m.rotation.y=r.staff[2];if(m.parent!==scene)scene.add(m);O.push(m);HALL.staff.push(m)});
   ROOM.cols=[]}
 function hallData(cb){var now=Date.now();if(HALL.cache&&now-HALL.ct<60000){cb&&cb(HALL.cache);return}fetch(MORI+'/api/world?w=live',{cache:'no-store'}).then(function(r){return r.json()}).then(function(w){HALL.cache=w;HALL.ct=Date.now();V15.ballot=w.ballot||null;cb&&cb(w)},function(){cb&&cb(null)})}
 function yakEnter(){close();ROOM.kind='yakuba';document.body.classList.add('inroom');ROOM.x=HALL.X;ROOM.z=HALL.Z;ROOM.fy=0;bills.forEach(function(b){b.visible=false});if(G.talk)G.talk.visible=false;SAYS.forEach(function(q){q.s.visible=false});hallBuild();ROOM.on=true;ROOM.yaw0=CAM.yaw;ROOM.tilt0=CAM.tilt;CAM.yaw=0;CAM.tilt=0;ROOM.path=null;
-  var e=hl(8,.8);me.rx=e[0];me.rz=e[1];me.path=[];me.go=null;HALL.cam=null;
+  var e=hl(HALL.W/2,2.4);me.rx=e[0];me.rz=e[1];HALL.zone=null;me.path=[];me.go=null;HALL.cam=null;
   me.sp.visible=true;me.sp.rotation.x=0;me.yawT=Math.PI;if(uw)uw.style.opacity=0;
-  $('#mapbtn').textContent='外に出る';actBtn.textContent='案内（役場の全部）';actBtn.hidden=false;actOn=null;if(typeof rst!=='undefined'&&rst)rst.hidden=true;$('#hint').textContent='森の役場の中　丸で歩く・なぞると見回せる・窓口に近づくと使える';$('#hint').hidden=false;logEv('yakuba:in');
+  $('#mapbtn').textContent='外に出る';actBtn.textContent='案内（役場の全部）';actBtn.hidden=false;actOn=null;if(typeof rst!=='undefined'&&rst)rst.hidden=true;$('#hint').textContent='森の役場の中　左右に産業課と会計課・奥の廊下に5つの部屋　窓口に近づくと使える';$('#hint').hidden=false;logEv('yakuba:in');
   hallData(function(w){if(w&&ROOM.on&&ROOM.kind==='yakuba'){var rx=me.rx,rz=me.rz;hallBuild();me.rx=rx;me.rz=rz}})}
 function yakNear(){var best=null,bd=1.7;HALL.deps.forEach(function(d){var dd=Math.hypot(me.rx-d.x,me.rz-d.z);if(dd<bd){bd=dd;best=d}});return best}
 function yakLabel(){var n=yakNear();return n?n.label:'案内（役場の全部）'}
@@ -1993,7 +2006,7 @@ function stepHall(dt,t){var jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y+(keys.d?
     me.rx=Math.max(-hw,Math.min(hw,me.rx));me.rz=Math.max(-hd,Math.min(hd,me.rz));if(ROOM.path&&Math.hypot(me.rx-ox,me.rz-oz)<SPEED*.55*dt*.3)ROOM.path=null}
   var hop=dirPose(me,dx,dz,mv,dt,7.5),wx=HALL.X+me.rx,wz=HALL.Z+me.rz;me.sp.visible=true;me.sp.material.opacity=1;me.sp.rotation.x=0;me.sp.position.set(wx,hop,wz);me.moving=mv;
   /* 後ろから追いかけるカメラ（高さ2.8・後ろ3.6・注視0.85）。壁の外に出そうなら手前に寄せる */
-  var sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),lim=function(v,m){return Math.max(-m,Math.min(m,v))},tx=lim(me.rx+sy*4.2,HALL.W/2-.25),tz=lim(me.rz+cy*4.2,HALL.D/2-.25),dist=Math.hypot(tx-me.rx,tz-me.rz),up=Math.max(0,2.6-dist)*1.3; /* 壁ぎわで近づいた分だけ上から見下ろす */
+  var sy=Math.sin(CAM.yaw),cy=Math.cos(CAM.yaw),zr=hRoomAt(me.rx,me.rz)||HALL.zone;if(zr)HALL.zone=zr;var zb=zr?[zr.x0-HALL.W/2+.3,zr.x1-HALL.W/2-.3,HALL.D/2-zr.z1+.3,HALL.D/2-zr.z0-.3]:[-HALL.W/2+.25,HALL.W/2-.25,-HALL.D/2+.25,HALL.D/2-.25],cl=function(v,a,b){return Math.max(a,Math.min(b,v))},tx=cl(me.rx+sy*4.2,zb[0],zb[1]),tz=cl(me.rz+cy*4.2,zb[2],zb[3]),cr0=hRoomAt(me.rx+sy*4.2,me.rz+cy*4.2);if(zr&&cr0&&cr0!==zr&&/lobby|corridor/.test(zr.id)&&/lobby|corridor/.test(cr0.id)){tx=me.rx+sy*4.2;tz=me.rz+cy*4.2} /* v0.22 カメラは今いる部屋の中だけ（ロビーと廊下はつながっているので行き来できる） */var dist=Math.hypot(tx-me.rx,tz-me.rz),up=Math.max(0,2.6-dist)*1.3; /* 壁ぎわで近づいた分だけ上から見下ろす */
   var k=Math.min(1,dt*8);if(!HALL.cam)HALL.cam={x:tx,z:tz};HALL.cam.x+=(tx-HALL.cam.x)*k;HALL.cam.z+=(tz-HALL.cam.z)*k;
   var sh=sheetOpen?1.6:0;HALL.up=(HALL.up||0)+(up-(HALL.up||0))*k;camera.position.set(HALL.X+HALL.cam.x,3.1+sh+HALL.up,HALL.Z+HALL.cam.z);camera.lookAt(wx-sy*sh*1.2,.85,wz-cy*sh*1.2);camera.updateMatrixWorld();
   if(!sheetOpen&&land.hidden){var al=yakLabel();if(actBtn.hidden||actBtn.textContent!==al){actBtn.textContent=al;actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
@@ -2013,7 +2026,7 @@ function hallSheet(id){var w=HALL.cache;
   else if(id==='koban'){var cs=(w.cases||[]).slice(-8).reverse();h='<h2>交番出張所</h2>'+(HALL.kei?'<p>ケイ「本日もここで見回りの記録をつけておるであります」</p>':'')+'<p class="note">盗みなどの事件。犯人は解決するまで分からない</p>'+
     (cs.map(function(c){return '<p>'+c.day+'日目　'+esc(c.text||c.what||'事件')+'　<b>'+esc(c.status||'')+'</b>'+(c.culprit?'（'+esc(nm(c.culprit))+'）':'')+'</p>'}).join('')||'<p class="note">事件はまだ起きていない。森は平和</p>')}
   show('yaku2',h)}
-function yakAct(){var n=yakNear();$('#hint').hidden=true;if(!n){yakubaOpen();return}logEv('yakuba:'+n.id);hallSheet(n.id)}
+function yakAct(){var n=yakNear();$('#hint').hidden=true;if(!n||n.id==='annai'){yakubaOpen();return}logEv('yakuba:'+n.id);hallSheet(n.id)}
 /* ===== v0.19 「住人が2時間の予定を森で演じる」 =====
    10/8 主「2時間おきに考えるって何してんの？」→ サーバーが住人ごとに「次の2時間にやること」を最大2つ返す（/api/forest の doing。AI代は増えない）
    画面では 1つ目（考えた刻）→ 2つ目（次の刻）の順に、その場所へ歩いて行って演じる。名前の札の下に「いま何をしているか」の札
@@ -2442,7 +2455,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.21',APP_BUILD='1010-1530',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.22',APP_BUILD='1010-1700',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
