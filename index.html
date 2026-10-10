@@ -36,11 +36,12 @@ img{max-width:100%}
 html,body{height:100%}
 /* v0.20.3 拡大の止め（10/10 主「なんで途中で拡大になるのー」） */
 input,textarea,select{font-size:16px!important}
+#sheet .tprow{margin-top:6px;gap:6px;flex-wrap:wrap;justify-content:flex-end}#sheet .tprow button{flex:0 0 auto;width:auto;min-height:36px;padding:6px 14px;font-size:13px}
 /* v0.20.4 キーボードを出しても森が縮まない（10/10 主「この問題どうする？」） */
 html body #app{height:var(--apph,100%)}
 body.kb #sheet{position:fixed;left:8px;right:8px;top:auto;bottom:calc(var(--kbb,0px) + 6px);max-height:calc(var(--kbh,60vh) - 14px);z-index:30;animation:none}
-body.kb #sheet .stamps,body.kb #sheet .note,body.kb #sheet label.ai,body.kb #sheet .row:not(:focus-within),body.kb #sheet .netp{display:none}
-body.kb #sheet .log{max-height:calc(var(--kbh,60vh) * 0.3);min-height:0}
+body.kb #sheet>*:not(.log):not(.row.say){display:none!important}body.kb #sheet>.row.say:not(:focus-within){display:none!important}body.kb #sheet{padding-top:10px;padding-bottom:10px}
+body.kb #sheet .log{max-height:min(calc(var(--kbh,60vh) * 0.3),150px);min-height:0}
 body{background:var(--night);color:var(--cream);font-family:var(--body);font-weight:500;overflow:hidden;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
 #app{height:100%;max-width:560px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;flex-direction:column;gap:8px}
@@ -270,7 +271,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.20.4';
+var VERSION='v0.21';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1080,11 +1081,11 @@ function motesStep(t,under){var i,q,u,bx=7,by=4.5;if(!G.motes){G.motes=[];for(i=
       q.scale.setScalar(.05+((i*13)%7)/140);q.renderOrder=2.4;q.visible=false;q.userData={ox:((i*73)%100)/100*bx,oy:((i*41)%100)/100*by,oz:((i*59)%100)/100*bx,s:.03+((i*17)%10)/200};scene.add(q);G.motes.push(q)}}
   for(i=0;i<G.motes.length;i++){q=G.motes[i];if(!under){q.visible=false;continue}u=q.userData;q.visible=true;
     q.position.set(me.wx+((((u.ox+t*.001*u.s*3-me.wx)%bx)+bx)%bx)-bx/2,DV.y+((((u.oy+t*.001*u.s-DV.y)%by)+by)%by)-by/2,me.wz+((((u.oz-t*.001*u.s*2-me.wz)%bx)+bx)%bx)-bx/2)}}
-function rockPush(){var i,q,dx,dz,d,rr;for(i=0;i<ROCKS.length;i++){q=ROCKS[i];if(DV.y-.35>q.top)continue;dx=me.x-q.x;dz=me.z-q.z;d=Math.hypot(dx,dz);rr=q.rr+.3;if(d<rr){if(d<1e-4){dx=0;dz=1;d=1}me.x=q.x+dx/d*rr;me.z=q.z+dz/d*rr}}}
+function rockPush(){var i,q,dx,dz,d,rr;for(i=0;i<ROCKS.length;i++){q=ROCKS[i];if(DV.y-.35>q.top)continue;dx=me.x-q.x;dz=me.z-q.z;d=Math.hypot(dx,dz);rr=q.rr/.8+.75;if(d<rr){if(d<1e-4){dx=0;dz=1;d=1}me.x=q.x+dx/d*rr;me.z=q.z+dz/d*rr}}}
 function diveStep(dt,t,mh,dep){
   if(!DV.on){if(dep>1.75&&!me.onB&&!intro&&me.sp)diveIn();else return}
   else if(dep<1.45){diveOut();return}
-  var top=WS+.22,bot=mh+.55,jl=DV.jl,depth,ri,rq;for(ri=0;ri<ROCKS.length;ri++){rq=ROCKS[ri];if(Math.hypot(me.x-rq.x,me.z-rq.z)<rq.rr+.2)bot=Math.max(bot,rq.top+.4)}
+  var top=WS+.22,bot=mh+.55,jl=DV.jl,depth,ri,rq;for(ri=0;ri<ROCKS.length;ri++){rq=ROCKS[ri];if(Math.hypot(me.x-rq.x,me.z-rq.z)<rq.rr/.8+.5)bot=Math.max(bot,rq.top+.6)}
   if(DV.black>0){DV.black-=dt;if(DV.black<1.1&&DV.y<top){DV.y=top;DV.breath=DV.MAX*.4;DV.pitch=0}if(DV.black<=.5)$('#dvk').style.opacity=0;DV.vy=0;jl=0}
   if(DV.rise){DV.vy=3.2;if(DV.y>=top-.01)DV.rise=false}
   else if(jl<.05&&DV.y>WS-1.2&&DV.charge<0)DV.vy=Math.max(DV.vy,.5); /* 水面の近くで何もしていないと、体が浮く */
@@ -1336,7 +1337,7 @@ function stepPeople(dt,t,mw,mh){var i,R2,dx,dz,d,near=null,nd=4.6,p,y,a,c,s2,gx,
   [npc,cop].forEach(function(q){var dq=Math.hypot(q.x-me.x,q.z-me.z);if(dq<nd){nd=dq;near=q}});
   if(G.talk){if(near&&talkable){p=wpos(near);G.talk.position.set(p[0],p[1]+2.35+Math.sin(t*.004)*.05,p[2]);G.talk.userData.who=near;G.talk.visible=true}else G.talk.visible=false}
   var now=performance.now();for(i=SAYS.length-1;i>=0;i--){var sy2=SAYS[i];if(now>sy2.until){scene.remove(sy2.s);sy2.s.material.map.dispose();sy2.s.material.dispose();SAYS.splice(i,1);continue}p=wpos(sy2.o);sy2.s.position.set(p[0],p[1]+(sy2.o.bubY||2.3),p[2])}}
-function show(id,h){sheetOpen=id;sheet.innerHTML='<button class="sub" id="x" data-a="close">とじる</button>'+h;sheet.hidden=false}
+function show(id,h){var fid=document.body.classList.contains('kb')&&document.activeElement&&document.activeElement.id;sheetOpen=id;sheet.innerHTML='<button class="sub" id="x" data-a="close">とじる</button>'+h;sheet.hidden=false;if(fid){var fe=document.getElementById(fid);if(fe)try{fe.focus({preventScroll:true})}catch(e){fe.focus()}}} /* v0.21 送った後も入力欄にキーボードを残す */
 function close(){sheetOpen=null;sheet.hidden=true}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
@@ -1405,6 +1406,7 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='greet'){S.like++;save();if(sheetOpen==='chat'&&chatWho===npc){npc.log.push(['me','（挨拶した）']);npc.log.push(['bot','やあ　これで'+S.like+'回目　今は'+stageName()+'だね']);sayOver(npc,'やあ　今は'+stageName()+'だね',4200);renderChat()}else open('npc');return}
   if(a.indexOf('st:')===0){chatSend('st',+a.slice(3));return}
   if(a.indexOf('give19:')===0){give19(+a.slice(7));return}
+  if(a.indexOf('tp:')===0){var tq=a.split(':');tpAct(tq[1],+tq[2]);return}
   if(a.indexOf('q15:')===0){q15Act(a.slice(4));return}
   if(a==='jumin'){juminOpen();return}if(a==='jumin:make'){juminMake();return}if(a==='jumin:restore'){J17.view='restore';J17.err='';juminDraw();return}if(a==='jumin:back'){J17.view='make';J17.err='';juminDraw();return}if(a==='jumin:login'){J17.view='login';J17.err='';juminDraw();return}if(a==='jumin:loginGo'){juminLogin();return}if(a==='jumin:restoreGo'){juminRestore();return}if(a==='jumin:copy'){juminCopy();return}if(a==='jumin:done'){juminDone();return}
   if(a==='bag'){bagOpen();return}if(a.indexOf('bag:')===0){bagAct(a.slice(4));return}  if(a==='my'){myOpen();return}if(a.indexOf('my:')===0){myAct(a.slice(3));return}
@@ -2254,13 +2256,34 @@ function askOf(id){var t=resOf(id),l=LOTS[id];return t?Math.round(TK[t]*TW[l.rin
    直し: 売り物でない土地を lotLock で1か所にまとめる（タッチ・地図・引っ越し・買い取りの全部がここを通る）。畑は「畑の板」を出す */
 function lotLock(id){if(!V15.on)return '';if(SKIPLOT[id])return id===YAKUBA_LOT?'役場':'畑';if(AIL[id])return '住人';if(!lotInZone(id))return '森';return ''}
 function fieldOf(lot){return FARM.fields.filter(function(F){return F.lot===lot})[0]}
-function farmName(id){var o=AIBY[id];return o?o.name:(id||'')}
-function farmOpen(lot){var F=fieldOf(lot)||FARM.fields[0];if(!F){show('farm','<h2>畑</h2><p>畑はまだ無い</p>');return}
-  var by={};V15.plots.forEach(function(p){by[p.no]=p});
-  var rows=FARM.plots.filter(function(f){return f.F===F}).map(function(f){var p=by[f.no]||{},own=p.owner,use=p.user||own,sale=own==='yakuba'||(V15.ok&&!use);
-    return '<tr><th>畑'+f.no+'</th><td>'+esc(p.state||f.state)+(p.water||f.water?'・水やり済み':'')+'　<span class="note">'+(sale?'役場が売っている（30フカ）':use?esc(farmName(use))+'の畑'+(own&&own!==use&&own!=='yakuba'?'（'+esc(farmName(own))+'から借りている）':''):'')+'</span></td></tr>'}).join('');
-  show('farm','<h2>'+esc(F.title)+'</h2><p>森の住人が野菜を育てている畑。家を建てる土地ではない（引っ越せない）</p><table class="mytab">'+rows+'</table>'+
-    '<p class="note">畑は土地ごとではなく、1区画ずつ役場の産業課が売っている。いま買えるのは森の住人だけで、旅人はまだ買えない</p>'+
+function farmName(id,p){if(id==='tabi')return '旅人の'+((p&&p.tn)||'だれか');var o=AIBY[id];return o?o.name:(id||'')}
+/* v0.21 旅人が畑を買う（10/9 主「逆にどこで畑買うの？」）: 畑の板から1区画30フカ・1人2区画まで。耕す→種(10フカ)→毎日水→2日で収穫。野菜はリュックへ
+   区画はサーバー（住人の頭）の役場が売る。お金は画面側（S.coin）で、つながらない時は返す。14日来ないと役場に戻る（サーバー側） */
+var TP={busy:false,lot:0,got:0},TPOP={till:'耕す',seed:'種をまく（10フカ）',water:'水をやる',harvest:'収穫する',buy:'買う（30フカ）',sell:'手放す（15フカ戻る）'};
+function tpMine(no){return (S.tplots||[]).indexOf(no)>=0}
+function tpNext(p){var st=p.state||'荒地';if(st==='荒地'||st==='収穫済み'||st==='枯れた')return 'till';if(st==='耕した')return 'seed';if(st==='収穫できる')return 'harvest';if((st==='芽'||st==='育ち中')&&!p.water)return 'water';return ''}
+function tpSync(){if(!S.acct||TP.got||typeof fetch!=='function')return;TP.got=1;
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'plot',op:'mine'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.tplots=(j.plots||[]).map(function(p){return p.no});save();if(sheetOpen==='farm')farmOpen(TP.lot)}},function(){TP.got=0})}
+function tpAct(op,no){if(TP.busy)return;if(!S.acct){juminOpen();return}
+  var cost=op==='buy'?30:op==='seed'?10:0;if(cost&&S.coin<cost){toast('フカが足りない（'+cost+'フカ）');return}
+  S.coin-=cost;save();TP.busy=true;if(sheetOpen==='farm')farmOpen(TP.lot);
+  var back=function(m){S.coin+=cost;save();TP.busy=false;toast(m+(cost?'（フカは返した）':''));if(sheetOpen==='farm')farmOpen(TP.lot)};
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'plot',op:op,no:no})}).then(function(r){return r.json()}).then(function(j){
+    if(!j||!j.ok){var R={max:'畑は1人2区画まで',sold:'その区画はもう売れていた',notmine:'自分の畑ではなかった',state:'いまはそれができない',done:'今日はもう水をやった',login:'住民票が要る'};back(R[j&&j.reason]||'できなかった');if(j&&j.reason==='login')juminOpen();return}
+    TP.busy=false;if(j.plots)S.tplots=j.plots;if(op==='sell')S.coin+=15;
+    var p=j.plot;if(p){var k,hit=false;for(k=0;k<V15.plots.length;k++)if(V15.plots[k].no===p.no){V15.plots[k]=p;hit=true}if(!hit)V15.plots.push(p);var f=FARM.plots[p.no-1];if(f){f.state=p.state;f.water=!!p.water;farmPaint()}}
+    if(op==='harvest'){var n=0,sold=0;for(k=0;k<(j.veg||0);k++){if(bagAdd({k:'野菜',name:'野菜'}))n++;else sold++}toast('野菜を'+j.veg+'個とった'+(n?'（リュックへ'+n+'個）':''),1)}
+    else toast(j.msg||'できた');save();logEv('tplot:'+op);if(sheetOpen==='farm')farmOpen(TP.lot)},function(){back('役場につながらなかった')})}
+function farmOpen(lot){var F=fieldOf(lot)||FARM.fields[0];if(!F){show('farm','<h2>畑</h2><p>畑はまだ無い</p>');return}TP.lot=F.lot;tpSync();
+  var by={};V15.plots.forEach(function(p){by[p.no]=p});var mine=0,dis=TP.busy?' disabled':'';
+  var rows=FARM.plots.filter(function(f){return f.F===F}).map(function(f){var p=by[f.no]||{},own=p.owner,use=p.user||own,sale=own==='yakuba'||(V15.ok&&!use),my=own==='tabi'&&tpMine(f.no),st=p.state||f.state,btn='';
+    if(my){mine++;var nx=tpNext(p);btn=(nx?'<button type="button" data-a="tp:'+nx+':'+f.no+'"'+dis+'>'+TPOP[nx]+'</button>':'<span class="note">'+(st==='芽'||st==='育ち中'?'今日の水やりは済み。明日また':'')+'</span>')+' <button type="button" class="sub" data-a="tp:sell:'+f.no+'"'+dis+'>'+TPOP.sell+'</button>'}
+    else if(sale&&V15.ok)btn='<button type="button" data-a="tp:buy:'+f.no+'"'+dis+'>'+TPOP.buy+'</button>';
+    return '<tr><th>畑'+f.no+'</th><td>'+esc(st)+(p.water||f.water?'・水やり済み':'')+'　<span class="note">'+(my?'自分の畑':sale?'役場が売っている':use?esc(farmName(use,p))+'の畑'+(own&&own!==use&&own!=='yakuba'?'（'+esc(farmName(own,p))+'から借りている）':''):'')+'</span>'+(btn?'<div class="row tprow">'+btn+'</div>':'')+'</td></tr>'}).join('');
+  var wet=/雨|嵐/.test(V15.weather||'');
+  show('farm','<h2>'+esc(F.title)+'</h2><p>森の住人と旅人が野菜を育てている畑。家を建てる土地ではない（引っ越せない）　手持ち '+S.coin+'フカ</p><table class="mytab">'+rows+'</table>'+
+    '<p class="note">畑は1区画ずつ役場の産業課が売っている（30フカ・旅人は1人2区画まで）。耕す→種をまく（10フカ）→毎日水をやる→2日で収穫。'+(wet?'今日は'+esc(V15.weather)+'なので水やりはいらない。':'晴れの日に水をやらない日が2日続くと枯れる。')+'野菜はリュックに入る。14日来ないと役場に戻る</p>'+
+    (S.acct?'':'<p class="note">買うには森の住民票が要る</p>')+
     (V15.ok?'':'<p class="note">役場につながっていないので、畑の様子は前に見た時のまま</p>'))}
 function lotPublic(id){if(id===YAKUBA_LOT){show('plot','<h2>森の役場</h2><p>役場の土地（売っていない）　中に入ると、住民課・産業課（売店）・福祉課などの窓口がある</p><div class="row"><button data-a="yakin">役場に入る</button></div>');return}farmOpen(id)}
 function landCount(){var c={S:[0,0],M:[0,0],L:[0,0]};LOTS.forEach(function(l){if(V15.on&&SKIPLOT[l.id])return;c[l.kind][0]++;if(!resOf(l.id)&&!isMine(l.id)&&!lotLock(l.id))c[l.kind][1]++});return c}
@@ -2418,7 +2441,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.20',APP_BUILD='1010-1400',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.21',APP_BUILD='1010-1500',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -2507,6 +2530,8 @@ function kb(){var sh=document.getElementById('sheet');var on=inp()&&!!(sh&&sh.co
 setH();window.addEventListener('resize',function(){setH();kb()});window.addEventListener('orientationchange',function(){setTimeout(function(){R.style.setProperty('--apph',window.innerHeight+'px')},400)});
 if(window.visualViewport){visualViewport.addEventListener('resize',kb);visualViewport.addEventListener('scroll',kb)}
 document.addEventListener('focusin',function(){setTimeout(kb,0);setTimeout(kb,350)});
+/* 入力中に板のボタンを押すと、先にキーボードが閉じて板が動き、押した所にボタンが無くなっていた → 押した瞬間にそのボタンを押したことにする（キーボードは開いたまま） */
+document.addEventListener('touchstart',function(e){if(!B.classList.contains('kb'))return;var bt=e.target.closest&&e.target.closest('#sheet button');if(!bt||bt.disabled)return;e.preventDefault();bt.click()},{passive:false});
 document.addEventListener('focusout',function(){setTimeout(function(){kb();setH()},150)});
 })();
 </script>
