@@ -1,7 +1,7 @@
-# 読んで v0.20（v0.19.5〜v0.20.1・2026-10-10）
+# 読んで v0.20（v0.19.5〜v0.20.2・2026-10-10）
 
 PCにつながっていないクラウドのセッションで、github の index.html を直に直して出した版。あとからPCに取り込んだ（このフォルダ）。
-公開した物: index.html（md5 c93c5bd563648e049705e30ce98538b3）・supabase.js（公式 supabase-js 2.117.3 の UMD・MIT・md5 db2653a991898cb982d887c3b07c1b20）・about/index.html（md5 23bf5edb1f63b736ef250e91f2861812）
+公開した物: index.html（v0.20.2・md5 26a3ab32839b861e63650adfe7f5312c。v0.20.1 は c93c5bd5…）・supabase.js（公式 supabase-js 2.117.3 の UMD・MIT・md5 db2653a991898cb982d887c3b07c1b20）・about/index.html（md5 23bf5edb1f63b736ef250e91f2861812）
 
 ## 作り方（v0.19.4 から）
 `python patch20.py ..\森_v0.19_住人の2時間\index.html index.html`
@@ -20,6 +20,7 @@ patch19.py＋patch19_extra.py の出力（md5 9d592cfd…）に、34か所の行
 | v0.20 | 同じワールド（ほかの旅人・ひとこと） | `NET`・`net*`（`netBoot`・`netSend`・`netGot`・`netStep`・`netSay`・`netSaid`・`netOpen`・`netAct`・`netClean`）。`step` の頭で `netFrame`。`#netb`。`supabase.js` |
 | v0.20 | 板を左上の札より手前に | CSS `#sheet{z-index:5}` |
 | v0.20.1 | 「出た」を送ってから0.35秒待って部屋を閉じる | `netLeave`・`netStop`・`NET.closeAt` |
+| v0.20.2 | チャッピーの直し2つ: f の名前「新入り」→「池の新入り」／朝帰りのひとこと「…行き先は非公表」 | `FISHDEF` の f・`FNOTE.i`・`QDEF` の末尾 |
 
 ## 同じワールドの決まり
 - 中継: Supabase Realtime（Broadcast）・公開の部屋 `mori-live-v1`・鍵は不具合の記録と同じ publishable key。森のサーバー（住人の頭）は通らない
@@ -31,10 +32,11 @@ patch19.py＋patch19_extra.py の出力（md5 9d592cfd…）に、34か所の行
 - サーバー側へ載せ替える時: `netBoot`・`netSend`（`netPush`）・`netSay` を差し替える。受け取る側（`netGot`・`netSaid`・`netStep`）はそのまま
 
 ## 検査（このフォルダの tests\）
-- `check195.js` 45本／`net20.js` 33本（2画面・まねた中継）／`misc.js` 3本／`real20.js` 6本（本物の Supabase・検査用の部屋 `mori-test-<乱数>`）。動かし方は tests\README.md
+- `check195.js` 47本／`net20.js` 33本（2画面・まねた中継）／`misc.js` 3本／`real20.js` 6本（本物の Supabase・検査用の部屋 `mori-test-<乱数>`）。動かし方は tests\README.md
 - 逆テスト: v0.19.4 の index.html に check195.js → 畑・魚・吹き出しが NG／`netStop` を待たずに閉じる形に戻すと net20.js の N18 が NG
 - PC側の func19.js・webtest19.js は v0.20 では回していない（版の文字 v0.19→v0.20、図鑑の「/5」、吹き出しの32字を見ている検査は直しが要る）
 
 ## 誰が決めたか
 - 主: リュックの「売る」はそのまま／最初から同じワールド（合言葉の部屋は作らない）／自由入力は入れる／魚を増やす・魚図鑑
-- Claude（仮・チャッピーに見せる前に出した物）: 新しい魚5種の名前・値段・色・深さ・条件／図鑑の並べ方と「ひとこと」10本／ほかの旅人の札の色と 👤／スタンプ6個／同意の板の文面／畑の板の文面
+- チャッピー（10/10 11:48・返事の控え chatgpt_v020_spec.json・照合 tests\check_chatgpt_spec.py で NG 0）: f の名前を「池の新入り」に／朝帰りのひとことを「行き先は非公表」に。魚の値段・色・深さ・条件、図鑑の並べ方、ひとこと9本、スタンプ6個、名前の札（水色＋👤）、同意の板の題とボタンは keep
+- Claude: 上の全部の元の案。チャッピーの返事は g〜j の名前にも「池の」を付けていたが、印は keep だったので名前は変えていない（10種のうち8種が「池の」で始まるのを避けた・図鑑のますは5字まで）。畑の板の文面はチャッピーに見せていない

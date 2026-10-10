@@ -793,9 +793,9 @@ var FISHDEF=[ /* k=絵の名前, n=名前, len=全長m, price=フカ, dmin〜dma
   {k:'c',n:'夜ふかし',len:.55,price:15,dmin:2.6,dmax:6.4,v:.6,mode:'curious',cnt:3,m:'catfish',wc:[240,240,235],pc:[38,40,52]}, /* m=専用の立体（頭が -x 向きにそろえてある） */
   {k:'d',n:'池の番人',len:.70,price:25,dmin:5,dmax:8.4,v:1.1,mode:'wary',cnt:2,wc:[205,40,48],pc:[120,12,24]},
   {k:'e',n:'池の大地主',len:2.0,price:100,dmin:8.5,dmax:9.3,v:.5,mode:'nushi',cnt:1,wc:[34,52,104],pc:[226,176,60]},
-  /* v0.19.5 魚を10種類に（10/10 主「魚の種類とかも増やして欲しい」）。絵は今の鯉の色ちがいと大きさちがい。名前・値段・住む深さは Claude の仮（チャッピーにはまだ見せていない）
+  /* v0.19.5 魚を10種類に（10/10 主「魚の種類とかも増やして欲しい」）。絵は今の鯉の色ちがいと大きさちがい。名前・値段・住む深さは Claude の案を 10/10 にチャッピーに見せた（f の名前を「池の新入り」に直した。ほかの値段・色・深さ・条件は keep。返事の控えは PC の 森_v0.20_同じワールド\\chatgpt_v020_spec.json）
      when=出る条件（dawn: 朝4〜9時だけ／rain: 雨か嵐の時だけ）。rw=竿で釣れる割合の重み（下の RODRW と同じ考え方）。動き(mode)は今ある5つの使い回し */
-  {k:'f',n:'新入り',len:.26,price:3,dmin:.8,dmax:2.2,v:.9,mode:'calm',cnt:4,wc:[214,226,232],pc:[150,170,182]},
+  {k:'f',n:'池の新入り',len:.26,price:3,dmin:.8,dmax:2.2,v:.9,mode:'calm',cnt:4,wc:[214,226,232],pc:[150,170,182]},
   {k:'g',n:'見栄っぱり',len:.50,price:20,dmin:2.0,dmax:5.2,v:1.7,mode:'shy',cnt:2,wc:[255,238,244],pc:[236,92,150]},
   {k:'h',n:'雨宿り',len:.48,price:22,dmin:1.2,dmax:3.8,v:.8,mode:'calm',cnt:2,wc:[196,226,236],pc:[58,120,170],when:'rain'},
   {k:'i',n:'朝帰り',len:.62,price:30,dmin:2.6,dmax:6.4,v:.7,mode:'curious',cnt:2,wc:[250,236,200],pc:[226,120,60],when:'dawn'},
@@ -815,7 +815,7 @@ function dayKey(){if(window.__day)return window.__day;var d=new Date();return d.
 var QDEF=[['住人2人に挨拶する',0,'talk',2],['魚を1匹釣る',0,'rod',1],['池の常連を1匹獲る',0,'a',1],
   ['池の常連を3匹獲る',1,'a',3],['魚を3匹釣る',1,'rod',3],['真珠貝を1個拾う',1,'shell',1],
   ['池の番人を釣る',2,'rod:d',1],['夜ふかしを2匹獲る',2,'c',2],['1回の潜りで30フカ以上持ち帰る',2,'bank30',1],
-  ['新入りを2匹獲る',0,'f',2],['見栄っぱりを1匹獲る',2,'g',1]],QRW=[5,10,15]; /* v0.19.5 新しい魚のおつかい（いつでも出る魚だけ。番号がずれないよう末尾に足す） */
+  ['池の新入りを2匹獲る',0,'f',2],['見栄っぱりを1匹獲る',2,'g',1]],QRW=[5,10,15]; /* v0.19.5 新しい魚のおつかい（いつでも出る魚だけ。番号がずれないよう末尾に足す） */
 function qNow(){var d=dayKey();if(!S.q||S.q.d!==d){var hh=0,i,T=[[],[],[]];for(i=0;i<d.length;i++)hh=(hh*31+d.charCodeAt(i))>>>0;QDEF.forEach(function(q,ix){T[q[1]].push(ix)});
     S.q={d:d,on:0,ids:[T[0][hh%T[0].length],T[1][(hh>>>3)%T[1].length],T[2][(hh>>>6)%T[2].length]],p:[0,0,0],ok:[0,0,0],all:0,who:[]};save()}return S.q}
 function qEv(kind,a,b){var q=S.q,i,D,hit;if(!q||!q.on||q.d!==dayKey()||q.all)return;
@@ -842,9 +842,9 @@ function bookAdd(k,cm){var B=S.book=S.book||{},e=B[k],D=FISHDEF.filter(function(
 /* ===== v0.19.6 魚図鑑（10/10 主「魚図鑑も追加してね」） =====
    前は池の看板の「池の記録」に字だけの表があった。魚の絵つきにして、リュックからも開けるようにした
    絵: 池を泳いでいるのと同じ立体・同じ色を、その場で小さく描いて使う（絵のファイルは増やさない）。まだ獲っていない魚は影だけ
-   並べ方・ひとことの文は Claude の仮（チャッピーにはまだ見せていない） */
+   並べ方・ひとことの文は Claude の案を 10/10 にチャッピーに見せた（並べ方 keep・ひとことは i だけ「行き先は非公表」に直した） */
 var ZK={img:{},sel:''},FNOTE={a:'毎日いる。来ない日は、池のほうが心配する',b:'金色なのは体だけで、貯金の話になると黙る',c:'昼は寝ている。夜も、だいたい寝ている',d:'池を守っている。何から守っているのかは、本人も知らない',e:'池の底の9割はこの魚の土地。残りの1割も、たぶんそう',
-  f:'先週来た。まだ誰にも名前を覚えられていない',g:'派手な色は自前。逃げ足の速さも自前',h:'雨の日だけ出てくる。濡れるのは平気らしい',i:'朝4時に帰ってきて、9時には寝る。どこに行っていたかは言わない',j:'昔は番人だった。今は岩かげで、昔の話をしている'};
+  f:'先週来た。まだ誰にも名前を覚えられていない',g:'派手な色は自前。逃げ足の速さも自前',h:'雨の日だけ出てくる。濡れるのは平気らしい',i:'朝4時に帰ってきて、9時には寝る。行き先は非公表',j:'昔は番人だった。今は岩かげで、昔の話をしている'};
 function zkShot(D){if(ZK.img[D.k]!==undefined)return ZK.img[D.k];var out='',rt=null,mat=null,own=null;
   try{var mk=(D.m&&MDL[D.m])?D.m:'koi',M=MDL[mk];if(!R||!M)throw new Error('no model');
     var tex=mk!=='koi'?M.tex:(D.wc?(own=koiTex(D.wc,D.pc)):M.tex),W=320,H=200;
@@ -2295,7 +2295,8 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    守り: 送る側と受ける側の両方で同じふるい（netClean）を通す。電話番号・ID・リンクは伏せ字、禁止ワードは伏せ字、名前は分身と同じ決まり。1人ずつ「字を見ない」
    回数: 無料枠は1秒100通（受け取る人1人で1通）。人数が増えたら送る間隔を自動でのばす（2人=1秒4回、5人=1秒2回、8人=1秒1回）。止まっている間は4秒に1回だけ
    確かめ: 公式の部品＋まねた中継で2画面（_tests/net20.js）と、本物の Supabase の検査用の部屋で2画面（_tests/real20.js。居場所が届くまで 55〜96ms）。実機のスマホ2台はまだ */
-var NETSTAMP=['やあ！','いいね','ありがとう','こっち来て','またね','おやすみ'],NETNG=/死|殺|うんこ|うんち|ちんこ|まんこ|ばか|バカ|アホ|あほ|くそ|クソ|ブス|でぶ|デブ|fuck|shit|sex/gi,
+var NETSTAMP=['やあ！','いいね','ありがとう','こっち来て','またね','おやすみ'], /* スタンプ6個・名前の札（水色＋👤）・同意の板の題とボタンは 10/10 にチャッピーに見せて keep */
+  NETNG=/死|殺|うんこ|うんち|ちんこ|まんこ|ばか|バカ|アホ|あほ|くそ|クソ|ブス|でぶ|デブ|fuck|shit|sex/gi,
   NET={st:'off',err:'',id:'',ch:null,sb:null,peers:{},n:0,sendT:0,last:'',lastAt:0,helloAt:0,log:[],saidAt:0,lib:0,ngAt:0,said:0,hud:'',closeAt:0,old:!!S.q16s,TOPIC:'mori-live-v1',MAXP:24,DEAD:12000}; /* old=前から遊んでいる人（初めての人には、住民票と性格診断の板に重ねて聞かない。次に来た時に聞く） */
 function netId(){if(NET.id)return NET.id;var v='',i;try{v=localStorage.getItem('mori_nid')||''}catch(e){}
   if(!/^[a-z0-9]{10}$/.test(v)){v='';for(i=0;i<10;i++)v+='abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random()*36));try{localStorage.setItem('mori_nid',v)}catch(e){}}NET.id=v;return v} /* 森の中だけの番号。住民票の番号や端末の番号とは別（つなげられないようにする） */
@@ -2399,7 +2400,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.20',APP_BUILD='1010-1230',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.20',APP_BUILD='1010-1310',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}

@@ -108,6 +108,7 @@ const ok = (name, cond, info) => { res.push([!!cond, name, info]); };
     return o;
   });
   ok('C1 魚が10種類（a〜j）', fish.n === 10 && fish.keys === 'abcdefghij', fish.n + ' ' + (fish.names || []).join('・'));
+  ok('C1b 名前はチャッピーに見せた後の物（f＝池の新入り・g〜j はそのまま）', (fish.names || []).slice(5).join('・') === '池の新入り・見栄っぱり・雨宿り・朝帰り・ご隠居', (fish.names || []).join('・'));
   ok('C2 どの魚も池に決めた数だけいる', fish.spawn && fish.spawn.split(' ').every(s => { const p = s.split('/'); return p[0] === p[1]; }), fish.spawn);
   ok('C2b 全部の魚に「引きの強さ」がある', fish.str === true, String(fish.str));
   const sum = o => Object.values(o || {}).reduce((a, b) => a + b, 0);
@@ -176,6 +177,7 @@ const ok = (name, cond, info) => { res.push([!!cond, name, info]); };
     o.px = px.map(p => p.join(':')).join(' '); o.pxOk = px.length === 10 && px.every(p => p[1] > .08 && p[1] < .75 && p[2] > 40 && p[3] === 0);
     o.detail = document.querySelector('#sheet .zkd').innerText.replace(/\s+/g, ' ');
     document.querySelector('#sheet [data-a="zk:j"]').click(); o.unk = document.querySelector('#sheet').innerText.replace(/\s+/g, ' '); o.unkAria = document.querySelector('#sheet [data-a="zk:j"]').getAttribute('aria-label');
+    m.S.book.i = { n: 1, max: 60 }; document.querySelector('#sheet [data-a="zk:i"]').click(); o.i = document.querySelector('#sheet .zkd').innerText.replace(/\s+/g, ' '); delete m.S.book.i;
     document.querySelector('#sheet [data-a="zk:g"]').click(); o.g = document.querySelector('#sheet .zkd').innerText.replace(/\s+/g, ' '); o.on = document.querySelector('#sheet .zk button.on').getAttribute('data-a');
     const sh = document.querySelector('#sheet'); o.fit = sh.scrollHeight <= sh.clientHeight + 1;
     document.querySelector('#sheet [data-a="bag"]').click(); o.back = document.querySelector('#sheet h2').innerText;
@@ -186,6 +188,7 @@ const ok = (name, cond, info) => { res.push([!!cond, name, info]); };
   ok('Z2 10種とも魚の形が描けている（面積・明るさ・角は透明）', zk.pxOk, zk.px);
   ok('Z3 獲った魚: 名前・値段・最大・匹数・深さ・ひとことが出る', /池の常連/.test(zk.detail) && /売ると 5フカ/.test(zk.detail) && /最大 58cm/.test(zk.detail) && /12匹/.test(zk.detail) && /底の深さ 0.9〜3.2m/.test(zk.detail) && /来ない日は/.test(zk.detail), zk.detail);
   ok('Z4 まだの魚: 名前もひとことも出さない（？？？・深さの手がかりだけ）', /？？？/.test(zk.unk) && !/ご隠居|昔は番人/.test(zk.unk) && zk.unkAria === 'まだ獲っていない魚' && /底の深さ 6.2〜8.4mのあたり/.test(zk.unk), zk.unk.slice(0, 120));
+  ok('Z4b 朝帰りのひとことはチャッピーの直し（行き先は非公表）', /朝帰り/.test(zk.i) && /行き先は非公表/.test(zk.i), zk.i);
   ok('Z5 ますを押すとその魚に切り替わる・板に収まる・リュックに戻れる', /見栄っぱり/.test(zk.g) && zk.on === 'zk:g' && zk.fit && zk.back === 'リュック', JSON.stringify([zk.on, zk.fit, zk.back]));
   ok('Z6 池の看板の「池の記録」も同じ図鑑になり、「自己ベスト」は今までどおり', zk.rec === '池の記録/10' && /真珠貝/.test(zk.best) && /最大：58cm/.test(zk.best), zk.rec + ' ' + zk.best.slice(0, 80));
 
@@ -216,7 +219,7 @@ const ok = (name, cond, info) => { res.push([!!cond, name, info]); };
 
   // ---------- E. 全体 ----------
   const build = await page.evaluate(() => window.__mori.log.doc('t').build);
-  ok('E1 版の印が 1010-1230', build === '1010-1230', build);
+  ok('E1 版の印が 1010-1310', build === '1010-1310', build);
   ok('E2 画面のエラーが0件', errors.length === 0, errors.join(' | ').slice(0, 300));
 
   await browser.close();
