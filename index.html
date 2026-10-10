@@ -390,6 +390,77 @@ body.kbc #sheet .ch>.chst,body.kbc #sheet .ch>.chset{display:none!important}
 #sheet .drb{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex:none}
 #sheet .drb button{min-height:0;height:48px;padding:0;border-radius:16px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:13.5px;font-weight:800}
 #sheet .drb button.y{background:#FFC83D;border-color:#FFC83D}#sheet .drb button.k{background:#173A2C;color:#fff;border-color:#173A2C}
+/* ===== v0.35 ガチャ（チャッピー chatgpt_gacha_spec.json）===== */
+#sheet .drc.lock{opacity:.55;border-style:dashed}#sheet .drc.lock img{filter:grayscale(.85) brightness(1.05)}
+#sheet .g{display:flex;flex-direction:column;gap:8px;color:#173A2C}
+#sheet .g .chh button{flex:none;min-height:0;width:44px;height:40px;padding:0;border-radius:12px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:22px;font-weight:800}
+#sheet .g-coin{font-size:13px;font-weight:700;color:#496A40}#sheet .g-coin b{font-size:17px;color:#173A2C}
+#sheet .g-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:min(calc(var(--kbh,60vh) * .62),460px);overflow-y:auto;padding:2px}
+#sheet .g-m{min-height:0;height:auto;padding:12px 10px;border-radius:18px;background:#FFFDF3;border:2px solid color-mix(in srgb,var(--gc) 55%,#fff);color:#173A2C;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;box-shadow:0 3px 0 color-mix(in srgb,var(--gc) 35%,transparent)}
+#sheet .g-m em{font-style:normal;font-size:30px;width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--gc) 30%,#fff);display:grid;place-items:center}
+#sheet .g-m b{font-size:14.5px;font-weight:800}#sheet .g-m small{font-size:11px;color:#68765D;line-height:1.35}#sheet .g-m span{font-size:11px;font-weight:800;color:#173A2C;background:#FFF3C7;border-radius:999px;padding:2px 8px}
+#sheet .g-m.pub{border-color:#FF6B52;background:linear-gradient(160deg,#FFF6EC,#FFE3D9)}
+#sheet .g-m:disabled{opacity:.55}
+#sheet .g-hero{position:relative;height:96px;border-radius:18px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--gc) 45%,#fff),var(--gc));display:flex;align-items:center;gap:12px;padding:0 14px;overflow:hidden}
+#sheet .g-hero p{margin:0;font-weight:800;font-size:14px;color:#173A2C;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.g-mc{position:relative;flex:none;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.7);border:3px solid #fff;box-shadow:inset 0 -6px 0 rgba(0,0,0,.08);animation:gsp 6s linear infinite}
+.g-mc i{position:absolute;width:20px;height:20px;border-radius:50%;background:linear-gradient(#fff 50%,var(--gc) 50%);border:2px solid rgba(23,58,44,.25)}
+.g-mc i:nth-child(1){left:10px;top:12px}.g-mc i:nth-child(2){left:34px;top:8px}.g-mc i:nth-child(3){left:22px;top:32px}.g-mc i:nth-child(4){left:42px;top:34px}.g-mc i:nth-child(5){left:8px;top:38px}
+@keyframes gsp{to{transform:rotate(360deg)}}
+#sheet .g-pull{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#sheet .g-pull button{min-height:0;height:56px;padding:0;border-radius:16px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:15px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2}
+#sheet .g-pull button small{font-size:11px;font-weight:700;color:#68765D}
+#sheet .g-pull button.y{background:#FFC83D;border-color:#FFC83D}#sheet .g-pull button.sub{grid-column:1/-1;height:40px}
+#sheet .g-pull button:only-child{grid-column:1/-1}
+#sheet .g-warn{padding:10px 12px;border-radius:14px;background:#FFE3D9;border:2px solid #FF6B52;font-size:12.5px;font-weight:700;line-height:1.5}
+#sheet .g-tbl{max-height:min(calc(var(--kbh,60vh) * .3),220px);overflow-y:auto}
+#sheet .g-tbl details{background:#FFFDF3;border:1px solid #EEE5CE;border-radius:12px;margin-bottom:6px;padding:6px 10px}
+#sheet .g-tbl summary{font-size:13px;font-weight:800;cursor:pointer}#sheet .g-tbl summary span{font-weight:700;color:#68765D;font-size:11.5px}
+#sheet .g-its{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}#sheet .g-its span{display:flex;align-items:center;gap:4px;font-size:11.5px;background:#F4EBCB;border-radius:999px;padding:2px 8px 2px 2px;opacity:.6}#sheet .g-its span.have{opacity:1;background:#FFE08A}
+.g-ic{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;flex:none}.g-ic.fur{font-style:normal;font-weight:800;background:#E8DDF8;color:#4b3a72;font-size:14px}
+.g-ic.big{width:84px;height:84px}.g-ic.fur.big{font-size:44px}
+.g-st{font-size:12px;letter-spacing:-1px;text-shadow:0 1px 0 rgba(0,0,0,.15)}
+/* 演出 */
+#gx{position:absolute;inset:0;z-index:20;display:none;background:radial-gradient(circle at 50% 40%,rgba(20,45,38,.82),rgba(5,14,12,.94));color:#173A2C;overflow:hidden}
+#gx.on{display:block;animation:gxin .5s ease-out}
+@keyframes gxin{from{background:rgba(0,0,0,0)}}
+.gx-skip{position:absolute;right:10px;top:10px;z-index:5;min-height:0;height:36px;padding:0 14px;border-radius:999px;background:rgba(255,253,243,.92);color:#173A2C;border:0;font-weight:800;font-size:13px}
+#gx.done .gx-skip{display:none}
+.gx-mc{position:absolute;left:50%;top:30%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,color-mix(in srgb,var(--gc) 60%,#fff) 60%,var(--gc));border:5px solid #fff;box-shadow:0 0 40px color-mix(in srgb,var(--gc) 60%,transparent);animation:gxsh .5s ease-in-out 0s 2 alternate,gxspin 1s ease-in .5s 1}
+.gx-mc i{position:absolute;width:38px;height:38px;border-radius:50%;background:linear-gradient(#fff 50%,var(--gc) 50%);border:3px solid rgba(23,58,44,.2)}.gx-mc i:nth-child(1){left:22px;top:30px}.gx-mc i:nth-child(2){left:74px;top:22px}.gx-mc i:nth-child(3){left:48px;top:76px}
+@keyframes gxsh{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}@keyframes gxspin{to{transform:rotate(540deg)}}
+#gx.done .gx-mc{opacity:0;transition:opacity .3s}
+.gx-cap{position:absolute;left:50%;top:30%;width:96px;height:96px;margin:-48px 0 0 -48px;opacity:0;animation:gxcap 1.4s cubic-bezier(.3,1.6,.5,1) 1.2s forwards}
+.gx-cap b{position:absolute;left:0;width:96px;height:48px;background:var(--rc);border:4px solid #fff;box-shadow:0 0 24px var(--rc)}
+.gx-cap b:first-child{top:0;border-radius:48px 48px 0 0;border-bottom-width:2px;animation:gxtop .6s ease-in 1.9s forwards}.gx-cap b:last-child{bottom:0;border-radius:0 0 48px 48px;background:#fff;border-color:var(--rc);animation:gxbot .6s ease-in 1.9s forwards}
+@keyframes gxcap{0%{opacity:1;transform:translateY(-40px) scale(.4)}50%{transform:translateY(120px) scale(1)}75%{transform:translateY(90px)}100%{opacity:1;transform:translateY(110px) scale(1.05)}}
+@keyframes gxtop{to{transform:translateY(-60px) rotate(-30deg);opacity:0}}@keyframes gxbot{to{transform:translateY(60px) rotate(20deg);opacity:0}}
+.gx-caps{position:absolute;left:12px;right:12px;top:48%;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.gx-cap.s{position:relative;left:auto;top:auto;margin:0;width:100%;height:auto;aspect-ratio:1;opacity:0;animation:gxpop .5s cubic-bezier(.3,1.6,.5,1) calc(.9s + var(--d)) forwards}
+.gx-cap.s b{width:100%;height:50%;border-width:3px}.gx-cap.s b:first-child{border-radius:999px 999px 0 0;animation:gxtop .5s ease-in calc(2s + var(--d)) forwards}.gx-cap.s b:last-child{border-radius:0 0 999px 999px;animation:gxbot .5s ease-in calc(2s + var(--d)) forwards}
+@keyframes gxpop{from{opacity:0;transform:translateY(-120px) scale(.3)}to{opacity:1;transform:none}}
+.gx-fx{position:absolute;inset:0;pointer-events:none}
+#gx.t3 .gx-fx{background:radial-gradient(circle at 50% 42%,rgba(115,184,240,.0) 0,rgba(115,184,240,.35) 30%,transparent 60%);opacity:0;animation:gxfx 1.2s ease-out 2.2s 3}
+#gx.t4 .gx-fx{background:linear-gradient(90deg,transparent 35%,rgba(181,154,239,.6) 50%,transparent 65%);opacity:0;animation:gxfx 1.4s ease-out 2.2s 2}
+#gx.t4{animation:gxin .5s ease-out,gxquake .15s linear 2.3s 2}
+#gx.t5 .gx-fx{background:radial-gradient(circle at 50% 40%,rgba(255,200,61,.75),rgba(255,200,61,.15) 45%,transparent 70%);opacity:0;animation:gxfx 2s ease-out 2.4s 2}
+@keyframes gxfx{0%{opacity:0;transform:scale(.6)}40%{opacity:1}100%{opacity:0;transform:scale(1.4)}}@keyframes gxquake{50%{transform:translate(4px,-3px)}}
+#gx.done .gx-cap,#gx.done .gx-caps{display:none}
+.gx-res{position:absolute;inset:54px 10px 10px;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:8px;overflow-y:auto}
+#gx.done .gx-res{display:flex;animation:gxr .4s ease-out}
+@keyframes gxr{from{opacity:0;transform:scale(.9)}}
+.gx-card{position:relative;background:#FFFDF3;border-radius:18px;border:3px solid var(--rc);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;box-shadow:0 0 18px color-mix(in srgb,var(--rc) 60%,transparent)}
+.gx-card b{font-size:12px;font-weight:800;line-height:1.25}.gx-card small{font-size:10px;color:#68765D}
+.gx-card em{font-style:normal;font-size:10.5px;font-weight:800;border-radius:999px;padding:1px 7px}.gx-card em.n{background:#FFC83D}.gx-card em.d{background:#E8E1CC}
+.gx-card.big{width:min(240px,70%);padding:16px 12px;gap:6px}.gx-card.big b{font-size:18px}.gx-card.big small{font-size:12px}.gx-card.big em{font-size:13px;padding:2px 12px}.gx-card.big .g-st{font-size:20px}
+.gx-card .g-ic{width:44px;height:44px}.gx-card .g-ic.big{width:96px;height:96px}
+.gx-best .gx-card.big{width:min(170px,50vw);padding:8px;gap:3px}.gx-best .gx-card.big b{font-size:15px}.gx-best .g-ic.big{width:64px;height:64px}.gx-best{flex:none}
+.gx-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
+.gx-grid .gx-card{padding:5px 2px}.gx-grid .gx-card em{font-size:9.5px;padding:1px 4px}.gx-grid .gx-card b{font-size:10px}.gx-grid .gx-card small{display:none}.gx-grid .gx-card .g-ic{width:34px;height:34px}.gx-grid .g-st{font-size:9px}
+.gx-sum{margin:0;color:#FFF3C7;font-weight:800;font-size:13px}
+.gx-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.gx-btns button{flex:1 1 30%;min-height:0;height:48px;border-radius:16px;background:#FFFDF3;color:#173A2C;border:0;font-weight:800;font-size:13px}.gx-btns button.y{background:#FFC83D}
+@media (prefers-reduced-motion:reduce){#gx *{animation-duration:.01s!important;animation-delay:0s!important}}
 </style>
 </head>
 <body>
@@ -465,7 +536,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.34';
+var VERSION='v0.35';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -977,7 +1048,7 @@ function drMini(kind,v){var key=kind+v;if(DR.cache['m'+key])return DR.cache['m'+
   var u=c.toDataURL();DR.cache['m'+key]=u;return u}
 function dressOpen(msg){if(!ROOM.on||ROOM.kind==='yakuba'){toast('着せ替えは自分の家の中でできる');return}if(!DR.mk||!MDL.kino){toast('準備中…もう一度押してね');return}
   if(DR.cur==null)DR.cur=lookCode();var L=DR.cur.split('').map(Number),tabs=[['hat','🍄','ぼうし'],['eyes','👀','目'],['mouth','😊','口'],['cheek','🍑','ほっぺ'],['brow','〰️','まゆ'],['clo','👕','服']];
-  var card=function(kind,v,name,on,pos){return '<button type="button" class="drc'+(on?' on':'')+'" data-a="dr:set:'+pos+':'+v+'"><img alt="" src="'+drMini(kind,v)+'"><span>'+esc(name)+'</span></button>'},items='';
+  var card=function(kind,v,name,on,pos){var own=drOwn(pos,v);return '<button type="button" class="drc'+(on?' on':'')+(own?'':' lock')+'" data-a="dr:'+(own?'set':'lock')+':'+pos+':'+v+'"><img alt="" src="'+drMini(kind,v)+'"><span>'+(own?esc(name):'🔒 ガチャ')+'</span></button>'},items='';
   if(DR.tab==='hat')items='<div class="drs">色</div><div class="drg">'+DR.hat.map(function(h,i){return card('hat',i,h[0],L[0]===i,0)}).join('')+'</div><div class="drs">柄</div><div class="drg">'+DR.hatp.map(function(n,i){return card('hatp',i,n,L[1]===i,1)}).join('')+'</div>';
   else if(DR.tab==='clo')items='<div class="drs">色</div><div class="drg">'+DR.clo.map(function(h,i){return card('clo',i,h[0],L[6]===i,6)}).join('')+'</div><div class="drs">柄</div><div class="drg">'+DR.clop.map(function(n,i){return card('clop',i,n,L[7]===i,7)}).join('')+'</div>';
   else{var pos={eyes:2,mouth:3,cheek:4,brow:5}[DR.tab],arr=DR[DR.tab];items='<div class="drg">'+arr.map(function(a,i){return card(DR.tab,i,typeof a==='string'?a:a[0],L[pos]===i,pos)}).join('')+'</div>'}
@@ -1003,12 +1074,94 @@ function drPreview(){var cv=$('#drcv');if(!cv)return;var P=DR.pv;
   var t=lookTex(DR.cur);if(t&&P.m.material.map!==t){P.m.material.map=t;P.m.material.needsUpdate=true}}
 function drAct(p){var L=(DR.cur||lookCode()).split('');
   if(p[0]==='tab'){DR.tab=p[1];dressOpen();return}
-  if(p[0]==='set'){L[+p[1]]=p[2];DR.cur=L.join('');dressOpen();return}
-  if(p[0]==='pre'){if(lookOk(p[1]))DR.cur=p[1];dressOpen();return}
+  if(p[0]==='set'){if(!drOwn(+p[1],p[2]))return;L[+p[1]]=p[2];DR.cur=L.join('');dressOpen();return}
+  if(p[0]==='lock'){var gp=+p[1];dressOpen('🔒 まだ持っていない　広場の「ガチャの祠」の '+(gp<2?'🍄小物ガチャ':gp<6?'😊顔パーツガチャ':'👕服ガチャ')+' で出る');return}
+  if(p[0]==='pre'){if(!lookOk(p[1]))return;var miss=0,nw=p[1].split('').map(function(d,i){if(drOwn(i,d))return d;miss++;return L[i]}).join('');DR.cur=nw;dressOpen(miss?'持っていない部品（'+miss+'つ）は今のまま　ガチャで出る':'');return}
   if(p[0]==='front'){if(DR.pv){DR.pv.yaw=0;DR.pv.t=performance.now()+1e9}return}
   if(p[0]==='undo'){DR.cur=lookCode();dressOpen('保存してある姿に戻した');return}
-  if(p[0]==='rand'){var mx=[8,5,7,7,7,7,8,5],n,old=DR.cur;do{n=mx.map(function(m,i){if(i===5)return Math.random()<.5?0:1+Math.floor(Math.random()*7);if(i===1||i===7)return Math.random()<.55?0:Math.floor(Math.random()*(m+1));return Math.floor(Math.random()*(m+1))}).join('')}while(n===old);DR.cur=n;logEv('dr:rand');dressOpen();return}
+  if(p[0]==='rand'){var mx=[8,5,7,7,7,7,8,5],n,old=DR.cur;var tries=0;do{n=mx.map(function(m,i){var ok=[];for(var v=0;v<=m;v++)if(drOwn(i,v))ok.push(v);if((i===1||i===5||i===7)&&Math.random()<.5)return 0;return ok[Math.floor(Math.random()*ok.length)]}).join('')}while(n===old&&++tries<20);DR.cur=n;logEv('dr:rand');dressOpen();return}
   if(p[0]==='save'){S.look=DR.cur;var hc=+DR.cur[0];if(hc<5)S.hat=['y','r','b','g','p'][hc];save();NET.last='';if(typeof netSend==='function')netSend(true);logEv('dr:save');toast('この姿で森に出る👗');var k=DR.cur;DR.cur=null;close();lookApply(k);return}}
+
+/* ===== v0.35 ガチャを作り直す（ゆい Y-3「ガチャの演出つける（10連も）　服、顔のパーツ、小物、家具、乗り物　別のガチャ」＋Y-7 主「どっちも」＝公開処刑ガチャ）=====
+   見た目・確率・返金・演出の順番はチャッピー chatgpt_gacha_spec.json。着せ替えの部品（v0.34）はここで手に入れる（最初は「いつもの」と前からある帽子5色だけ）
+   台: 👕服 / 😊顔パーツ / 🍄小物（ぼうし）/ 🛋家具（前のガチャの中身）/ 🚲乗り物（準備中）/ 📢公開処刑（全部から・レア以上が出やすい・結果が森のみんなのチャットに出る）
+   確率: まず珍しさを引いて（ふつう60・ちょっといい25・レア10・激レア4・伝説1。公開処刑は40/40/15/4/1）、その中から同じ確率で1つ。その台に無い珍しさは抜いて割り直す（表示も同じ計算）
+   お金: 1回10フカ・10連90フカ。持っている物がまた出たら 2/4/8/20/50フカ戻る。抽選は払った時に1回だけ（演出を飛ばしても変わらない）
+   持ち物: S.own（'k3'＝服の色3 など。着せ替えの番号の位置ごとの頭文字 h/p/e/m/c/b/k/q）。家具は今までどおり S.items */
+var GR={common:['ふつう',1,'#A8B3A5',2],uncommon:['ちょっといい',2,'#70C9A1',4],rare:['レア',3,'#73B8F0',8],epic:['激レア',4,'#B59AEF',20],legendary:['伝説',5,'#FFC83D',50]},
+  GRW={n:{common:60,uncommon:25,rare:10,epic:4,legendary:1},p:{common:40,uncommon:40,rare:15,epic:4,legendary:1}},
+  GM=[['cloth','服ガチャ','👕','#FF8C83','今日の自分を、着替えよう。'],['face','顔パーツガチャ','😊','#FFC66D','顔で語ろう、森の暮らし。'],['hat','小物ガチャ','🍄','#78C9A0','頭の上まで、盛っていこう。'],
+    ['fur','家具ガチャ','🛋️','#B6A0E8','必要かどうかは、置いてから考える。'],['ride','乗り物ガチャ','🚲','#92C9E8','森を駆ける日は、まだ遠い。'],['public','公開処刑ガチャ','📢','#FF6B52','引いた瞬間、森じゅうが知っている。']],
+  GPRE='hpemcbkq',GX={m:null,busy:0,conf:0};
+var GI=(function(){var L=[],R=function(m,o){return o},add=function(m,pos,v,name,lab,r){L.push({m:m,pos:pos,v:v,key:GPRE[pos]+v,name:name,lab:lab,r:r})};
+  var cr={'いちご':'common','そら':'common','わかば':'common','たんぽぽ':'common','さくら':'uncommon','ぶどう':'uncommon','みかん':'uncommon','ココア':'uncommon'};
+  for(var i=1;i<=8;i++)add('cloth',6,i,DR.clo[i][0],'服の色',cr[DR.clo[i][0]]);
+  [['ボーダー','common'],['水玉','common'],['チェック','uncommon'],['おほしさま','rare'],['おはな','rare']].forEach(function(q,j){add('cloth',7,j+1,q[0],'服の柄',q[1])});
+  var er=['rare','common','uncommon','uncommon','rare','common','epic'],mr=['common','common','common','rare','uncommon','uncommon','rare'],chr=['uncommon','uncommon','uncommon','rare','uncommon','common','rare'],br=['common','common','uncommon','uncommon','rare','common','common'];
+  for(i=1;i<=7;i++){add('face',2,i,DR.eyes[i],'目',er[i-1]);add('face',3,i,DR.mouth[i],'口',mr[i-1]);add('face',4,i,DR.cheek[i][0],'ほっぺ',chr[i-1]);add('face',5,i,DR.brow[i],'まゆ',br[i-1])}
+  [[5,'uncommon'],[6,'uncommon'],[7,'uncommon'],[8,'common']].forEach(function(q){add('hat',0,q[0],DR.hat[q[0]][0],'ぼうしの色',q[1])});
+  [['白い水玉','common'],['大きな水玉','uncommon'],['ボーダー','common'],['おほしさま','rare'],['おはな','rare']].forEach(function(q,j){add('hat',1,j+1,q[0],'ぼうしの柄',q[1])});
+  var fr={'盛りすぎたソファ':'uncommon','自称トロフィー':'rare','ゴールポスト型ベッド':'epic','鉄格子の窓':'uncommon','未使用の灰皿':'rare','自分の指名手配ポスター':'epic','金のフカシ像':'legendary'};
+  GACHA.forEach(function(g){L.push({m:'fur',key:'f:'+g.n,name:g.n,lab:'家具',r:fr[g.n]||'common',fk:g.k})});return L})();
+function gOwnInit(){if(!S.own||typeof S.own!=='object'){S.own={};if(/^[0-9]{8}$/.test(S.look||''))S.look.split('').forEach(function(d,i){if(+d)S.own[GPRE[i]+d]=1});save()}} /* v0.34 で着ていた物は持っていることにする */
+function drOwn(pos,v){v=+v;if(!v)return true;if(pos===0&&v<5)return true;gOwnInit();return !!S.own[GPRE[pos]+v]}
+function gPool(m){return m==='public'?GI:GI.filter(function(it){return it.m===m})}
+function gRates(m){var pool=gPool(m),W=GRW[m==='public'?'p':'n'],has={},tot=0;pool.forEach(function(it){has[it.r]=(has[it.r]||0)+1});Object.keys(W).forEach(function(r){if(has[r])tot+=W[r]});
+  var out={};Object.keys(W).forEach(function(r){if(has[r])out[r]={all:W[r]/tot*100,each:W[r]/tot*100/has[r],n:has[r]}});return out}
+function gHave(it){return it.m==='fur'?(S.items[it.name]||0)>0:drOwn(it.pos,it.v)}
+function gDraw(m){var R=gRates(m),x=Math.random()*100,acc=0,rr=null;Object.keys(R).forEach(function(r){if(rr)return;acc+=R[r].all;if(x<acc)rr=r});if(!rr)rr=Object.keys(R).pop();
+  var c=gPool(m).filter(function(it){return it.r===rr});return c[Math.floor(Math.random()*c.length)]}
+function gIcon(it,big){var s=big?'g-ic big':'g-ic';if(it.m==='fur')return '<i class="'+s+' fur">'+esc(it.fk||'？')+'</i>';var kind={0:'hat',1:'hatp',2:'eyes',3:'mouth',4:'cheek',5:'brow',6:'clo',7:'clop'}[it.pos];return '<img class="'+s+'" alt="" src="'+drMini(kind,it.v)+'">'}
+function gStars(r){return '<b class="g-st" style="color:'+GR[r][2]+'">'+'★'.repeat(GR[r][1])+'</b>'}
+function gachaOpen(msg){gOwnInit();GX.m=null;GX.conf=0;
+  var h='<div class="g"><div class="chh" style="padding-right:74px"><b>🎰 森のガチャ屋さん</b></div><div class="g-coin">手持ち <b>'+S.coin+'</b> フカ</div><div class="g-list">'+
+    GM.map(function(m){var pool=gPool(m[0]),got=pool.filter(gHave).length,ride=m[0]==='ride';
+      return '<button type="button" class="g-m'+(m[0]==='public'?' pub':'')+'" data-a="g:m:'+m[0]+'"'+(ride?' disabled':'')+' style="--gc:'+m[3]+'"><em>'+m[2]+'</em><b>'+m[1]+'</b><small>'+esc(m[4])+'</small><span>'+(ride?'準備中':'1回10・10連90'+(m[0]!=='public'?'　'+got+'/'+pool.length:''))+'</span></button>'}).join('')+'</div>'+
+    (msg?'<p class="chn">'+esc(msg)+'</p>':'<p class="chn">森のお金（フカ）だけで引ける。持っている物がまた出たら少しフカが戻る</p>')+'</div>';
+  show('gac',h)}
+function gMachine(m,msg){gOwnInit();GX.m=m;var M=GM.find(function(q){return q[0]===m}),R=gRates(m),pool=gPool(m);
+  var tbl=Object.keys(R).map(function(r){var its=pool.filter(function(it){return it.r===r});
+    return '<details'+(r==='legendary'||r==='epic'?' open':'')+'><summary>'+gStars(r)+' '+GR[r][0]+' <span>'+R[r].all.toFixed(1)+'%（1つ '+R[r].each.toFixed(2)+'%）</span></summary><div class="g-its">'+its.map(function(it){return '<span class="'+(gHave(it)?'have':'')+'">'+gIcon(it)+esc(it.lab==='家具'?it.name:it.lab+'「'+it.name+'」')+'</span>'}).join('')+'</div></details>'}).join('');
+  var pub=m==='public',got=pool.filter(gHave).length;
+  var h='<div class="g"><div class="chh" style="padding-right:74px"><button type="button" data-a="g:back" aria-label="もどる">‹</button><b>'+M[2]+' '+M[1]+'</b></div>'+
+    '<div class="g-hero" style="--gc:'+M[3]+'"><div class="g-mc"><i></i><i></i><i></i><i></i><i></i></div><p>'+esc(M[4])+'</p></div>'+
+    '<div class="g-coin">手持ち <b>'+S.coin+'</b> フカ　'+(pub?'':'集めた '+got+'/'+pool.length)+'</div>'+
+    (pub&&GX.conf?'<div class="g-warn">📢 結果が森のみんなのチャットと画面に出ます（出るのは 名前・引いた物・珍しさ だけ）'+(NET.st==='on'?'':'<br>いまは森につながっていないので、だれにも見えない')+'</div>':'')+
+    '<div class="g-pull">'+(pub&&!GX.conf?'<button type="button" class="y" data-a="g:conf"'+(S.coin<10?' disabled':'')+'>📢 公開して引く…</button>':
+      '<button type="button" data-a="g:pull:1"'+(S.coin<10?' disabled':'')+'>1回引く<small>10フカ</small></button><button type="button" class="y" data-a="g:pull:10"'+(S.coin<90?' disabled':'')+'>10連で引く<small>90フカ（1回分おとく）</small></button>')+
+    (pub&&GX.conf?'<button type="button" class="sub" data-a="g:unconf">やめる</button>':'')+'</div>'+
+    (msg?'<p class="chn">'+esc(msg)+'</p>':'')+
+    '<div class="g-tbl"><div class="drs">中身と出る確率</div>'+tbl+'<p class="chn">持っている物がまた出たら: ★1 2フカ・★2 4・★3 8・★4 20・★5 50 戻る</p></div></div>';
+  show('gac',h)}
+function gPull(n){var m=GX.m;if(!m||GX.busy)return;var cost=n===10?90:10;if(S.coin<cost)return;gOwnInit();
+  S.coin-=cost;var res=[],ref=0,i,it,dup;
+  for(i=0;i<n;i++){it=gDraw(m);dup=gHave(it)||res.some(function(q){return q.it===it&&!q.dup});
+    if(dup){ref+=GR[it.r][3]}else{if(it.m==='fur')S.items[it.name]=(S.items[it.name]||0)+1;else S.own[it.key]=1}
+    res.push({it:it,dup:dup})}
+  S.coin+=ref;save();logEv('gacha:'+m+':'+n);
+  if(m==='public'){var best=res.slice().sort(function(a,b){return GR[b.it.r][1]-GR[a.it.r][1]})[0],nm=netName();
+    var t=n===1?'📢【公開処刑ガチャ】'+nm+'が「'+best.it.name+'」を引いた！'+GR[best.it.r][0]+'（'+GR[best.it.r][1]+'★）'+(best.dup?'🔁かぶり':'✨NEW'):'📢【公開処刑10連】'+nm+'の最高は「'+best.it.name+'」'+GR[best.it.r][0]+'（'+GR[best.it.r][1]+'★）';
+    if(NET.st==='on')netPush('c',{i:netId(),t:t.slice(0,60)});NET.log.push([nm,t.slice(0,60),1]);if(NET.log.length>20)NET.log.shift()}
+  GX.conf=0;gShow(res,ref,n)}
+function gShow(res,ref,n){var o=$('#gx');if(!o){o=document.createElement('div');o.id='gx';$('#stage').appendChild(o)}
+  var best=res.slice().sort(function(a,b){return GR[b.it.r][1]-GR[a.it.r][1]})[0],top=GR[best.it.r][1],M=GM.find(function(q){return q[0]===GX.m});
+  o.className='on t'+top+(n===10?' ten':'');o.style.setProperty('--gc',M[3]);GX.busy=1;
+  o.innerHTML='<button type="button" class="gx-skip" data-gx="skip">スキップ</button><div class="gx-mc"><i></i><i></i><i></i></div>'+
+    (n===1?'<div class="gx-cap" style="--rc:'+GR[best.it.r][2]+'"><b></b><b></b></div>':'<div class="gx-caps">'+res.map(function(q,i){return '<div class="gx-cap s" style="--rc:'+GR[q.it.r][2]+';--d:'+(i*.1)+'s"><b></b><b></b></div>'}).join('')+'</div>')+
+    '<div class="gx-fx"></div><div class="gx-res"></div>';
+  var done=function(){if(!o.classList.contains('on'))return;clearTimeout(GX.tm);o.classList.add('done');
+    var card=function(q,big){return '<div class="gx-card'+(big?' big':'')+'" style="--rc:'+GR[q.it.r][2]+'">'+gStars(q.it.r)+gIcon(q.it,big)+'<b>'+esc(q.it.name)+'</b><small>'+esc(q.it.lab)+'</small>'+(q.dup?'<em class="d">'+(big?'持ってる　フカ +':'+')+GR[q.it.r][3]+(big?'':'フカ')+'</em>':'<em class="n">NEW！</em>')+'</div>'};
+    var h=n===1?card(res[0],1):'<div class="gx-best">'+card(best,1)+'</div><div class="gx-grid">'+res.map(function(q){return card(q,0)}).join('')+'</div><p class="gx-sum">NEW '+res.filter(function(q){return !q.dup}).length+'個　かぶり '+res.filter(function(q){return q.dup}).length+'個'+(ref?'　フカ +'+ref:'')+'</p>';
+    var eq=n===1&&!res[0].dup&&res[0].it.m!=='fur';
+    h+='<div class="gx-btns">'+(eq?'<button type="button" class="y" data-gx="wear">身につける</button>':'')+'<button type="button" data-gx="again"'+(S.coin<(n===10?90:10)?' disabled':'')+'>'+(n===10?'もう10連':'もう1回')+'</button><button type="button" data-gx="close">'+(n===10&&res.some(function(q){return !q.dup&&q.it.m!=='fur'})?'しまう（着せ替えは家で）':'しまう')+'</button></div>';
+    o.querySelector('.gx-res').innerHTML=h;GX.busy=0;GX.last={res:res,n:n}};
+  GX.tm=setTimeout(done,(n===1?3200:5000)+(top>=5?1000:0));GX.done=done}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-gx]');if(!b)return;var a=b.getAttribute('data-gx'),o=$('#gx');
+  if(a==='skip'){if(GX.done)GX.done();return}
+  if(a==='close'){o.className='';o.innerHTML='';gMachine(GX.m||'cloth');return}
+  if(a==='again'){var n=GX.last?GX.last.n:1;o.className='';o.innerHTML='';if(GX.m==='public'){GX.conf=1;gMachine('public');return}gPull(n);return}
+  if(a==='wear'){var it=GX.last.res[0].it,L=lookCode().split('');L[it.pos]=String(it.v);S.look=L.join('');if(it.pos===0&&it.v<5)S.hat=['y','r','b','g','p'][it.v];save();lookApply();NET.last='';netSend(true);toast('身につけた　'+it.name);o.className='';o.innerHTML='';gMachine(GX.m);return}});
+function gAct(p){if(p[0]==='m'){GX.conf=0;gMachine(p[1]);return}if(p[0]==='back'){gachaOpen();return}if(p[0]==='conf'){GX.conf=1;gMachine('public');return}if(p[0]==='unconf'){GX.conf=0;gMachine('public');return}if(p[0]==='pull'){gPull(+p[1]);return}}
 
 function setHat(){ if(!me.sp)return;if(me.sp.userData.m3){if(S.look&&lookOk(S.look)){var hi=['y','r','b','g','p'].indexOf(S.hat);if(hi>=0&&+S.look[0]<5&&+S.look[0]!==hi){S.look=hi+S.look.slice(1);save()}}lookApply();return}var t=TX['kino_'+S.hat].clone();t.needsUpdate=true;t.repeat.set(1/8,1);t.offset.x=(me.pose||0)/8;me.sp.material.map.dispose();me.sp.material.map=t;me.sp.material.needsUpdate=true}
 function buildPlace(p){var w,s;
@@ -1682,8 +1835,7 @@ function open(id){
     var hats=HATS.map(function(h){return '<button type="button" data-a="hat:'+h[0]+'" class="'+(S.hat===h[0]?'on':'')+'" style="background:'+h[1]+'" aria-label="帽子 '+h[2]+'"></button>'}).join('');
     show(id,'<h2>自分の家　Lv'+level()+'（'+n+'×'+n+'マス）</h2><button type="button" class="drin" data-a="dress">👗 着せ替え（顔・服・ぼうし）</button><div class="hats">帽子の色'+hats+'</div><div class="room" style="grid-template-columns:repeat('+n+',30px)">'+cells.join('')+'</div>'+
     '<p class="note">'+(inv.length?('家具 '+inv.length+'個'+(inv.length>n*n?'（'+(inv.length-n*n)+'個は入りきらず外に置いてある）':'')):'まだ家具が無い　ガチャの祠で引くと部屋に並ぶ')+'　ゲームをクリアすると広がる（Lv5まで）　土地: '+KNAME[LOTS[S.lot].kind]+'（'+RNAME[LOTS[S.lot].ring]+'）</p>')}
-  else if(id==='gac'){var rows=GACHA.map(function(g){return '<tr><td>'+g.n+' ×'+(S.items[g.n]||0)+'</td><td>'+g.w+'%</td></tr>'}).join('');
-    show(id,'<h2>ガチャの祠</h2><table>'+rows+'</table><div class="row"><button data-a="pull"'+(S.coin<10?' disabled':'')+'>10フカで1回引く</button></div><p class="note" id="msg">右の数字は出る割合　ご褒美の中身は仮</p>')}
+  else if(id==='gac'){gachaOpen()} /* v0.35 種類ごとのガチャ（gacha.js） */
   else if(id==='box'&&V15.on)senkyoOpen(); /* v0.24 広場の目安箱は森の要望に */
   else if(id==='box')show(id,'<h2>目安箱</h2><p>追加してほしいゲームを書いて入れる　今 '+S.box.length+'通</p><textarea id="boxtext" maxlength="80" placeholder="例: フカシの釣り"></textarea>'+
     '<div class="row"><button data-a="post">投函する</button></div><p class="note" id="msg">試作ではこの端末にだけ保存される（まだ主には届かない）</p>');
@@ -1710,7 +1862,7 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='qtake'){var q0=qNow();q0.on=1;save();mailOpen();logEv('quest:take');return}
   if(a.indexOf('rec:')===0){recOpen(a.slice(4));return}
   if(a==='net'){netOpen();return}if(a.indexOf('net:')===0){netAct(a.slice(4));return}
-  if(a==='dress'){DR.cur=null;dressOpen();return}if(a.indexOf('dr:')===0){drAct(a.slice(3).split(':'));return}
+  if(a==='dress'){DR.cur=null;dressOpen();return}if(a.indexOf('g:')===0){gAct(a.slice(2).split(':'));return}if(a.indexOf('dr:')===0){drAct(a.slice(3).split(':'));return}
   if(a==='zukan'){zukanOpen();return}if(a.indexOf('zk:')===0){zkPick(a.slice(3));return}
   if(a.indexOf('gear:')===0){var gk=a.slice(5),gn=GEAR[gk].lv[S.gear[gk]];if(!gn||S.coin<gn[1])return;S.coin-=gn[1];S.gear[gk]++;gearApply();save();gearOpen('少しだけ、本気になりました');logEv('gear:'+gk+S.gear[gk]);return}
   if(a==='logsend'){LOG.note=String($('#lognote').value||'').replace(/[<>]/g,'').trim().slice(0,200);(LOG.notes=LOG.notes||[]).push({t:Date.now(),note:LOG.note,x:+me.x.toFixed(1),z:+me.z.toFixed(1),room:ROOM.on?1:0,dive:DV.on?+(WS-DV.y).toFixed(1):-1});b.disabled=true;b.textContent='送っている';
@@ -2947,7 +3099,7 @@ function netFrame(dt,t){var now=performance.now();netHud();
 function netSay(text){if(NET.st!=='on'){netOpen('まだつながっていない');return}var now=performance.now();if(now-NET.saidAt<1200)return;var raw=String(text||'').trim(),t=netClean(raw);if(!t)return;NET.saidAt=now;
   sayOver(me,t,t.length>22?7000:4500);NET.log.push([netName(),t,1]);if(NET.log.length>20)NET.log.shift();netPush('c',{i:netId(),t:t});logEv('net:say');if(sheetOpen==='net')netOpen(t!==raw?'個人の情報や使えない言葉は ＊ にして送った':'')}
 function netSaid(q){if(!q||typeof q!=='object')return;var id=String(q.i||''),p=NET.peers[id];if(!p||(S.netMute&&S.netMute[id]))return;var now=performance.now();if(now-(p.saidAt||0)<900)return;p.saidAt=now;var t=netClean(q.t);if(!t)return;
-  NET.log.push([p.name,t,0]);if(NET.log.length>20)NET.log.shift();if(p.shown)sayOver(p,t,t.length>22?8000:5000);if(sheetOpen==='net')netOpen();else toast(p.name+'「'+t.slice(0,22)+(t.length>22?'…':'')+'」')}
+  NET.log.push([p.name,t,0]);if(NET.log.length>20)NET.log.shift();if(p.shown)sayOver(p,t,t.length>22?8000:5000);var pub=/^📢/.test(t);if(pub)toast(t,1);if(sheetOpen==='net')netOpen();else if(!pub)toast(p.name+'「'+t.slice(0,22)+(t.length>22?'…':'')+'」')}
 function netOpen(msg){var h;
   if(S.net!==1){h='<h2>ほかの旅人と同じ森に入る</h2><p>入ると、同じ時間に森にいる旅人が互いに見える。ひとことも送り合える。相手は本物の人</p>'+
       '<table class="mytab netc"><tr><th>相手に見える</th><td>森の中の居場所・帽子の色・名前（いまは「'+esc(netName())+'」）・自分が書いたひとこと</td></tr>'+
@@ -3087,7 +3239,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.34',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.35',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -3151,7 +3303,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
