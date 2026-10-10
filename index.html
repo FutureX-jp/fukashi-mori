@@ -309,6 +309,47 @@ body #wm #land h2,body #wm #land .gol,body #wm #land button.sub[data-l="close"]{
 #mmf{background:#FFF3C7 !important;border:2px solid #fff !important;box-shadow:0 2px 8px rgba(0,0,0,.25);font-size:22px;line-height:1}
 #stage:has(#mmw.fold) #phb{right:58px}
 #mmw.fold #cmp{left:-42px;top:4px}
+
+/* ===== v0.31 個人・グループチャット（ゆい Y-5。見た目はチャッピー chatgpt_chat_spec.json）===== */
+#stage #chb.dot:after{content:'';position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#E94343;border:2px solid #FFF3C7}
+#sheet .ch{color:#173A2C}
+#sheet .chh{display:flex;align-items:center;gap:8px;min-height:44px;margin:-2px 0 2px;padding-right:74px} /* 右上の「とじる」と重ならない */
+#sheet .chh b{flex:1;min-width:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sheet .chh small{display:block;font-size:11px;font-weight:700;color:#718071}
+#sheet .chh button{flex:none;min-height:0;width:44px;height:40px;padding:0;border-radius:12px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:20px;font-weight:800}
+#sheet .cht{display:flex;gap:4px;padding:4px;background:#E5D9B4;border-radius:14px;margin-bottom:6px}
+#sheet .cht button{flex:1;min-height:0;height:38px;padding:0;border-radius:10px;background:transparent;color:#68765D;border:1px solid transparent;font-size:13px;font-weight:700;position:relative}
+#sheet .cht button.on{background:#FFFDF3;color:#173A2C;font-weight:800;border-color:#DCCB99;box-shadow:0 2px 5px rgba(35,55,35,.12)}
+#sheet .cht i,#sheet .chr i.u{position:absolute;right:6px;top:3px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#E94343;color:#fff;font-size:11px;font-style:normal;font-weight:800;line-height:18px;text-align:center}
+#sheet .chl{max-height:min(calc(var(--kbh,60vh) * .45),300px);overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:1px}
+#sheet .chs{font-size:12px;font-weight:800;color:#496A40;margin:6px 2px 0}
+#sheet .chr{position:relative;display:flex;align-items:center;gap:10px;min-height:60px;padding:8px 10px;background:#FFFDF3;border:1px solid #EEE5CE;border-radius:14px;text-align:left;width:100%;color:#173A2C;font-weight:400}
+#sheet .chr>em{flex:none;width:40px;height:40px;border-radius:50%;border:2px solid #E7DDBE;background:#F4EBCB;display:grid;place-items:center;font-size:20px;font-style:normal}
+#sheet .chr>span{flex:1;min-width:0}
+#sheet .chr b{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sheet .chr small{display:block;font-size:12px;color:#647568;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sheet .chr small.off{color:#8A9188}
+#sheet .chr.sel{background:#FFE08A;border-color:#E9C768}
+#sheet .chr .ck{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #D8CDAA;display:grid;place-items:center;font-weight:900;color:#173A2C}
+#sheet .chr.sel .ck{background:#FFC83D;border-color:#FFC83D}
+#sheet .chb{width:100%;min-height:0;height:46px;border-radius:16px;background:#FFC83D;color:#173A2C;border:0;font-size:14px;font-weight:800}
+#sheet .chb:disabled{background:#E8E1CC;color:#8A9188}
+#sheet .che{padding:16px;border-radius:14px;background:#FFFDF3;color:#68765D;font-size:13px;text-align:center}
+#sheet .chm{display:flex;flex-direction:column;gap:4px;max-height:min(calc(var(--kbh,60vh) * .42),280px);overflow-y:auto;padding:4px 2px}
+#sheet .chm .mi{align-self:flex-end;max-width:78%;background:#FFC83D;color:#173A2C;border-radius:18px 18px 4px 18px;padding:8px 12px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#sheet .chm .th{align-self:flex-start;max-width:78%;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;border-radius:18px 18px 18px 4px;padding:8px 12px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#sheet .chm .nm{align-self:flex-start;font-size:12px;font-weight:800;color:#496A40;margin:6px 0 0 6px}
+#sheet .chm .tm{font-size:10.5px;color:#7B897C;margin:0 6px 2px}
+#sheet .chm .tm.r{align-self:flex-end}
+#sheet .chm .sy{align-self:center;font-size:11px;color:#718071;background:#F8EDCE;border-radius:12px;padding:3px 10px;margin:4px 0}
+#sheet .chm .mu{font-style:italic;color:#8A9188}
+#sheet .chk{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+#sheet .chk::-webkit-scrollbar{display:none}
+#sheet .chk button{flex:none;min-height:0;height:34px;padding:0 12px;border-radius:999px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:12.5px;font-weight:700}
+#sheet .chn{font-size:12px;color:#718071;margin:2px}
+#sheet .chmenu{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px}
+#sheet .chmenu button{min-height:0;height:36px;padding:0 12px;border-radius:12px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:12.5px;font-weight:700}
+#sheet .chmenu button.d{color:#B23A3A}
 </style>
 </head>
 <body>
@@ -384,7 +425,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.30';
+var VERSION='v0.31';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -2681,11 +2722,11 @@ function netClean(s){s=String(s==null?'':s).replace(/[\u0000-\u001f<>]/g,'').sli
 function netWant(){return V15.on&&S.net===1}
 function netPush(ev,pl){try{var w=NET.ch;if(w&&w.readyState===1){var o={e:ev};for(var k in pl)o[k]=pl[k];w.send(JSON.stringify(o))}}catch(e){}} /* v0.30 森のサーバーへ */
 function netBoot(){if(!netWant()||NET.st==='on'||NET.st==='wait'||performance.now()<NET.closeAt)return;NET.st='wait';NET.err=''; /* v0.30 森のサーバーの部屋へ WebSocket で入る */
-  var w;try{w=new WebSocket(NET.WS+'?i='+netId())}catch(e){NET.st='ng';NET.ngAt=performance.now();NET.err='始められない（'+String(e&&e.message||e).slice(0,40)+'）';return}
+  var w;try{w=new WebSocket(NET.WS+'?i='+netId()+(/testroom/.test(location.hash)?'&r=test':''))}catch(e){NET.st='ng';NET.ngAt=performance.now();NET.err='始められない（'+String(e&&e.message||e).slice(0,40)+'）';return}
   NET.ch=w;
-  w.onopen=function(){if(w!==NET.ch)return;NET.st='on';NET.err='';NET.sendT=0;NET.last='';NET.back=3000;NET.pingAt=performance.now();logEv('net:on');netSend(true);netHud();if(sheetOpen==='net')netOpen()};
+  w.onopen=function(){if(w!==NET.ch)return;NET.st='on';NET.err='';NET.sendT=0;NET.last='';NET.back=3000;NET.pingAt=performance.now();logEv('net:on');netSend(true);chBlk();netHud();if(sheetOpen==='net')netOpen()};
   w.onmessage=function(m){if(w!==NET.ch)return;var q;try{q=JSON.parse(m.data)}catch(e){return}if(!q||typeof q!=='object')return;
-    if(q.e==='p')netGot(q);else if(q.e==='c')netSaid(q);else if(q.e==='x'){if(NET.peers[String(q.i)])netDrop(String(q.i))}};
+    if(q.e==='p')netGot(q);else if(q.e==='c')netSaid(q);else if(q.e==='w')chGot(q);else if(q.e==='wack')chAck(q);else if(q.e==='x'){if(NET.peers[String(q.i)])netDrop(String(q.i))}};
   w.onclose=w.onerror=function(ev){if(w!==NET.ch)return;var was=NET.st==='on';NET.ch=null;NET.st='ng';NET.ngAt=performance.now();NET.err=(ev&&ev.type==='close'?'切れた '+(ev.code||''):'つながらない')+(ev&&ev.reason?' '+String(ev.reason).slice(0,30):'');
     Object.keys(NET.peers).forEach(netDrop);if(!NET.said&&!was){NET.said=1;logPush('net','同じワールドにつながらない（'+NET.err+'）','')}netHud();if(sheetOpen==='net')netOpen()}}
 function netLeave(ch,wait){NET.closeAt=performance.now()+wait+200;setTimeout(function(){try{if(ch&&ch.close)ch.close(1000,'bye')}catch(e){}},wait)}
@@ -2700,14 +2741,14 @@ function netMk(id,x,z){var sp=chara('kino_y');sp.userData.off=true;sp.visible=fa
   p.hit={type:'sign',id:'net_'+id,who:p,w:1.4,h:2.1};NET.peers[id]=p;NET.n++;logEv('net:peer:'+NET.n);netHud();return p}
 function netDrop(id){var p=NET.peers[id];if(!p)return;delete NET.peers[id];NET.n=Math.max(0,NET.n-1);var i=hits.indexOf(p.hit);if(i>=0)hits.splice(i,1);i=bills.indexOf(p.tag);if(i>=0)bills.splice(i,1);
   for(i=SAYS.length-1;i>=0;i--)if(SAYS[i].o===p){scene.remove(SAYS[i].s);SAYS[i].s.material.map.dispose();SAYS[i].s.material.dispose();SAYS.splice(i,1)}
-  scene.remove(p.sp);if(p.sp.material)p.sp.material.dispose();scene.remove(p.tag);if(p.tag.material.map)p.tag.material.map.dispose();p.tag.material.dispose();if(p.name)toast(p.name+'が森を出た');netHud();if(sheetOpen==='net')netOpen()}
+  scene.remove(p.sp);if(p.sp.material)p.sp.material.dispose();scene.remove(p.tag);if(p.tag.material.map)p.tag.material.map.dispose();p.tag.material.dispose();if(p.name)toast(p.name+'が森を出た');netHud();netRef()}
 function netGot(q){if(!q||typeof q!=='object'||NET.st!=='on')return;var id=String(q.i||''),x=+q.x,z=+q.z;if(!/^[a-z0-9]{10}$/.test(id)||id===netId()||!isFinite(x)||!isFinite(z)||Math.abs(x)>TOWN+10||Math.abs(z)>TOWN+10)return;
   var now=performance.now(),p=NET.peers[id],fresh=!p;if(fresh){if(NET.n>=NET.MAXP)return;p=netMk(id,x,z);if(now-NET.helloAt>400){NET.helloAt=now;netSend(true,now)}} /* 初めて見る人には、すぐ自分の居場所を返す（相手の画面にもすぐ出るように） */
   p.at=now;p.tx=x;p.tz=z;p.ya=isFinite(+q.a)?+q.a:0;p.v=q.v?1:0;
   var nm=netName(q.n),hat=HATS.some(function(h){return h[0]===q.h})?q.h:'y';
   if(nm!==p.name){p.name=nm;netTag(p)}
   if(hat!==p.hat){p.hat=hat;if(p.sp.userData.m3){p.sp.material.map=hatTex(hat);p.sp.material.needsUpdate=true}}
-  if(fresh){toast(p.name+'が森にいる');if(sheetOpen==='net')netOpen()}}
+  if(fresh){toast(p.name+'が森にいる');netRef()}}
 function netStep(dt,now){var ids=Object.keys(NET.peers),i,p,dx,dz,d,mv,sp,w,y,hop,a,c,s2,show,hi;
   for(i=0;i<ids.length;i++){p=NET.peers[ids[i]];if(now-p.at>NET.DEAD){netDrop(ids[i]);continue}
     show=!!(p.v&&!ROOM.on&&!DV.on&&Math.hypot(p.tx-me.x,p.tz-me.z)<95);
@@ -2735,15 +2776,16 @@ function netOpen(msg){var h;
   if(S.net!==1){h='<h2>ほかの旅人と同じ森に入る</h2><p>入ると、同じ時間に森にいる旅人が互いに見える。ひとことも送り合える。相手は本物の人</p>'+
       '<table class="mytab netc"><tr><th>相手に見える</th><td>森の中の居場所・帽子の色・名前（いまは「'+esc(netName())+'」）・自分が書いたひとこと</td></tr>'+
       '<tr><th>見えない</th><td>フカ・家・リュック・住民票・役場や家の中と水の中にいる時の姿</td></tr>'+
-      '<tr><th>通り道</th><td>中継に Supabase（不具合の記録と同じ会社）を通す。居場所もひとことも、その場で相手に届けるだけで保存しない</td></tr></table>'+
+      '<tr><th>通り道</th><td>森のサーバーを通す。居場所もひとことも、その場で相手に届けるだけで保存しない（個人・グループの会話は自分の端末の中にだけ残る）</td></tr></table>'+
       '<div class="row"><button data-a="net:yes">同じ森に入る</button><button class="sub" data-a="net:no">ひとりで遊ぶ</button></div>'+
       '<p class="note">あとからいつでも切り替えられる（左上の 👥 の札）。本名・住所・学校・電話番号・SNSのIDは書かないでね（電話番号・ID・リンクは自動で ＊ になる）</p>';
     show('net',h);return}
+  if(!CH.pub){chOpen(msg);return} /* v0.31 */
   var ps=Object.keys(NET.peers).map(function(k){return NET.peers[k]}),mu=S.netMute||{},keep=$('#netin')?$('#netin').value:'';
-  var st=NET.st==='on'?(ps.length?'いま森にいる旅人 '+ps.length+'人':'いま森にいる旅人は自分だけ（だれか来ると、ここと森に出る）'):NET.st==='ng'?'つながらない（'+esc(NET.err||'理由は分からない')+'）　30秒おきにつなぎ直している':'つないでいる…';
+  var st=NET.st==='on'?(ps.length?'いま森にいる旅人 '+ps.length+'人':'いま森にいる旅人は自分だけ（だれか来ると、ここと森に出る）'):NET.st==='ng'?'つながらない（'+esc(NET.err||'理由は分からない')+'）　自動でつなぎ直している':'つないでいる…';
   var who=ps.map(function(p){return '<div class="netp"><b>👤 '+esc(p.name)+'</b><button type="button" class="sub" data-a="net:mute:'+p.id+'">'+(mu[p.id]?'字を見る':'字を見ない')+'</button></div>'}).join('');
   var lines=NET.log.slice(-8).map(function(l){return '<p class="'+(l[2]?'me':'bot')+'"><span class="bb">'+(l[2]?'':esc(l[0])+'：')+esc(l[1])+'</span></p>'}).join('')||'<p class="note">スタンプか、ひとことを送ると、森にいる旅人みんなに見える</p>';
-  h='<h2>ほかの旅人</h2><p>'+st+'</p>'+who+'<div class="log" id="netlog">'+lines+'</div>'+
+  h=chHead()+'<p>'+st+'</p>'+who+'<div class="log" id="netlog">'+lines+'</div>'+
     '<div class="stamps">'+NETSTAMP.map(function(s,i){return '<button type="button" class="st" data-a="net:st:'+i+'">'+s+'</button>'}).join('')+'</div>'+
     '<div class="row say"><input id="netin" type="text" maxlength="60" placeholder="ひとこと書く（みんなに見える）" autocomplete="off" enterkeyhint="send" aria-label="ひとこと"><button data-a="net:say">送る</button></div>'+
     '<div class="row say"><input id="netname" type="text" maxlength="12" value="'+esc(S.pname||'')+'" placeholder="名前（12字まで）" autocomplete="off" aria-label="ほかの旅人に見える名前"><button class="sub" data-a="net:name">名前を変える</button></div>'+
@@ -2753,11 +2795,109 @@ function netOpen(msg){var h;
 function netAct(a){var p=a.split(':');
   if(p[0]==='yes'){S.net=1;S.netAsk=1;save();logEv('net:yes');netBoot();netHud();netOpen();return}
   if(p[0]==='no'){S.net=0;S.netAsk=1;save();logEv('net:no');netStop();close();toast('ひとりで遊ぶ（左上の 👥 の札で、いつでも変えられる）');return}
-  if(p[0]==='st'){netSay(NETSTAMP[+p[1]]||'');return}
-  if(p[0]==='say'){var v=($('#netin')||{}).value||'';if(v.trim()){$('#netin').value='';netSay(v)}return}
+  if(p[0]==='st'){if(CH.th){chSay(NETSTAMP[+p[1]]||'');return}netSay(NETSTAMP[+p[1]]||'');return}
+  if(p[0]==='say'){var v=($('#netin')||{}).value||'';if(CH.th){chSay(v);return}if(v.trim()){$('#netin').value='';netSay(v)}return}
+  if(p[0]==='ch'){chAct(p.slice(1));return}
   if(p[0]==='mute'){S.netMute=S.netMute||{};if(S.netMute[p[1]])delete S.netMute[p[1]];else{var ks=Object.keys(S.netMute);if(ks.length>=50)delete S.netMute[ks[0]];S.netMute[p[1]]=1}save();netOpen();return}
   if(p[0]==='name'){var nv=(($('#netname')||{}).value||'').trim().slice(0,12);if(nv&&QNG.test(nv)){netOpen('その名前は使えない言葉が入ってる。ほかの名前にしてね');return}S.pname=nv;save();NET.last='';netSend(true);netOpen(nv?'名前を「'+nv+'」にした':'名前を消した（「旅人」と出る）');return}}
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='netin'){e.preventDefault();netAct('say')}});
+/* ===== v0.31 個人チャット・グループチャット（ゆい Y-5「個人チャットとグループチャットができるように」。見た目はチャッピー）=====
+   届け方: 森のサーバーの部屋（v0.30）に e:'w'（宛先つき）を送る。サーバーは宛先の人にだけ届けて、届いた人・いなかった人を送り主に返す（wack）。サーバーには残さない
+   会話: 個人＝森にいる1人（相手が森を出たら送れない）。グループ＝森にいる人を選んで名前を付けて作る（自分を入れて8人まで）。抜けられる
+   履歴: この端末の中だけ（S.chat。会話ごとに直近30件・会話は30個まで）。未読は赤い数字、💬ボタンに赤い点
+   守り: 名前とひとことはサーバーと端末の両方でふるう。「字を見ない（ミュート）」は自分の画面だけ。「個人チャットを受け取らない」はサーバーで止める（相手には知らせない）
+   画面: 一覧（みんな／個人／グループのタブ）→ 会話。会話の入力欄は前の「ひとこと」と同じ id（netin）なので、キーボードの扱いはそのまま */
+var CH={tab:'dm',th:null,menu:0,mk:null,pub:0,pend:{}};
+function netRef(){if(sheetOpen!=='net')return;if(!CH.pub&&(CH.th||CH.mk)){var i=$('#netin')||$('#chgn');if(i&&(i.value||document.activeElement===i))return}netOpen()}
+function chS(){if(!S.chat||typeof S.chat!=='object')S.chat={t:{},left:{},blk:{}};S.chat.t=S.chat.t||{};S.chat.left=S.chat.left||{};S.chat.blk=S.chat.blk||{};return S.chat}
+function chRid(n){var v='';for(var i=0;i<n;i++)v+='abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random()*36));return v}
+function chOn(id){var p=NET.peers[id];return !!(NET.st==='on'&&p)}
+function chNm(id,t){var p=NET.peers[id];return p&&p.name?p.name:(t&&t.nm&&t.nm[id])||'旅人'}
+function chT(key,mk){var c=chS(),t=c.t[key];if(!t&&mk){t=c.t[key]=mk;var ks=Object.keys(c.t);if(ks.length>30){ks.sort(function(a,b){return (c.t[a].at||0)-(c.t[b].at||0)});delete c.t[ks[0]]}}return t}
+function chPush(t,from,text,kind){t.log=t.log||[];t.log.push([from,text,Date.now(),kind||0]);if(t.log.length>30)t.log.splice(0,t.log.length-30);t.at=Date.now()}
+function chUn(){var c=chS(),n=0,d=0,g=0;Object.keys(c.t).forEach(function(k){var u=c.t[k].un||0;n+=u;if(c.t[k].k==='g')g+=u;else d+=u});return {n:n,d:d,g:g}}
+function chDot(){var b=$('#chb');if(b)b.classList.toggle('dot',chUn().n>0)}
+function chBlk(){netPush('blk',{ids:Object.keys(chS().blk).slice(0,50)})}
+function chHM(t){var d=new Date(t);return d.getHours()+':'+('0'+d.getMinutes()).slice(-2)}
+function chHead(){var u=chUn(),tb=function(id,lb,n){return '<button type="button" data-a="net:ch:tab:'+id+'" class="'+((CH.pub?id==='all':CH.tab===id)?'on':'')+'">'+lb+(n?'<i>'+(n>99?'99+':n)+'</i>':'')+'</button>'};
+  return '<div class="ch"><div class="chh"><b>💬 チャット</b></div><div class="cht">'+tb('all','みんな',0)+tb('dm','個人',u.d)+tb('grp','グループ',u.g)+'</div></div>'}
+function chOpen(msg){var c=chS(),h;if(CH.th&&!c.t[CH.th])CH.th=null;
+  if(CH.mk){h=chMake(msg)}
+  else if(CH.th){h=chThread(msg)}
+  else{var ks=Object.keys(c.t).filter(function(k){return c.t[k].k===(CH.tab==='grp'?'g':'d')}).sort(function(a,b){return (c.t[b].at||0)-(c.t[a].at||0)});
+    var row=function(k){var t=c.t[k],last=(t.log||[]).slice(-1)[0],on=t.k==='d'?chOn(t.id):!t.left,pv=last?(last[3]===2?last[1]:(last[0]==='me'?'自分：':'')+last[1]):'まだ話していない';
+      return '<button type="button" class="chr" data-a="net:ch:th:'+k+'"><em>'+(t.k==='g'?'👥':'👤')+'</em><span><b>'+esc(t.k==='g'?t.n:chNm(t.id,t))+(t.k==='g'?' ('+(t.m||[]).length+')':'')+'</b><small'+(on?'':' class="off"')+'>'+(t.k==='d'&&!on?'森にいない・':t.left?'抜けた・':'')+esc(String(pv).slice(0,35))+'</small></span>'+(t.un?'<i class="u">'+(t.un>99?'99+':t.un)+'</i>':'')+'</button>'};
+    h=chHead();
+    if(CH.tab==='grp'){var can=Object.keys(NET.peers).length>0;h+='<button type="button" class="chb" data-a="net:ch:mk"'+(can?'':' disabled')+'>＋ グループをつくる</button>'+(can?'':'<p class="chn">森にほかの旅人がいる時につくれる</p>');
+      h+='<div class="chl">'+(ks.map(row).join('')||'<div class="che">👥 まだグループはない。仲間を集めてつくろう</div>')+'</div>'}
+    else{var ps=Object.keys(NET.peers).map(function(k){return NET.peers[k]});
+      h+='<div class="chl"><div class="chs">森にいる旅人</div>'+(ps.length?ps.map(function(p){return '<button type="button" class="chr" data-a="net:ch:dm:'+p.id+'"><em>👤</em><span><b>'+esc(p.name)+'</b><small>森にいる・押すと個人チャット</small></span></button>'}).join(''):'<div class="che">🌙 いま森にいる旅人は自分だけ</div>')+
+        '<div class="chs">個人チャット</div>'+(ks.map(row).join('')||'<div class="che">💬 まだ個人チャットはない。森の旅人に話しかけてみよう</div>')+'</div>'}
+    h+='<p class="note" id="msg">'+(msg?esc(msg):'知らない人に本名・住所・電話番号・SNSのIDを教えないでね（電話番号・ID・リンクは自動で ＊ になる）')+'</p>'}
+  var keep=$('#netin')&&CH.th?$('#netin').value:'';show('net',h);if(keep&&$('#netin'))$('#netin').value=keep;var m=$('#chmlog');if(m)m.scrollTop=m.scrollHeight;chDot()}
+function chThread(msg){var c=chS(),t=c.t[CH.th],mu=S.netMute||{},g=t.k==='g',on=g?!t.left:chOn(t.id),title=g?t.n:chNm(t.id,t),sub=g?(t.left?'抜けたグループ':(t.m||[]).length+'人（森にいる人 '+(t.m||[]).filter(function(x){return x===netId()||chOn(x)}).length+'人）'):(on?'森にいる':'いま森にいない');
+  if(t.un){t.un=0;save()}
+  var h='<div class="ch"><div class="chh"><button type="button" data-a="net:ch:back" aria-label="一覧へ">‹</button><b>'+(g?'👥 ':'👤 ')+esc(title)+'<small>'+esc(sub)+'</small></b><button type="button" data-a="net:ch:menu" aria-label="メニュー">⋯</button></div>';
+  if(CH.menu){h+='<div class="chmenu">'+(g?'<button type="button" data-a="net:ch:mem">メンバーを見る</button>'+(t.left?'':'<button type="button" class="d" data-a="net:ch:leave">グループを抜ける</button>'):
+      '<button type="button" data-a="net:mute:'+t.id+'">'+(mu[t.id]?'字を見る（ミュート解除）':'この人の字を見ない')+'</button><button type="button" data-a="net:ch:blk">'+(c.blk[t.id]?'個人チャットを受け取る':'この人から個人チャットを受け取らない')+'</button>')+
+    '<button type="button" class="d" data-a="net:ch:del">この会話を消す</button></div>';
+    if(CH.menu===2&&g)h+='<p class="chn">メンバー: '+(t.m||[]).map(function(x){return esc(x===netId()?'自分':chNm(x,t))+(x===netId()||chOn(x)?'':'（森にいない）')}).join('・')+'</p>'}
+  var L=t.log||[],prev='';h+='<div class="chm" id="chmlog">';
+  L.forEach(function(l){if(l[3]===2){h+='<div class="sy">'+esc(l[1])+'</div>';prev='';return}var me=l[0]==='me',txt=(!me&&mu[l[0]])?'<span class="mu">ミュート中のメッセージ</span>':esc(l[1]);
+    if(g&&!me&&prev!==l[0])h+='<div class="nm">'+esc(chNm(l[0],t))+'</div>';h+='<div class="'+(me?'mi':'th')+'">'+txt+'</div><div class="tm'+(me?' r':'')+'">'+chHM(l[2])+(l[3]===1?' ・届かなかった':'')+'</div>';prev=l[0]});
+  if(!L.length)h+='<div class="sy">'+(g?'グループができた。話しかけてみよう':'ここに書いたことは '+esc(title)+' にだけ届く')+'</div>';
+  h+='</div>';
+  if(on){h+='<div class="chk">'+NETSTAMP.map(function(s,i){return '<button type="button" data-a="net:st:'+i+'">'+['👋','👍','💛','🌳','🐾','🌙'][i]+' '+s+'</button>'}).join('')+'</div>'+
+      '<div class="row say"><input id="netin" type="text" maxlength="60" placeholder="メッセージを書く（'+(g?'グループの人':'この人')+'だけに届く）" autocomplete="off" enterkeyhint="send" aria-label="メッセージ"><button data-a="net:say">送る</button></div>'}
+  else h+='<p class="che">'+(g?'抜けたグループには送れない':'いま森にいないから送れない（森に来たらまた話せる）')+'</p>';
+  h+='<p class="note" id="msg">'+(msg?esc(msg):'')+'</p></div>';return h}
+function chMake(msg){var ps=Object.keys(NET.peers).map(function(k){return NET.peers[k]}),sel=CH.mk.sel,n=Object.keys(sel).filter(function(k){return sel[k]&&NET.peers[k]}).length;
+  var h='<div class="ch"><div class="chh"><button type="button" data-a="net:ch:mkx" aria-label="やめる">‹</button><b>グループをつくる<small>'+(CH.mk.step?'② 名前を決める':'① 一緒に話す仲間を選ぶ（'+n+'/7人）')+'</small></b></div>';
+  if(!CH.mk.step){h+='<div class="chl">'+(ps.length?ps.map(function(p){var on=!!sel[p.id];return '<button type="button" class="chr'+(on?' sel':'')+'" data-a="net:ch:pk:'+p.id+'"><em>👤</em><span><b>'+esc(p.name)+'</b><small>森にいる</small></span><span class="ck">'+(on?'✓':'')+'</span></button>'}).join(''):'<div class="che">森にいる旅人がいない。少し待ってからつくってね</div>')+'</div>'+
+    '<button type="button" class="chb" data-a="net:ch:mk2"'+(n?'':' disabled')+'>次へ</button>'}
+  else{var nm=Object.keys(sel).filter(function(k){return sel[k]&&NET.peers[k]}).map(function(k){return esc(NET.peers[k].name)});
+    h+='<p class="chn">メンバー: 自分・'+nm.join('・')+'（'+(nm.length+1)+'人）</p><div class="row say"><input id="chgn" type="text" maxlength="12" placeholder="例：夜の森の仲間たち" autocomplete="off" aria-label="グループの名前" value="'+esc(CH.mk.n||'')+'"></div>'+
+      '<button type="button" class="chb" data-a="net:ch:mk3">このメンバーでつくる</button>'}
+  return h+'<p class="note" id="msg">'+(msg?esc(msg):'')+'</p></div>'}
+function chSend(t,k,text){var to=t.k==='g'?(t.m||[]).filter(function(x){return x!==netId()}):[t.id],c=chRid(6);if(!to.length)return false;
+  CH.pend[c]={key:CH.th||('g:'+t.id),n:t.log?t.log.length:0};netPush('w',{to:to,t:text||'',k:k,n:netName(),c:c,g:t.k==='g'?{id:t.id,n:t.n,m:t.m}:null});return true}
+function chSay(v){var t=chS().t[CH.th];if(!t)return;var now=performance.now();if(now-(CH.saidAt||0)<1000)return;var raw=String(v||'').trim(),x=netClean(raw);if(!x)return;
+  if(t.k==='d'&&!chOn(t.id)){chOpen('いま森にいないから送れない');return}if(t.k==='g'&&t.left)return;
+  CH.saidAt=now;if($('#netin'))$('#netin').value='';chPush(t,'me',x,0);chSend(t,'say',x);save();logEv('ch:say:'+t.k);chOpen(x!==raw?'個人の情報や使えない言葉は ＊ にして送った':'')}
+function chAck(q){var p=CH.pend[q.c];if(!p)return;delete CH.pend[q.c];var t=chS().t[p.key];if(!t)return;
+  if(t.k==='d'&&q.miss&&q.miss.length){var l=t.log&&t.log[t.log.length-1];if(l&&l[0]==='me')l[3]=1;save();if(sheetOpen==='net'&&CH.th===p.key)chOpen('相手が森を出ていたから届かなかった')}}
+function chGot(q){if(!q||typeof q!=='object')return;var id=String(q.i||'');if(!/^[a-z0-9]{10}$/.test(id))return;var c=chS(),nm=netName(q.n),k=q.k,t,key,text=k==='say'?netClean(q.t):'';
+  if(k==='say'&&!text)return;
+  if(q.g&&typeof q.g==='object'){var gid=String(q.g.id||'');if(!/^[a-z0-9]{8}$/.test(gid)||c.left[gid])return;key='g:'+gid;t=c.t[key];
+    var ms=Array.isArray(q.g.m)?q.g.m.filter(function(x){return /^[a-z0-9]{10}$/.test(x)}).slice(0,9):[];if(ms.indexOf(netId())<0&&k!=='leave')return;
+    if(!t){if(k==='leave')return;t=chT(key,{k:'g',id:gid,n:netClean(q.g.n).slice(0,12)||'グループ',m:ms,nm:{},log:[],un:0,at:Date.now()});chPush(t,'sys',nm+'がグループ「'+t.n+'」をつくった',2)}
+    if(k!=='leave'&&ms.length)t.m=ms;t.nm=t.nm||{};t.nm[id]=nm;
+    if(k==='leave'){t.m=(t.m||[]).filter(function(x){return x!==id});chPush(t,'sys',nm+'がグループを抜けた',2)}
+    else if(k==='say')chPush(t,id,text,0)}
+  else{if(c.blk[id]||k!=='say')return;key='d:'+id;t=chT(key,{k:'d',id:id,nm:{},log:[],un:0,at:Date.now()});t.nm=t.nm||{};t.nm[id]=nm;chPush(t,id,text,0)}
+  var mu=S.netMute&&S.netMute[id],view=sheetOpen==='net'&&!CH.pub&&CH.th===key&&!CH.mk;if(!view&&k==='say'&&!mu)t.un=(t.un||0)+1;save();
+  if(sheetOpen==='net'&&!CH.pub)chOpen();else{chDot();if(k==='say'&&!mu)toast('💬 '+(t.k==='g'?t.n+'・':'')+nm+'「'+text.slice(0,18)+(text.length>18?'…':'')+'」')}}
+function chAct(p){var c=chS(),a=p[0],t=CH.th&&c.t[CH.th];
+  if(a==='tab'){CH.menu=0;CH.th=null;CH.mk=null;if(p[1]==='all'){CH.pub=1;netOpen();return}CH.pub=0;CH.tab=p[1];chOpen();return}
+  if(a==='th'){CH.th=p.slice(1).join(':');CH.menu=0;chOpen();return}
+  if(a==='dm'){var id=p[1],pp=NET.peers[id];if(!pp)return;var k='d:'+id;chT(k,{k:'d',id:id,nm:{},log:[],un:0,at:Date.now()}).nm[id]=pp.name;CH.th=k;CH.tab='dm';CH.menu=0;save();chOpen();return}
+  if(a==='back'){CH.th=null;CH.menu=0;chOpen();return}
+  if(a==='menu'){CH.menu=CH.menu?0:1;chOpen();return}
+  if(a==='mem'){CH.menu=2;chOpen();return}
+  if(a==='blk'&&t&&t.k==='d'){if(c.blk[t.id])delete c.blk[t.id];else{var bk=Object.keys(c.blk);if(bk.length>=50)delete c.blk[bk[0]];c.blk[t.id]=1}save();chBlk();chOpen(c.blk[t.id]?'この人からの個人チャットは届かなくなった（相手には知らせない）':'また個人チャットを受け取る');return}
+  if(a==='del'&&t){delete c.t[CH.th];CH.th=null;CH.menu=0;save();chOpen('会話を消した（この端末の中だけ）');return}
+  if(a==='leave'&&t&&t.k==='g'){chSend(t,'leave','');t.left=1;c.left[t.id]=1;chPush(t,'sys','グループを抜けた',2);CH.menu=0;save();logEv('ch:leave');chOpen();return}
+  if(a==='mk'){CH.mk={step:0,sel:{},n:''};chOpen();return}
+  if(a==='mkx'){if(CH.mk&&CH.mk.step){CH.mk.n=($('#chgn')||{}).value||'';CH.mk.step=0}else CH.mk=null;chOpen();return}
+  if(a==='pk'&&CH.mk){var s=CH.mk.sel;if(s[p[1]])delete s[p[1]];else if(Object.keys(s).length<7)s[p[1]]=1;chOpen();return}
+  if(a==='mk2'&&CH.mk){CH.mk.step=1;chOpen();return}
+  if(a==='mk3'&&CH.mk){var gn=String((($('#chgn')||{}).value)||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,12);if(!gn){chOpen('グループの名前を書いてね');return}if(QNG.test(gn)){chOpen('その名前は使えない言葉が入ってる');return}
+    var mem=Object.keys(CH.mk.sel).filter(function(x){return NET.peers[x]});if(!mem.length){CH.mk.step=0;chOpen('選んだ人が森を出た。選び直してね');return}
+    var gid=chRid(8),nmm={};mem.forEach(function(x){nmm[x]=NET.peers[x].name});var g=chT('g:'+gid,{k:'g',id:gid,n:gn,m:[netId()].concat(mem),nm:nmm,log:[],un:0,at:Date.now()});chPush(g,'sys','グループ「'+gn+'」をつくった',2);
+    CH.mk=null;CH.th='g:'+gid;CH.tab='grp';chSend(g,'make','');save();logEv('ch:make:'+mem.length);chOpen();return}}
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='chgn'){e.preventDefault();chAct(['mk3'])}});
+setTimeout(chDot,1500);
+
 window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('x',{i:netId()})});
 (function(){var nb=$('#netb');if(nb)nb.onclick=function(){if(sheetOpen==='net')close();else netOpen()}})();
 /* ---- 記録（ログ）（v0.11。10/6 13:39 主「この段階でもうログを回収できる仕組みがほしい　pkのときみたいな」）----
@@ -2768,7 +2908,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.30',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.31',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -2832,7 +2972,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
