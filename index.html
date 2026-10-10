@@ -576,7 +576,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.40';
+var VERSION='v0.41';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1179,11 +1179,18 @@ function gMachine(m,msg){if(m==='cloth'||m==='face')m='look';gOwnInit();GX.m=m;v
     '<div class="g-tbl"><div class="drs">中身と出る確率</div>'+tbl+'<p class="chn">持っている物がまた出たら: ★1 2フカ・★2 4・★3 8・★4 20・★5 50 戻る</p></div></div>';
   show('gac',h)}
 function gPull(n){var m=GX.m;if(!m||GX.busy)return;var cost=n===10?90:10;if(S.coin<cost)return;gOwnInit();
+  if(S.acct&&S.acct.token&&WAL.on){GX.busy=1;walFlush(function(){fetch(MORI+'/api/account/gacha?w=live',{method:'POST',headers:MH(),body:JSON.stringify({m:m,n:n})}).then(function(r){return r.json()}).then(function(j){GX.busy=0;
+      if(!j||!j.ok){if(j&&j.coin!=null)walSet(j.coin);toast(j&&j.reason==='coin'?'フカが足りない（住民票のフカ '+j.coin+'）':'ガチャ屋さんにつながらなかった（フカは減っていない）');if(sheetOpen==='gac')gMachine(m);return}
+      var res=[];j.res.forEach(function(q){var it=GI.find(function(x){return x.key===q.key});if(!it)return;if(!q.dup){if(it.m==='fur')S.items[it.name]=(S.items[it.name]||0)+1;else S.own[it.key]=1}res.push({it:it,dup:!!q.dup})});
+      walSet(j.coin);if(!res.length){toast('ゲームを新しくしてね（知らない物が出た）');return}gDone(m,n,res,j.ref||0)},function(){GX.busy=0;toast('ガチャ屋さんにつながらなかった（フカは減っていない）')})});return} /* v0.41 住民票がある人はサーバーで引く */
+  return gPullLocal(n)}
+function gPullLocal(n){var m=GX.m,cost=n===10?90:10;
   S.coin-=cost;var res=[],ref=0,i,it,dup;
   for(i=0;i<n;i++){it=gDraw(m);dup=gHave(it)||res.some(function(q){return q.it===it&&!q.dup});
     if(dup){ref+=GR[it.r][3]}else{if(it.m==='fur')S.items[it.name]=(S.items[it.name]||0)+1;else S.own[it.key]=1}
     res.push({it:it,dup:dup})}
-  S.coin+=ref;save();logEv('gacha:'+m+':'+n);
+  S.coin+=ref;gDone(m,n,res,ref)}
+function gDone(m,n,res,ref){save();logEv('gacha:'+m+':'+n);
   if(m==='public'){var best=res.slice().sort(function(a,b){return GR[b.it.r][1]-GR[a.it.r][1]})[0],nm=netName();
     var t=n===1?'📢【公開処刑ガチャ】'+nm+'が「'+best.it.name+'」を引いた！'+GR[best.it.r][0]+'（'+GR[best.it.r][1]+'★）'+(best.dup?'🔁かぶり':'✨NEW'):'📢【公開処刑10連】'+nm+'の最高は「'+best.it.name+'」'+GR[best.it.r][0]+'（'+GR[best.it.r][1]+'★）';
     if(NET.st==='on')netPush('c',{i:netId(),t:t.slice(0,60)});NET.log.push([nm,t.slice(0,60),1]);if(NET.log.length>20)NET.log.shift()}
@@ -1815,8 +1822,8 @@ function qEv(kind,a,b){var q=S.q,i,D,hit;if(!q||!q.on||q.d!==dayKey()||q.all)ret
     else if(D[2]==='shell')hit=kind==='shell';
     else if(D[2]==='bank30')hit=kind==='bank'&&a>=30;
     else hit=kind==='catch'&&a===D[2];
-    if(!hit)continue;q.p[i]++;if(q.p[i]>=D[3]){q.ok[i]=1;S.coin+=QRW[D[1]];toast('本日の仕事は、完璧です　「'+D[0]+'」＋'+QRW[D[1]]+'フカ')}}
-  if(q.ok[0]&&q.ok[1]&&q.ok[2]){q.all=1;S.coin+=20;toast('本日の仕事、終了　＋20フカ',1)}save()}
+    if(!hit)continue;q.p[i]++;if(q.p[i]>=D[3]){q.ok[i]=1;fuka(QRW[D[1]],'quest');toast('本日の仕事は、完璧です　「'+D[0]+'」＋'+QRW[D[1]]+'フカ')}}
+  if(q.ok[0]&&q.ok[1]&&q.ok[2]){q.all=1;fuka(20,'quest');toast('本日の仕事、終了　＋20フカ',1)}save()}
 function mailOpen(){var q=qNow(),rows='',i,D;for(i=0;i<3;i++){D=QDEF[q.ids[i]];rows+='<tr><td>'+D[0]+'</td><td>'+(q.ok[i]?'達成':(q.on?Math.min(q.p[i],D[3])+'/'+D[3]:''))+'</td><td>'+QRW[D[1]]+'フカ</td></tr>'}
   show('mail','<h2>本日の任務</h2><table>'+rows+'</table>'+(q.all?'<p>本日の仕事、終了　3件ともこなした分の20フカも受け取った</p><p class="note">日付が変わると新しい任務が届く</p>':
     (q.on?'<p class="note">引き受け中　3件ともこなすと、さらに＋20フカ　日付が変わると新しい任務に替わる</p>':'<div class="row"><button data-a="qtake">引き受ける</button></div><p class="note">引き受けてから数え始める　3件ともこなすと、さらに＋20フカ</p>')))}
@@ -1824,10 +1831,10 @@ function mailOpen(){var q=qNow(),rows='',i,D;for(i=0;i<3;i++){D=QDEF[q.ids[i]];r
 var FTIP={calm:'ほぼ逃げない',shy:'速く泳ぐとすぐ逃げる',curious:'じっとしていると寄ってくる',wary:'近づくだけで逃げる　岩かげに隠れる',nushi:'しっかり溜めないと銛が刺さらない'};
 function fishK(D,u){return D.mode==='nushi'?.95+.3*u*u:.85+.55*u*u} /* 大きさのばらつき: 決まった全長の0.85〜1.4倍（大きいのは少ない）。ヌシは0.95〜1.25倍 */
 function bookAdd(k,cm){var B=S.book=S.book||{},e=B[k],D=FISHDEF.filter(function(d){return d.k===k})[0];if(!D)return;
-  if(!e){e=B[k]={n:0,max:0};S.coin+=5;toast('図鑑に登録　'+D.n+'　＋5フカ')}else if(cm>e.max)toast('過去の自分を超えました　'+D.n+' '+cm+'cm');
+  if(!e){e=B[k]={n:0,max:0};fuka(5,'book');toast('図鑑に登録　'+D.n+'　＋5フカ')}else if(cm>e.max)toast('過去の自分を超えました　'+D.n+' '+cm+'cm');
   e.n++;if(cm>e.max)e.max=cm;
-  if(!S.bookAll&&FISHDEF.slice(0,5).every(function(d){return B[d.k]})){S.bookAll=1;S.coin+=75;toast('池の魚を、5種類知りました　＋75フカ',1)} /* はじめの5種（v0.19.4 までの「全部」。もらった人はそのまま） */
-  if(!S.bookAll2&&FISHDEF.every(function(d){return B[d.k]})){S.bookAll2=1;S.coin+=150;toast('池の魚を、すべて知りました　＋150フカ',1)}save()}
+  if(!S.bookAll&&FISHDEF.slice(0,5).every(function(d){return B[d.k]})){S.bookAll=1;fuka(75,'book5');toast('池の魚を、5種類知りました　＋75フカ',1)} /* はじめの5種（v0.19.4 までの「全部」。もらった人はそのまま） */
+  if(!S.bookAll2&&FISHDEF.every(function(d){return B[d.k]})){S.bookAll2=1;fuka(150,'book10');toast('池の魚を、すべて知りました　＋150フカ',1)}save()}
 /* ===== v0.19.6 魚図鑑（10/10 主「魚図鑑も追加してね」） =====
    前は池の看板の「池の記録」に字だけの表があった。魚の絵つきにして、リュックからも開けるようにした
    絵: 池を泳いでいるのと同じ立体・同じ色を、その場で小さく描いて使う（絵のファイルは増やさない）。まだ獲っていない魚は影だけ
@@ -1905,7 +1912,7 @@ function fishTap(){if(!FS.on)return;if(FS.st==='nib'||FS.st==='wait'){logEv('rod
   FS.fish=D;FS.cm=Math.round(D.len*100*fishK(D,Math.random()));FS.st='reel';FS.t=0;FS.total=0;FS.tens=.3;FS.prog=.25;FS.run=false;FS.rt=.9+Math.random()*.6;FS.pull=false;$('#fsg').hidden=false;fsMsg('引く');logEv('rod:hook')}
 function fishDown(){if(!FS.on)return;if(FS.st==='reel')FS.pull=true;else{fishTap();if(FS.st==='reel')FS.pull=true}} /* 合わせた指を離さなければ、そのまま引く */
 function fishUp(){FS.pull=false}
-function fishLand(){var D=FS.fish,cm=FS.cm,bt=V15.on?bagCatch(D,cm):(S.coin+=D.price,'＋'+D.price+'フカ');S.fish=(S.fish||0)+1;S.rod=(S.rod||0)+1;save();
+function fishLand(){var D=FS.fish,cm=FS.cm,bt=V15.on?bagCatch(D,cm):(fuka(D.price,'fish'),'＋'+D.price+'フカ');S.fish=(S.fish||0)+1;S.rod=(S.rod||0)+1;save();
   fishEnd(D.mode==='nushi'?'池の大地主が、釣れました　'+cm+'cm　'+bt:'釣れました。実力です　'+D.n+' '+cm+'cm　'+bt,D.mode==='nushi');bookAdd(D.k,cm);qEv('catch',D.k,'rod');logEv('rod:got:'+D.k)}
 function fishStep(dt,t){if(!FS.on)return;var p=RODS[FS.ix],sx=FS.x+p.ux*1.1,sz=FS.z+p.uz*1.1,fx=p.fx,fz=p.fz,k,str,w,q,q2,dy=0,jx=0,lbl='';FS.t+=dt;FS.dip=false;
   if(FS.st==='cast'){k=Math.min(1,FS.t/.5);fx=sx+(p.fx-sx)*k;fz=sz+(p.fz-sz)*k;dy=-Math.sin(k*3.1416)*46;if(k>=1){FS.st='wait';FS.t=0;FS.w=2+Math.random()*6;fsMsg('待ちます')}}
@@ -1941,7 +1948,7 @@ function hideSpot(f,px,pz){var i,q,d,bd=12,best=null,ux,uz,l,sx,sz; /* 泳いで
   return best}
 function shellStep(dt){var i,sh;
   if(CHEST&&CHEST.glow){CHEST.glow.visible=!S.chest; /* まだ開けていない間は光っている */
-    if(!S.chest&&DV.on&&DV.black<=0&&Math.hypot(me.x-CHEST.x,me.z-CHEST.z)<1.8&&DV.y-CHEST.y<2.2){S.chest=1;S.coin+=50;save();dvBig('宝箱を開けた　＋50フカ','誰の物かは分からない',true,2.6);logEv('chest')}}for(i=0;i<SHELLS.length;i++){sh=SHELLS[i];
+    if(!S.chest&&DV.on&&DV.black<=0&&Math.hypot(me.x-CHEST.x,me.z-CHEST.z)<1.8&&DV.y-CHEST.y<2.2){S.chest=1;fuka(50,'chest');save();dvBig('宝箱を開けた　＋50フカ','誰の物かは分からない',true,2.6);logEv('chest')}}for(i=0;i<SHELLS.length;i++){sh=SHELLS[i];
     if(sh.st==='gone'){sh.re-=dt;if(sh.re<=0){sh.st='on';sh.sp.visible=true;sh.sp.userData.off=false}continue}
     if(DV.on&&DV.black<=0&&Math.hypot(me.x-sh.x,me.z-sh.z)<1.3&&DV.y-sh.y<1.7){sh.st='gone';sh.re=180+Math.random()*120;sh.sp.visible=false;sh.sp.userData.off=true;
       DV.catch.push({k:'shell',price:SHELL_PRICE,head:false});dvMsg('真珠貝を拾った　'+SHELL_PRICE+'フカ（水面に顔を出すと確定）',2.4);logEv('shell')}}}
@@ -2008,7 +2015,7 @@ function diveIn(){if(FS.on)fishEnd('');DV.on=true;DV.y=WS+.22;camera.near=.15;ca
   actOn=null;actBtn.textContent='銛';actBtn.classList.add('spear');actBtn.hidden=false;$('#hint').textContent='丸の上で進む・左右で向きを変える・なぞると上下を見る・銛は長押し';$('#hint').hidden=false;DV.hintT=7;dvHud(true);logEv('dive:in')}
 function diveOut(){if(DV.catch.length)diveBank();if(DV.hook)hookEnd();DV.on=false;camera.near=.5;camera.fov=CAM.fov;camera.updateProjectionMatrix();if(G.motes)G.motes.forEach(function(q){q.visible=false});DV.charge=-1;me.sp.userData.off=false;me.sp.visible=true;CAM.tilt=0;$('#dv').hidden=true;$('#mapbtn').hidden=false;actBtn.classList.remove('spear');actBtn.hidden=true;actOn=null;$('#hint').hidden=true;
   dvFog(0,false);if(DV.fx){DV.fx.g.visible=false;DV.fx.ring.visible=false;DV.fx.on=false}logEv('dive:out')}
-function diveBank(){var all=DV.catch.length,sh=DV.catch.filter(function(c){return c.k==='shell'}).length,n=all-sh,sum=0,head=0;DV.catch.forEach(function(c){sum+=Math.ceil(c.price*(c.head?1.2:1));if(c.head)head++});var got=DV.catch;DV.catch=[];var b19=V15.on?dive19Bank(got):null;if(b19)sum=b19.shell;S.coin+=sum;got.forEach(function(c){if(c.k==='shell')qEv('shell');else{bookAdd(c.k,c.cm||0);qEv('catch',c.k,'spear')}});qEv('bank',sum);S.fish=(S.fish||0)+n;S.shell=(S.shell||0)+sh;save();
+function diveBank(){var all=DV.catch.length,sh=DV.catch.filter(function(c){return c.k==='shell'}).length,n=all-sh,sum=0,head=0;DV.catch.forEach(function(c){sum+=Math.ceil(c.price*(c.head?1.2:1));if(c.head)head++});var got=DV.catch;DV.catch=[];var b19=V15.on?dive19Bank(got):null;if(b19)sum=b19.shell;fuka(sum,'dive');got.forEach(function(c){if(c.k==='shell')qEv('shell');else{bookAdd(c.k,c.cm||0);qEv('catch',c.k,'spear')}});qEv('bank',sum);S.fish=(S.fish||0)+n;S.shell=(S.shell||0)+sh;save();
   if(b19)dvBig(b19.n?'獲れた　'+b19.n+'匹リュックへ':'獲れた　＋'+sum+'フカ',(b19.full?'リュックがいっぱいで'+b19.full+'匹は売った　':'')+(sh?'貝'+sh+'個 ＋'+sum+'フカ':'')+(head?'　急所！ 頭に当てた '+head+'匹は値段＋20%':''),head>0,2.4);else dvBig('獲れた　＋'+sum+'フカ',(n?n+'匹':'')+(sh?(n?'・':'')+'貝'+sh+'個':'')+(head?'　急所！ 頭に当てた '+head+'匹は＋20%':''),head>0,2.2);logEv('dive:catch:'+n+':'+sh+':'+sum)}
 function diveFaint(){DV.black=1.9;var ls=DV.catch.filter(function(c){return c.k==='shell'}).length;DV.lost=DV.catch.length-ls;DV.lostS=ls;DV.catch=[];if(DV.hook)hookEnd();DV.charge=-1;$('#dvk').style.opacity=1;dvBig('息が……！',(DV.lost||DV.lostS)?'獲物を '+(DV.lost?DV.lost+'匹':'')+(DV.lostS?(DV.lost?'と':'')+'貝'+DV.lostS+'個':'')+' 落とした':'',false,1.7);logEv('dive:faint')}
 function hookEnd(){var hf=DV.hook.f;DV.hook=null;hf.st='flee';hf.t=3.5;hf.fa=Math.atan2(hf.z-me.z,hf.x-me.x)}
@@ -2364,17 +2371,17 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='net'){netOpen();return}if(a.indexOf('net:')===0){netAct(a.slice(4));return}
   if(a==='dress'){DR.cur=null;dressOpen();return}if(a.indexOf('g:')===0){gAct(a.slice(2).split(':'));return}if(a.indexOf('dr:')===0){drAct(a.slice(3).split(':'));return}
   if(a==='zukan'){zukanOpen();return}if(a.indexOf('zk:')===0){zkPick(a.slice(3));return}
-  if(a.indexOf('gear:')===0){var gk=a.slice(5),gn=GEAR[gk].lv[S.gear[gk]];if(!gn||S.coin<gn[1])return;S.coin-=gn[1];S.gear[gk]++;gearApply();save();gearOpen('少しだけ、本気になりました');logEv('gear:'+gk+S.gear[gk]);return}
+  if(a.indexOf('gear:')===0){var gk=a.slice(5),gn=GEAR[gk].lv[S.gear[gk]];if(!gn||S.coin<gn[1])return;fuka(-gn[1],'gear');S.gear[gk]++;gearApply();save();gearOpen('少しだけ、本気になりました');logEv('gear:'+gk+S.gear[gk]);return}
   if(a==='logsend'){LOG.note=String($('#lognote').value||'').replace(/[<>]/g,'').trim().slice(0,200);(LOG.notes=LOG.notes||[]).push({t:Date.now(),note:LOG.note,x:+me.x.toFixed(1),z:+me.z.toFixed(1),room:ROOM.on?1:0,dive:DV.on?+(WS-DV.y).toFixed(1):-1});b.disabled=true;b.textContent='送っている';
     logSend('manual').then(function(ok){LOG.note='';if(sheetOpen==='log')show('log',logHtml(ok?'送った　ありがとう':(LOG.sink?'送れなかった（通信できない）':'今の開き方では送り先が無い')+'　「全部コピー」で渡せる'))});return}
   if(a==='logcopy'){logCopy();return}
-  if(a==='chest'){if(!S.chest){S.chest=1;S.coin+=50;save()}show('chest','<h2>50フカ入っていた</h2><p>誰の物かは分からない　手持ち '+S.coin+'フカ</p>');return}
+  if(a==='chest'){if(!S.chest){S.chest=1;fuka(50,'chest');save()}show('chest','<h2>50フカ入っていた</h2><p>誰の物かは分からない　手持ち '+S.coin+'フカ</p>');return}
   if(a.indexOf('hat:')===0){S.hat=a.slice(4);save();setHat();open('home');return}
   if(a.indexOf('fp:')===0){var fg=GACHA[+a.slice(3)];if(fg&&S.items[fg.n]>0){var fpl=furPlaced(),fon=fpl.indexOf(fg)>=0,fcap=furCap(),fmsg='';S.fon=fpl.map(function(q){return q.n});
     if(fon)S.fon.splice(S.fon.indexOf(fg.n),1);else if(fpl.length>=fcap)fmsg='部屋がいっぱい　何かしまってから置いてね';else S.fon.push(fg.n);save();if(ROOM.on&&!ROOM.kind)roomBuild();open('home');if(fmsg){var fm=$('#sheet .fph');if(fm)fm.insertAdjacentHTML('afterend','<p class="note fpm">'+fmsg+'</p>')}}return} /* v0.39 */
   if(a.indexOf('buyp:')===0){var bm=buyLot(+a.slice(5));if(bm)show('plot','<h2>買い取った</h2><p>'+bm+'</p>');return}
   if(a.indexOf('movep:')===0){if(moveLot(+a.slice(6)))show('plot','<h2>引っ越した</h2><p>ここが主の家になった</p>');return}
-  if(a==='sim:pk'||a==='sim:dil'){var k=a.slice(4),max=k==='pk'?12:3;if(S.clear[k]<max){S.clear[k]++;S.coin+=30}save();open(k);return}
+  if(a==='sim:pk'||a==='sim:dil'){var k=a.slice(4),max=k==='pk'?12:3;if(S.clear[k]<max){S.clear[k]++;fuka(30,'clear')}save();open(k);return}
   if(a==='pull'){if(S.coin<10)return;S.coin-=10;var r=Math.random()*100,acc=0,got=GACHA[0];for(var i=0;i<GACHA.length;i++){acc+=GACHA[i].w;if(r<acc){got=GACHA[i];break}}
     S.items[got.n]=(S.items[got.n]||0)+1;save();open('gac');$('#msg').textContent='「'+got.n+'」が出た（'+got.w+'%）　家に置かれた';return}
   if(a==='post'){var v=($('#boxtext').value||'').trim();if(!v){$('#msg').textContent='何か書いてから入れる';return}
@@ -2399,12 +2406,12 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='rob'){loot=5+Math.floor(Math.random()*10);
     if(Math.random()<(S.wanted?.8:.5)){show('pkk','<h2>警察官に見つかった</h2><p>PKで決着　決めたら逃走、止められたら逮捕　どこに蹴る？</p>'+
       '<div class="row"><button data-a="kick:0">左</button><button data-a="kick:1">真ん中</button><button data-a="kick:2">右</button></div>')}
-    else{S.coin+=loot;save();show('rob','<h2>成功</h2><p>'+loot+'フカ盗んだ　誰にも見られていない</p>')}return}
+    else{fuka(loot,'rob');save();show('rob','<h2>成功</h2><p>'+loot+'フカ盗んだ　誰にも見られていない</p>')}return}
   if(a.indexOf('kick:')===0){var n=+a.slice(5),kp=Math.floor(Math.random()*3),nm=['左','真ん中','右'];
     if(kp===n)show('tori','<h2>止められた　逮捕</h2><p>警察官は'+nm[kp]+'に飛んだ　盗んだ'+loot+'フカは没収　ジレンマの小屋で取り調べ　見張り役の住人も別室にいる</p>'+
       '<div class="row"><button data-a="dil:0">黙秘する</button><button class="bad" data-a="dil:1">自白する</button></div>'+
       '<p class="note">2人とも黙秘=10秒／自分だけ自白=0秒／自分だけ黙秘=30秒／2人とも自白=20秒</p>');
-    else{S.coin+=loot;S.wanted=true;save();show('rob','<h2>ゴール　逃走成功</h2><p>警察官は'+nm[kp]+'に飛んだ　'+loot+'フカを持って逃げた　広場に指名手配の札が出た</p>')}return}
+    else{fuka(loot,'rob');S.wanted=true;save();show('rob','<h2>ゴール　逃走成功</h2><p>警察官は'+nm[kp]+'に飛んだ　'+loot+'フカを持って逃げた　広場に指名手配の札が出た</p>')}return}
   if(a.indexOf('dil:')===0){var mine=+a.slice(4),pSilent=S.like>=3?.75:.5,his=Math.random()<pSilent?0:1;
     var sec=[[10,30],[0,20]][mine][his];S.jailUntil=Date.now()+sec*1000;S.wanted=false;save();
     show('tori','<h2>判決　刑期'+sec+'秒</h2><p>自分は'+(mine?'自白':'黙秘')+'、住人は'+(his?'自白':'黙秘')+'した　'+(sec?'刑期中は家にも住人の家にも入れない':'そのまま釈放')+'</p>');return}
@@ -2722,8 +2729,8 @@ function myBox(w){var h='<h3>あなたの推し・分身</h3>';
   var g=S.gift===w.day;h+='<div class="row">'+['パン','野菜','魚'].map(function(it){return '<button'+(g?' class="sub" disabled':'')+' data-a="gift:'+it+'">'+it+'を差し入れ</button>'}).join('')+'</div><p class="note">'+(g?'今日の差し入れはもうした（1日1回）':'差し入れは1日1回・10フカ（いま '+S.coin+'フカ）　食べ物は時間がたつと腐る')+'</p>';
   return h+'<div class="row"><button class="sub" data-a="q15:start">性格診断をもう一度（推しを変える）</button></div>'+myRow()}
 function myRow(){return '<div class="row">'+(S.acct?'<button class="sub" data-a="my">自分のデータ（見る・直す・消す）</button>':'<button class="sub" data-a="jumin">森の住民票を作る</button>')+'</div>'}
-function giftSend(item){if(!S.acct){juminOpen();return}var gd=V15.wday||V15.day;if(!S.oshi||S.gift===gd)return;if(S.coin<10){toast('フカが足りない（10フカ）');return}S.coin-=10;S.gift=gd;save();
-  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'gift',to:S.oshi.id,item:item})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){toast(S.oshi.name+'に'+item+'を差し入れた');logEv('gift')}else{S.coin+=10;if(!(j&&j.reason==='today'))S.gift=0;save();toast(j&&j.reason==='today'?'今日はもう差し入れした':'差し入れできなかった（フカは返した）')}yakubaOpen()},function(){S.coin+=10;S.gift=0;save();toast('役場につながらなかった（フカは返した）')})}
+function giftSend(item){if(!S.acct){juminOpen();return}var gd=V15.wday||V15.day;if(!S.oshi||S.gift===gd)return;if(S.coin<10){toast('フカが足りない（10フカ）');return}fuka(-10,'gift');S.gift=gd;save();
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'gift',to:S.oshi.id,item:item})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){toast(S.oshi.name+'に'+item+'を差し入れた');logEv('gift')}else{fuka(10,'gift');if(!(j&&j.reason==='today'))S.gift=0;save();toast(j&&j.reason==='today'?'今日はもう差し入れした':'差し入れできなかった（フカは返した）')}yakubaOpen()},function(){fuka(10,'gift');S.gift=0;save();toast('役場につながらなかった（フカは返した）')})}
 /* 分身: 家は持たないので、広場のまわりの空き場所を「家」にする。見た目は ②の答え（0=まんまる 1=ちいさめ 2=もこもこ） */
 var CLONE_SPOTS=[[-11,-2],[11,-3],[-12,8],[12,9],[-6,-7],[6,-8],[0,17],[-14,3],[14,3],[-9,13],[9,14],[0,-9]];
 function cloneAI(p){var n=parseInt(String(p.id).slice(1),10)||0,sp=CLONE_SPOTS[n%CLONE_SPOTS.length],look=p.look==null?n%3:p.look,hat=['y','g','b','p','r'][n%5];
@@ -2790,7 +2797,22 @@ function cloudLoad(fresh){if(!S.acct||!S.acct.token)return;fetch(MORI+'/api/acco
     try{localStorage.setItem(KEY,JSON.stringify(n))}catch(e){return}CL.lock=1;logEv('cloud:load'); /* 読み直すまで、古い記録で上書きしない */toast('住民票の記録から続きを読み込んだ（'+new Date(sv.at+9*3600e3).toISOString().slice(5,16).replace('T',' ')+'）',1);setTimeout(function(){location.reload()},1600)},function(){})}
 document.addEventListener('visibilitychange',function(){if(document.hidden&&CL.t)cloudUp(true)});
 
-function juminSync(){if(!S.acct)return;setTimeout(cloudLoad,300);fetch(MORI+'/api/account/me?w=live',{headers:MH(),cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(!j||!j.ok){if(j&&j.reason==='login'){S.acct=null;save()}return}var m=j.me;J17.me=m;
+/* ===== v0.41 フカと持ち物はサーバーの財布（10/10 主「1.2でいこう」の 2）=====
+   住民票がある人: フカの出し入れは理由つきでサーバーに送る（fuka）。サーバーが決まり（1回・1日の上限、1回きり）を見て通した結果が正しいフカ。ガチャもサーバーで引く
+   端末の数字を書き換えても、次につないだ時にサーバーの値に戻る。住民票が無い人は今まで通り端末の中だけ */
+var WAL={on:false,q:[],busy:0,t:0};
+function walPend(){return WAL.q.reduce(function(a,o){return a+o.d},0)}
+function fuka(d,k){d=Math.trunc(+d)||0;if(!d)return;S.coin+=d;if(S.acct&&S.acct.token){WAL.q.push({k:k,d:d});if(WAL.q.length>60)WAL.q.splice(0,WAL.q.length-60);clearTimeout(WAL.t);WAL.t=setTimeout(walFlush,700)}}
+function walSet(c){if(typeof c!=='number')return;var n=c+walPend();if(n!==S.coin){S.coin=n;save()}}
+function walFlush(cb){if(!WAL.on||WAL.busy||!WAL.q.length||!S.acct||!S.acct.token){if(cb)cb();return}clearTimeout(WAL.t);var ops=WAL.q.splice(0,60);WAL.busy=1;
+  fetch(MORI+'/api/account/fuka?w=live',{method:'POST',headers:MH(),body:JSON.stringify({ops:ops})}).then(function(r){return r.json()}).then(function(j){WAL.busy=0;if(j&&j.ok){walSet(j.coin);if(j.ng)logEv('wal:ng:'+j.ng)}else WAL.q=ops.concat(WAL.q);if(cb)cb();else if(WAL.q.length)WAL.t=setTimeout(walFlush,700)},
+    function(){WAL.busy=0;WAL.q=ops.concat(WAL.q);WAL.t=setTimeout(walFlush,6000);if(cb)cb()})}
+function walApply(w){if(!w)return;WAL.on=true;S.coin=w.coin+walPend();S.own=Object.assign({},w.own||{});S.items=Object.assign({},w.items||{});save();if(ROOM.on&&!ROOM.kind)roomBuild();walFlush()}
+function walSync(){if(!S.acct||!S.acct.token)return;fetch(MORI+'/api/account/wallet?w=live',{headers:MH(),cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(!j||!j.ok)return;
+    if(j.wal){walApply(j.wal);return}WAL.q=[]; /* 初めて: この端末のフカと持ち物を預ける（フカは3000まで） */
+    fetch(MORI+'/api/account/wallet?w=live',{method:'POST',headers:MH(),body:JSON.stringify({init:{coin:S.coin,own:S.own||{},items:S.items||{}}})}).then(function(r){return r.json()}).then(function(j2){if(j2&&j2.ok)walApply(j2.wal)},function(){})},function(){})}
+document.addEventListener('visibilitychange',function(){if(document.hidden&&WAL.q.length)walFlush()});
+function juminSync(){if(!S.acct)return;setTimeout(walSync,900);setTimeout(cloudLoad,300);fetch(MORI+'/api/account/me?w=live',{headers:MH(),cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(!j||!j.ok){if(j&&j.reason==='login'){S.acct=null;save()}return}var m=j.me;J17.me=m;
   S.oshi=m.oshi?{id:m.oshi.id,name:m.oshi.name}:null;S.clone=m.clone&&m.clone.alive?{id:m.clone.id,name:m.clone.name}:null;if(S.acct.name!==m.name){S.acct.name=m.name;S.pname=m.name}save();tagsPaint()},function(){})}
 function juminDone(){close();if(Q16.after&&Q16.after.oshi){var o=Q16.after.oshi;Q16.after=null;oshiSet(o);return}if(!S.q16s){S.q16s=1;save();q15Open(0)}}
 function juminCopy(){var t=J17.code,el=$('#jcodeShow');try{navigator.clipboard.writeText(t).then(function(){toast('コピーした')},function(){sel()})}catch(e){sel()}
@@ -2974,19 +2996,19 @@ function fish3dOff(){if(F3.g)F3.g.visible=false;F3.last='';if(F3.cam){CAM.h=F3.c
 var BAG={MAX:20,SHELF:{'魚':1,'パン':2,'野菜':3,'木の実':7},EAT:{'魚':30,'パン':35,'野菜':25,'木の実':12},SELL:{'パン':7,'野菜':8,'木の実':3},BREAD:15,warn:0};
 function bagList(){if(!Array.isArray(S.bag))S.bag=[];return S.bag}
 function dayNo(){var d=new Date(Date.now()+9*3600e3);return Math.floor(d.getTime()/864e5)} /* 日本時間の日付（傷む日数を数える） */
-function bagAdd(it){var b=bagList();it.day=dayNo();if(b.length>=BAG.MAX){var p=it.price||BAG.SELL[it.k]||0;S.coin+=p;save();toast('リュックがいっぱい。'+it.name+'はその場で売った　＋'+p+'フカ');return false}b.push(it);save();return true}
+function bagAdd(it){var b=bagList();it.day=dayNo();if(b.length>=BAG.MAX){var p=it.price||BAG.SELL[it.k]||0;fuka(p,'sell');save();toast('リュックがいっぱい。'+it.name+'はその場で売った　＋'+p+'フカ');return false}b.push(it);save();return true}
 function bagSpoil(){var b=bagList(),now=dayNo(),gone=[];S.bag=b.filter(function(it){var ok=now-it.day<(BAG.SHELF[it.k]||99);if(!ok)gone.push(it.name);return ok});if(gone.length){save();toast(gone.join('・')+'が傷んだので捨てた')}}
 function hunNow(){var now=Date.now();if(S.hun==null){S.hun=10;S.hunT=now}var d=(now-(S.hunT||now))/36e5;if(d>0){S.hun=Math.min(100,S.hun+d*10);S.hunT=now}return S.hun}
 function hunK(){if(!V15.on)return 1;var h=S.hun||0;return h>=90?.7:h>=70?.85:1}
 function hunTick(){if(!V15.on)return;var h=hunNow(),full=Math.round(100-h),el=$('#hunv');if(el)el.textContent=full+'%';var c=$('#hunb');if(c)c.className=h>=90?'bad':h>=70?'warn':'';
   var lv=h>=90?2:h>=70?1:0;if(lv>BAG.warn&&!intro)toast(lv===2?'おなかぺこぺこ。歩くのがおそくなった（リュックから食べられる）':'おなかがすいてきた。リュックから食べられる');BAG.warn=lv;if(Math.random()<.2)save()}
 function bagEat(i){var b=bagList(),it=b[i];if(!it)return;var v=BAG.EAT[it.k]||10;hunNow();S.hun=Math.max(0,S.hun-v);b.splice(i,1);BAG.warn=S.hun>=90?2:S.hun>=70?1:0;save();hunTick();logEv('bag:eat:'+it.k);toast(it.name+'を食べた。おなか '+Math.round(100-S.hun)+'%');bagOpen()}
-function bagSell(i){var b=bagList(),it=b[i];if(!it)return;var p=it.price||BAG.SELL[it.k]||0;S.coin+=p;b.splice(i,1);save();logEv('bag:sell:'+it.k);toast(it.name+'を売った　＋'+p+'フカ');bagOpen()}
+function bagSell(i){var b=bagList(),it=b[i];if(!it)return;var p=it.price||BAG.SELL[it.k]||0;fuka(p,'sell');b.splice(i,1);save();logEv('bag:sell:'+it.k);toast(it.name+'を売った　＋'+p+'フカ');bagOpen()}
 function bagGift(i){var b=bagList(),it=b[i];if(!it||!S.oshi)return;if(!S.acct){juminOpen();return}var item=['パン','野菜','魚'].indexOf(it.k)>=0?it.k:'';if(!item){toast(it.name+'は差し入れできない（パン・野菜・魚だけ）');return}
   var gd=V15.wday||V15.day;if(S.gift===gd){toast('今日の差し入れはもうした（1日1回）');return}
   b.splice(i,1);S.gift=gd;save();
   fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'gift',to:S.oshi.id,item:item})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){toast(S.oshi.name+'に'+it.name+'を差し入れた');logEv('gift:bag')}else{b.push(it);if(!(j&&j.reason==='today'))S.gift=0;save();toast(j&&j.reason==='today'?'今日はもう差し入れした':'差し入れできなかった（リュックに戻した）')}if(sheetOpen==='bag')bagOpen()},function(){b.push(it);S.gift=0;save();toast('役場につながらなかった（リュックに戻した）')})}
-function bagBuy(){if(S.coin<BAG.BREAD){toast('フカが足りない（'+BAG.BREAD+'フカ）');return}if(bagList().length>=BAG.MAX){toast('リュックがいっぱい');return}S.coin-=BAG.BREAD;bagAdd({k:'パン',name:'パン'});logEv('bag:buy');toast('パンを買った（リュックへ）');if(sheetOpen==='bag')bagOpen();else if(sheetOpen==='yakuba')yakubaOpen()}
+function bagBuy(){if(S.coin<BAG.BREAD){toast('フカが足りない（'+BAG.BREAD+'フカ）');return}if(bagList().length>=BAG.MAX){toast('リュックがいっぱい');return}fuka(-BAG.BREAD,'bread');bagAdd({k:'パン',name:'パン'});logEv('bag:buy');toast('パンを買った（リュックへ）');if(sheetOpen==='bag')bagOpen();else if(sheetOpen==='yakuba')yakubaOpen()}
 function bagOpen(){bagSpoil();var b=bagList(),h=hunNow(),full=Math.round(100-h),now=dayNo(),gd=V15.wday||V15.day;
   var rows=b.map(function(it,i){var left=(BAG.SHELF[it.k]||99)-(now-it.day),p=it.price||BAG.SELL[it.k]||0;
     return '<div class="bagrow"><div class="bagn"><b>'+esc(it.name)+'</b>'+(it.cm?' <span class="note">'+it.cm+'cm</span>':'')+'<span class="note">'+(left<=1?'今日中に傷む':'あと'+left+'日で傷む')+'</span></div><div class="row"><button data-a="bag:eat:'+i+'">食べる</button>'+
@@ -3421,11 +3443,11 @@ function tpSync(){if(!S.acct||TP.got||typeof fetch!=='function')return;TP.got=1;
   fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'plot',op:'mine'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.tplots=(j.plots||[]).map(function(p){return p.no});save();if(sheetOpen==='farm')farmOpen(TP.lot)}},function(){TP.got=0})}
 function tpAct(op,no){if(TP.busy)return;if(!S.acct){juminOpen();return}
   var cost=op==='buy'?30:op==='seed'?10:0;if(cost&&S.coin<cost){toast('フカが足りない（'+cost+'フカ）');return}
-  S.coin-=cost;save();TP.busy=true;if(sheetOpen==='farm')farmOpen(TP.lot);
-  var back=function(m){S.coin+=cost;save();TP.busy=false;toast(m+(cost?'（フカは返した）':''));if(sheetOpen==='farm')farmOpen(TP.lot)};
+  fuka(-cost,'farm');save();TP.busy=true;if(sheetOpen==='farm')farmOpen(TP.lot);
+  var back=function(m){fuka(cost,'farm');save();TP.busy=false;toast(m+(cost?'（フカは返した）':''));if(sheetOpen==='farm')farmOpen(TP.lot)};
   fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'plot',op:op,no:no})}).then(function(r){return r.json()}).then(function(j){
     if(!j||!j.ok){var R={max:'畑は1人2区画まで',sold:'その区画はもう売れていた',notmine:'自分の畑ではなかった',state:'いまはそれができない',done:'今日はもう水をやった',login:'住民票が要る'};back(R[j&&j.reason]||'できなかった');if(j&&j.reason==='login')juminOpen();return}
-    TP.busy=false;if(j.plots)S.tplots=j.plots;if(op==='sell')S.coin+=15;
+    TP.busy=false;if(j.plots)S.tplots=j.plots;if(op==='sell')fuka(15,'farm');
     var p=j.plot;if(p){var k,hit=false;for(k=0;k<V15.plots.length;k++)if(V15.plots[k].no===p.no){V15.plots[k]=p;hit=true}if(!hit)V15.plots.push(p);var f=FARM.plots[p.no-1];if(f){f.state=p.state;f.water=!!p.water;farmPaint()}}
     if(op==='harvest'){var n=0,sold=0;for(k=0;k<(j.veg||0);k++){if(bagAdd({k:'野菜',name:'野菜'}))n++;else sold++}toast('野菜を'+j.veg+'個とった'+(n?'（リュックへ'+n+'個）':''),1)}
     else toast(j.msg||'できた');save();logEv('tplot:'+op);if(sheetOpen==='farm')farmOpen(TP.lot)},function(){back('役場につながらなかった')})}
@@ -3476,10 +3498,10 @@ land.addEventListener('click',function(e){var gq=e.target.closest('[data-go]');i
   if(a==='move'){if(moveLot(s))renderLand(s)}});
 /* 買い取りと引っ越し（地図からも森の家からもここを通る）。追い出された住人は、主の元の土地が自分の段に足りる広さなら、そこへ引っ越す */
 function buyLot(id){var t=resOf(id),pr=askOf(id);if(!t||S.coin<pr||lotLock(id))return '';
-  var old=LOTS[S.lot],m;S.coin-=pr;delete S.res2[id];S.lot=id;
+  var old=LOTS[S.lot],m;fuka(-pr,'land');delete S.res2[id];S.lot=id;
   if(t>=3&&KR[old.kind]>=KR[TNEED[t]]){S.res2[old.id]=t;m=pr+'フカで買い取った　'+t+'段の住人は主の元の家に引っ越した'}else m=pr+'フカで買い取った　'+t+'段の住人は森を出ていった';
   save();buildTown();return m}
-function moveLot(id){var l=LOTS[id];if(!l||lotLock(id)||isMine(id)||resOf(id)||S.coin<landPrice(l))return false;S.coin-=landPrice(l);S.lot=id;save();buildTown();return true}
+function moveLot(id){var l=LOTS[id];if(!l||lotLock(id)||isMine(id)||resOf(id)||S.coin<landPrice(l))return false;fuka(-landPrice(l),'land');S.lot=id;save();buildTown();return true}
 function openLand(){wmOpen('land')}
 $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else openLand()});
 /* ===== v0.29 地図画面（作り直し）=====
@@ -3764,7 +3786,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.40',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.41',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -3828,7 +3850,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={G3up:function(t){G3upd(t)},FXP:FXP,FXBY:FXBY,fxSpark:fxSpark,gBadge:gBadge,GM:GM,gPool:gPool,drMini:drMini,GACHA:GACHA,furObj:furObj,furPlaced:furPlaced,roomBuild:roomBuild,FSLOT:FSLOT,furCap:furCap,lookOk:lookOk,lookN:lookN,MR:MR,cloudHash:cloudHash,save:save,cloudUp:cloudUp,cloudLoad:cloudLoad,cloudBlob:cloudBlob,gShow:gShow,g3skip:g3skip,G3get:function(){return G3},GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={WAL:WAL,fuka:fuka,walSync:walSync,walFlush:walFlush,G3up:function(t){G3upd(t)},FXP:FXP,FXBY:FXBY,fxSpark:fxSpark,gBadge:gBadge,GM:GM,gPool:gPool,drMini:drMini,GACHA:GACHA,furObj:furObj,furPlaced:furPlaced,roomBuild:roomBuild,FSLOT:FSLOT,furCap:furCap,lookOk:lookOk,lookN:lookN,MR:MR,cloudHash:cloudHash,save:save,cloudUp:cloudUp,cloudLoad:cloudLoad,cloudBlob:cloudBlob,gShow:gShow,g3skip:g3skip,G3get:function(){return G3},GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
