@@ -36,6 +36,25 @@ img{max-width:100%}
 html,body{height:100%}
 /* v0.20.3 拡大の止め（10/10 主「なんで途中で拡大になるのー」） */
 input,textarea,select{font-size:16px!important}
+#stage #phb{left:auto;right:148px}#stage:has(#mmw.fold) #phb{right:52px}#stage #chb{left:118px} /* v0.26 主「スマホのアイコンは右側に」: 右上の地図のすぐ左 */
+#ph{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(0,0,0,0.58);opacity:0;transition:opacity .28s}#ph.on{opacity:1}#ph[hidden]{display:none}
+#phd{position:relative;width:min(82vw,320px,calc((100dvh - 24px) * 9 / 19.5));aspect-ratio:9 / 19.5;border:5px solid #171A1B;border-radius:38px;box-shadow:0 20px 70px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,.08);background:#10251F;overflow:hidden;transform:translateY(110%) scale(.96);transition:transform 420ms cubic-bezier(0.22, 1, 0.36, 1)}
+#ph.on #phd{transform:none}#ph.out #phd{transform:translateY(110%) scale(.96);transition-duration:280ms;transition-timing-function:cubic-bezier(0.4, 0, 1, 1)}
+#phd:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:9;background:linear-gradient(125deg,rgba(255,255,255,.10),transparent 32%)} /* 画面の反射 */
+#phw{position:absolute;inset:0;background:radial-gradient(ellipse at 18% 24%, rgba(117,170,111,0.32) 0%, transparent 38%), radial-gradient(ellipse at 82% 47%, rgba(93,137,110,0.24) 0%, transparent 42%), radial-gradient(ellipse at 52% 92%, rgba(255,200,61,0.13) 0%, transparent 35%), linear-gradient(160deg, #10251F 0%, #193C31 48%, #0B1B1A 100%)}#phw i{position:absolute;width:2px;height:2px;border-radius:50%;background:#FFEFBF;opacity:.55}
+#phi{position:absolute;top:9px;left:50%;width:86px;height:25px;margin-left:-43px;border-radius:99px;background:#000;z-index:8}
+#phs{position:absolute;left:0;right:0;top:0;height:47px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;color:#FFFFFF;font:600 12px/1 system-ui,sans-serif;z-index:7;font-variant-numeric:tabular-nums}#phs .r{display:flex;align-items:center;gap:5px}
+#phg{position:absolute;left:0;right:0;top:72px;padding:0 13px;display:grid;grid-template-columns:repeat(4,1fr);row-gap:27px;column-gap:12px}
+.pa{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:0;padding:0;background:none;border:0;box-shadow:none;color:#FFFFFF;font:500 10px/1.2 system-ui,sans-serif;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.pa b{display:grid;place-items:center;width:54px;height:54px;border-radius:15px;font-size:27px;box-shadow:0 3px 8px rgba(0,0,0,0.18),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .12s}.pa:active b{transform:scale(.9)}
+#phk{position:absolute;left:13px;right:13px;bottom:29px;height:83px;border-radius:25px;background:rgba(230,245,231,0.16);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-around}
+#phk .pa b{width:48px;height:48px;font-size:24px}#phk .pa span{display:none}
+#phh{position:absolute;left:50%;bottom:8px;width:108px;height:4px;margin-left:-54px;border-radius:9px;background:#FFFFFF;z-index:8;cursor:pointer}#phh:after{content:'';position:absolute;left:-30px;right:-30px;top:-18px;bottom:-10px} /* 触れる幅を広げる */
+#pht{position:absolute;left:0;right:0;bottom:24px;text-align:center;color:#fff;font:600 12px/1 system-ui,sans-serif;opacity:0;transition:opacity .3s;z-index:8}#pht.on{opacity:.9}
+#phd #sheet{position:absolute;left:0;right:0;top:47px;bottom:22px;max-height:none;border:0;border-radius:0;margin:0;z-index:6;animation:none;transform-origin:var(--ox,50%) var(--oy,50%)}
+#phd.app #sheet{animation:phl 300ms cubic-bezier(0.2, 0.8, 0.2, 1)}@keyframes phl{from{transform:scale(.15);border-radius:30px;opacity:.2}to{transform:none;border-radius:0;opacity:1}}
+#phd.app{background:var(--cream)}#phd.app #phw,#phd.app #phg,#phd.app #phk{visibility:hidden}#phd.app #phs svg rect{fill:#2c3b2f;stroke:#2c3b2f}#phd.app #phs{color:#2c3b2f;background:var(--cream)}#phd.app #phh{background:#2c3b2f}#phd #sheet>#x{display:none} /* アプリの中はホームバーで戻る（とじるは置かない） */
+@media (prefers-reduced-motion:reduce){#phd{transition-duration:120ms}#phd.app #sheet{animation-duration:80ms}}
 #phb,#chb{position:absolute;top:6px;flex:none;min-height:0;width:42px;height:42px;padding:0;border-radius:50%;font-size:21px;line-height:1;background:var(--cream);color:var(--ink);z-index:6;box-shadow:0 2px 8px rgba(0,0,0,.35)}#phb{left:118px}#chb{left:166px} /* 上の帯（板が開いても隠れない64pxの所）に置く */
 .phg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.pha{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:74px;padding:8px 2px;font-size:11px;line-height:1.25;background:#fff;color:var(--ink);border:2px solid #e2d6b0;border-radius:16px}.pha span{font-size:26px}
 #mmw.big{top:56px;width:min(72vw,300px);height:min(72vw,300px);z-index:5}
@@ -43,9 +62,9 @@ input,textarea,select{font-size:16px!important}
 #sheet .tprow{margin-top:6px;gap:6px;flex-wrap:wrap;justify-content:flex-end}#sheet .tprow button{flex:0 0 auto;width:auto;min-height:36px;padding:6px 14px;font-size:13px}
 /* v0.20.4 キーボードを出しても森が縮まない（10/10 主「この問題どうする？」） */
 html body #app{height:var(--apph,100%)}
-body.kb #sheet{position:fixed;left:8px;right:8px;top:auto;bottom:calc(var(--kbb,0px) + 6px);max-height:calc(var(--kbh,60vh) - 14px);z-index:30;animation:none}
-body.kbc #sheet>*:not(.log):not(.row.say){display:none!important}body.kbc #sheet>.row.say:not(:focus-within){display:none!important}body.kb #sheet{padding-top:10px;padding-bottom:10px}
-body.kb #sheet .log{max-height:min(calc(var(--kbh,60vh) * 0.3),150px);min-height:0}
+body.kb:not(.phon) #sheet{position:fixed;left:8px;right:8px;top:auto;bottom:calc(var(--kbb,0px) + 6px);max-height:calc(var(--kbh,60vh) - 14px);z-index:30;animation:none}
+body.kbc:not(.phon) #sheet>*:not(.log):not(.row.say){display:none!important}body.kbc:not(.phon) #sheet>.row.say:not(:focus-within){display:none!important}body.kb:not(.phon) #sheet{padding-top:10px;padding-bottom:10px}
+body.kb:not(.phon) #sheet .log{max-height:min(calc(var(--kbh,60vh) * 0.3),150px);min-height:0}
 body{background:var(--night);color:var(--cream);font-family:var(--body);font-weight:500;overflow:hidden;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
 #app{height:100%;max-width:560px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;flex-direction:column;gap:8px}
@@ -276,7 +295,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.25';
+var VERSION='v0.26';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1344,8 +1363,8 @@ function stepPeople(dt,t,mw,mh){var i,R2,dx,dz,d,near=null,nd=4.6,p,y,a,c,s2,gx,
   [npc,cop].forEach(function(q){var dq=Math.hypot(q.x-me.x,q.z-me.z);if(dq<nd){nd=dq;near=q}});
   if(G.talk){if(near&&talkable){p=wpos(near);G.talk.position.set(p[0],p[1]+2.35+Math.sin(t*.004)*.05,p[2]);G.talk.userData.who=near;G.talk.visible=true}else G.talk.visible=false}
   var now=performance.now();for(i=SAYS.length-1;i>=0;i--){var sy2=SAYS[i];if(now>sy2.until){scene.remove(sy2.s);sy2.s.material.map.dispose();sy2.s.material.dispose();SAYS.splice(i,1);continue}p=wpos(sy2.o);sy2.s.position.set(p[0],p[1]+(sy2.o.bubY||2.3),p[2])}}
-function show(id,h){var fid=document.body.classList.contains('kb')&&document.activeElement&&document.activeElement.id;sheetOpen=id;sheet.innerHTML='<button class="sub" id="x" data-a="close">とじる</button>'+h;sheet.hidden=false;if(fid){var fe=document.getElementById(fid);if(fe)try{fe.focus({preventScroll:true})}catch(e){fe.focus()}}} /* v0.21 送った後も入力欄にキーボードを残す */
-function close(){sheetOpen=null;sheet.hidden=true}
+function show(id,h){if(typeof PH!=='undefined'&&PH.on)setTimeout(phApp,0);var fid=document.body.classList.contains('kb')&&document.activeElement&&document.activeElement.id;sheetOpen=id;sheet.innerHTML='<button class="sub" id="x" data-a="close">とじる</button>'+h;sheet.hidden=false;if(fid){var fe=document.getElementById(fid);if(fe)try{fe.focus({preventScroll:true})}catch(e){fe.focus()}}} /* v0.21 送った後も入力欄にキーボードを残す */
+function close(){if(PH&&PH.on&&PH.app){phHome();return}sheetOpen=null;sheet.hidden=true} /* v0.26 スマホのアプリの中で閉じる＝ホームへ */
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
 function open(id){
@@ -1600,10 +1619,34 @@ function buildBenches(){if(!V15.on||BENCHO.length)return;var B=new THREE.BoxGeom
   ACT.bench0=ACT.bench1=ACT.bench2=ACT.bench3='座る'}
 function benchSit(i){var b=BENCH[i];if(!b)return;var gx=-b[0],gz=-b[1],l=Math.hypot(gx,gz);me.path=[];me.go=null;me.x=b[0]+gx/l*.12;me.z=b[1]+gz/l*.12;me.sit={i:i,yaw:benchFace(b[0],b[1])};logEv('bench');toast('ベンチに座った（歩くと立つ）')}
 /* Y-8・Y-7 スマホと会話の印を、いつでも押せる所に。スマホは役場からの支給（最初に開いた時に1回だけお知らせ） */
-function phoneOpen(){if(!S.phone){S.phone=1;save();toast('役場からスマホが支給された📱',1)}
-  var A=[['💬','チャット','net'],['🗳','投票所・目安箱','senkyo'],['🎒','リュック','bag'],['🐟','魚図鑑','zukan'],['🗺','土地の地図','land'],['🪪','住民票','my'],['🏛','役場の様子','yakuba'],['📝','不具合を送る','log']];
-  show('phone','<h2>📱 スマホ</h2><div class="phg">'+A.map(function(a){return '<button type="button" class="pha" data-a="ph:'+a[2]+'"><span>'+a[0]+'</span>'+a[1]+'</button>'}).join('')+'</div><p class="note">右上の地図はタッチで大きくなる。もう一度タッチでたたむ</p>');logEv('phone')}
-function phoneGo(k){if(k==='net'){netOpen();return}if(k==='senkyo'){senkyoOpen();return}if(k==='bag'){bagOpen();return}if(k==='zukan'){zukanOpen();return}if(k==='land'){close();if(ROOM.on)exitRoom();openLand();return}
+
+/* ===== v0.26 スマホを本物のスマホみたいに（10/10 15:11 主「スマホ開いた時、実際のスマホ開いたみたいにして欲しい」）
+   見た目・動きはチャッピー「ゲーム内スマホ仕様」（10/10・chatgpt_phone_spec.json）: 本体の縁・角丸・切り欠き・ホームバー・夜の森の壁紙・4×2のアプリ＋ドック4つ・下からせり上がる・アイコンから広がるアプリ起動・とじるは置かない（ホームバーを下へ／外をタッチ）
+   アプリの中身は今の板（#sheet）をそのままスマホの画面に入れる（板を作り直さない）。アプリの中でホームバー＝ホームへ戻る、ホームでホームバー＝スマホを閉じる */
+var PHA=[{"id": "chat", "label": "チャット", "emoji": "💬", "bg": "linear-gradient(145deg, #6FE7B7 0%, #168F76 100%)"}, {"id": "senkyo", "label": "投票・目安箱", "emoji": "🗳️", "bg": "linear-gradient(145deg, #FFE58A 0%, #ECA83A 100%)"}, {"id": "bag", "label": "リュック", "emoji": "🎒", "bg": "linear-gradient(145deg, #FFB58B 0%, #E96C52 100%)"}, {"id": "zukan", "label": "魚図鑑", "emoji": "🐟", "bg": "linear-gradient(145deg, #83DEFF 0%, #388DD6 100%)"}, {"id": "land", "label": "土地マップ", "emoji": "🗺️", "bg": "linear-gradient(145deg, #B8E89A 0%, #529D62 100%)"}, {"id": "my", "label": "住民票", "emoji": "🪪", "bg": "linear-gradient(145deg, #D5C5FF 0%, #8A70D8 100%)"}, {"id": "yakuba", "label": "役場の様子", "emoji": "🏛️", "bg": "linear-gradient(145deg, #FFE0A3 0%, #C78D55 100%)"}, {"id": "log", "label": "不具合を送る", "emoji": "🐛", "bg": "linear-gradient(145deg, #FFC1D2 0%, #D85E87 100%)"}],PHDOCK=["chat", "bag", "land", "zukan"],PH={on:false,app:false,busy:false};
+function phBuild(){if($('#ph'))return;var d=document.createElement('div');d.id='ph';d.hidden=true;
+  var ic=function(a){return '<button type="button" class="pa" data-ph="'+a.id+'"><b style="background:'+a.bg+'">'+a.emoji+'</b><span>'+esc(a.label)+'</span></button>'};
+  var st='';for(var i=0;i<26;i++){var r=Math.sin(i*91.7)*43758.5;r-=Math.floor(r);var q=Math.sin(i*17.3)*12345.6;q-=Math.floor(q);st+='<i style="left:'+(r*100).toFixed(1)+'%;top:'+(q*62).toFixed(1)+'%;opacity:'+(.2+((i*7)%5)/8).toFixed(2)+'"></i>'}
+  d.innerHTML='<div id="phd"><div id="phw">'+st+'</div><div id="phi"></div><div id="phs"><span id="pht0">--:--</span><span class="r"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="#fff"/><rect x="4.5" y="5" width="3" height="6" rx="1" fill="#fff"/><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="#fff"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="#fff"/></svg>森<svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="#fff" opacity=".6"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#fff"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="#fff" opacity=".6"/></svg></span></div>'+
+    '<div id="phg">'+PHA.map(ic).join('')+'</div><div id="phk">'+PHDOCK.map(function(k){return ic(PHA.find(function(a){return a.id===k}))}).join('')+'</div><div id="pht">下にスワイプで閉じる</div><div id="phh" role="button" aria-label="ホームバー"></div></div>';
+  document.body.appendChild(d);
+  d.addEventListener('click',function(e){if(e.target===d){phClose();return}var b=e.target.closest('[data-ph]');if(b)phLaunch(b.getAttribute('data-ph'),b)});
+  var hb=$('#phh'),y0=null;hb.addEventListener('pointerdown',function(e){y0=e.clientY;try{hb.setPointerCapture(e.pointerId)}catch(_){}});
+  hb.addEventListener('pointerup',function(e){var dy=y0==null?0:e.clientY-y0;y0=null;if(PH.app&&dy<20){phHome();return}if(dy>=-20)phClose()}); /* アプリの中: 上へ(か押す)=ホーム／ホーム: 下へ(か押す)=閉じる */
+  setInterval(function(){if(PH.on){var t=new Date(Date.now()+9*3600e3).toISOString().slice(11,16);$('#pht0').textContent=t}},10000)}
+function phoneOpen(){if(PH.busy)return;phBuild();if(!S.phone){S.phone=1;save();toast('役場からスマホが支給された📱',1)}
+  var d=$('#ph');PH.on=true;PH.app=false;$('#phd').classList.remove('app');document.body.classList.add('phon');
+  if(sheet.parentNode!==$('#phd')){sheetOpen=null;sheet.hidden=true;$('#phd').appendChild(sheet)}
+  $('#pht0').textContent=new Date(Date.now()+9*3600e3).toISOString().slice(11,16);d.hidden=false;d.classList.remove('out');void d.offsetWidth;d.classList.add('on');
+  if(!S.phHint){S.phHint=1;save();var h=$('#pht');h.classList.add('on');setTimeout(function(){h.classList.remove('on')},1800)}logEv('phone')}
+function phClose(){if(!PH.on)return;var d=$('#ph');PH.busy=true;d.classList.add('out');d.classList.remove('on');
+  setTimeout(function(){d.hidden=true;d.classList.remove('out');PH.on=false;PH.app=false;PH.busy=false;document.body.classList.remove('phon');sheetOpen=null;sheet.hidden=true;$('#stage').appendChild(sheet)},280)}
+function phHome(){PH.app=false;$('#phd').classList.remove('app');sheetOpen=null;sheet.hidden=true}
+function phLaunch(k,btn){if(k==='land'){phClose();setTimeout(function(){if(ROOM.on)exitRoom();openLand()},280+20);return}
+  var r=btn&&btn.getBoundingClientRect(),dr=$('#phd').getBoundingClientRect();if(r){sheet.style.setProperty('--ox',((r.left+r.width/2-dr.left)/dr.width*100).toFixed(1)+'%');sheet.style.setProperty('--oy',((r.top+r.height/2-dr.top-47)/(dr.height-47-22)*100).toFixed(1)+'%')}
+  phoneGo(k)}
+function phApp(){if(!PH.on)return;if(!PH.app){PH.app=true;var p=$('#phd');p.classList.remove('app');void p.offsetWidth;p.classList.add('app')}}
+function phoneGo(k){if(k==='chat'||k==='net'){netOpen();return}if(k==='senkyo'){senkyoOpen();return}if(k==='bag'){bagOpen();return}if(k==='zukan'){zukanOpen();return}if(k==='land'){close();if(ROOM.on)exitRoom();openLand();return}
   if(k==='my'){myOpen();return}if(k==='yakuba'){yakubaOpen();return}if(k==='log'){open('log');return}}
 function voteSend(n,c){if(!S.acct){juminOpen();return}
   fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');if(sheetOpen==='senkyo')senkyoOpen();else yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
@@ -2429,7 +2472,7 @@ function buyLot(id){var t=resOf(id),pr=askOf(id);if(!t||S.coin<pr||lotLock(id))r
 function moveLot(id){var l=LOTS[id];if(!l||lotLock(id)||isMine(id)||resOf(id)||S.coin<landPrice(l))return false;S.coin-=landPrice(l);S.lot=id;save();buildTown();return true}
 function openLand(){close();renderLand(S.lot);land.hidden=false}
 $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else openLand()});
-$('#phb').addEventListener('click',function(){if(sheetOpen==='phone')close();else phoneOpen()});$('#chb').addEventListener('click',function(){if(sheetOpen==='net')close();else netOpen()});
+$('#phb').addEventListener('click',function(){if(PH.on)phClose();else phoneOpen()});$('#chb').addEventListener('click',function(){if(sheetOpen==='net')close();else netOpen()});
 setTimeout(function tryB(){if(typeof scene!=='undefined'&&typeof height==='function'&&MDL&&Object.keys(MDL).length){try{buildBenches()}catch(e){logEv('bench:err')}}else setTimeout(tryB,500)},800);
 /* ===== v0.20 同じワールド（10/10 主「昨日ゆいと一緒にプレイしたけどゆいがワールドにいなかった」→「最初から同じワールドじゃだめなのか」） =====
    前: 住人・畑・役場だけがみんなで共通で、主人公の居場所はその端末の中だけ。同じ時間に遊んでも互いに見えなかった
@@ -2545,7 +2588,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.25',APP_BUILD='1010-2000',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.26',APP_BUILD='1010-2100',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
