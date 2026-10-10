@@ -35,6 +35,12 @@ img{max-width:100%}
 .ichh{font-size:14px;margin:10px 0 4px}
 .ichr{display:flex;gap:10px;align-items:center;background:#FFFDF3;border:2px solid #E8D9A6;border-radius:14px;padding:5px 8px 5px 12px;margin:4px 0}
 .ichr b{font-size:15px;min-width:5.2em}.ichr div{flex:1;display:flex;flex-direction:column;line-height:1.2}.ichr span{font-weight:800;color:#8a5a12}.ichr small{font-size:11px;color:#6b7d72}.ichr button{flex:none;min-height:36px;padding:4px 12px;font-size:14px}
+.gdh{margin:0 70px 4px 0;font-size:13px;line-height:1.35}.gdh span{color:#b3261e;font-weight:700}
+.gdpal{display:flex;gap:6px;margin:4px 0;overflow-x:auto;padding:2px}
+.gdw .row{margin-top:4px}.gdw .row button{min-height:38px}
+.gdp{flex:none;width:58px;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:0;padding:6px 2px;border-radius:12px;border:2px solid #E8D9A6;background:#FFFDF3;font-size:10px;font-weight:700}
+.gdp i{font-style:normal;font-size:22px}.gdp.on{border-color:#FFC83D;background:#FFF3C7;box-shadow:0 0 0 2px #FFC83D}
+.drin.gdin{background:#BFE6C2}
 </style>
 <title>フカシの森</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@500;700&display=swap">
@@ -579,7 +585,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.43';
+var VERSION='v0.44';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -899,6 +905,7 @@ function garden(l,k,r,add){var slots,i,gx=l.cx-l.side*8.6,fz=l.z1-.45,own=k<0;
     else if(st===2){for(x=l.x0+1.6;x<l.x1-1;x+=3.4){if(Math.abs(x-l.hx)<2.2)continue;add(l.B('flowerbed',1.5,x,fz))}}
     if(own||k>=2&&r()<.75)add(l.B('mailbox',.75,l.hx+1.9,fz-.1));
     if(own){var mg=l.G(l.hx+1.9,fz-.1),ma=l.G(l.hx+1.9,fz+1.1);hits.push({type:'sign',id:'mail',px:mg[0],pz:mg[1],w:.9,h:1.2});SPOT.mail={ax:ma[0],az:ma[1]}}}
+  if(own&&Array.isArray(S.garden)){S.garden.forEach(function(g){var d=GDI[g.k];if(!d||!has(d[0]))return;add(l.B(d[0],d[1],g.u,g.v,g.r?{turn:g.r}:{}));if(d[4]){var gp=l.G(g.u,g.v);townCols.push({x:gp[0],z:gp[1]-.2,r:d[4]})}});return} /* v0.44 自分で並べた庭 */
   if(!has('flowerbed'))return;
   if(l.kind==='S')slots=[[l.x0+2.7,l.z1-3.4],[l.x1-2.7,l.z1-3.7],[l.x0+2.6,l.cz-.6,1],[l.x1-2.6,l.cz-.2,1]];
   else if(l.kind==='L')slots=[[l.x0+3,l.z1-3.6],[l.x1-3,l.z1-3.9],[l.x0+6,l.z1-9,1],[l.x1-6,l.z1-9.6,1],[l.x0+3.2,l.cz-2],[l.x1-3.2,l.cz-1.2],[l.hx-5.6,l.z1-5.2],[l.hx+5.6,l.z1-5.6]];
@@ -2176,7 +2183,7 @@ function endIntro(){ if(!intro)return;intro=null;big.hidden=true;big.textContent
 function startIntro(){var c=LOTS.filter(function(l){return resOf(l.id)===5}).sort(function(a,b){return (a.q?5e3:0)+(a.cz<0?0:1e3)+a.dist-((b.q?5e3:0)+(b.cz<0?0:1e3)+b.dist)})[0];
   if(!c||window.matchMedia('(prefers-reduced-motion: reduce)').matches){S.intro=1;return}
   var ip=warp(c.hx,c.hz);intro={t0:performance.now(),x:ip[0],z:ip[1],y:height(ip[0],ip[1]),ask:askOf(c.id)};$('#hint').hidden=true}
-function frame(t){requestAnimationFrame(frame);logFrame(t-tPrev);var dt=Math.min(.05,(t-tPrev)/1000||0);tPrev=t;hud();if(!R)return;try{step(dt,t);if(typeof auraTick==='function')auraTick(t);if(typeof quakeTick==='function')quakeTick();R.render(scene,camera)}catch(e){if(!frame.err){frame.err=1;console.error(e)}}}
+function frame(t){requestAnimationFrame(frame);logFrame(t-tPrev);var dt=Math.min(.05,(t-tPrev)/1000||0);tPrev=t;hud();if(!R)return;try{step(dt,t);if(typeof auraTick==='function')auraTick(t);if(GD.on)gdCam();if(typeof quakeTick==='function')quakeTick();R.render(scene,camera)}catch(e){if(!frame.err){frame.err=1;console.error(e)}}}
 
 /* ---- スティック（10/6 1:44 主「ジョイスティックの操作の方がいい」）。左下の丸を倒す。キーボードは矢印か WASD ---- */
 var joy={x:0,y:0,id:null},keys={},jb=$('#joy'),jk=$('#joyk');
@@ -2202,7 +2209,7 @@ function pick(px,py){ var best=null,i,h,q,x,z,mx=me.wx===undefined?me.x:me.wx,mz
     for(k=0;k<4;k++){tt=(y0-o.y)/d.y;gx=o.x+d.x*tt;gz=o.z+d.z*tt;y0=height(gx,gz)} /* 丘の高さに合わせて当たる場所を詰める */
     var g=unwarp(gx,gz),l=lotAtPoint(g[0],g[1]);best=l?{type:'plot',id:l.id}:{type:'ground',x:g[0],z:g[1]}}
   return best}
-function tapAt(cx,cy){ if(!R)return;if(ROOM.on){roomTap(cx,cy);return}if(DV.on){var b0=pick(cx,cy);if(b0&&b0.id==='chest')open('chest');return}if(intro){endIntro();return}if(FS.on){fishTap();return}close();$('#hint').hidden=true;var b=pick(cx,cy);if(!b)return;
+function tapAt(cx,cy){ if(!R)return;if(GD.on){gdTap(cx,cy);return}if(ROOM.on){roomTap(cx,cy);return}if(DV.on){var b0=pick(cx,cy);if(b0&&b0.id==='chest')open('chest');return}if(intro){endIntro();return}if(FS.on){fishTap();return}close();$('#hint').hidden=true;var b=pick(cx,cy);if(!b)return;
   if(b.type==='talk'){openChat(b.who);return}
   if(b.type==='ground'){walkTo(b,null);return}
   if(b.type==='plot'){walkTo(lotFront(LOTS[b.id]),{lot:b.id});return}
@@ -2345,7 +2352,7 @@ function open(id){
     var n=level()+1,pl=furPlaced(),own=GACHA.filter(function(g){return S.items[g.n]>0}),inv=own,cells=own.map(function(g){var on=pl.indexOf(g)>=0,gi=GACHA.indexOf(g),it=GI.find(function(q){return q.name===g.n})||{r:'common'};
       return '<button type="button" class="fp'+(on?' on':'')+'" data-a="fp:'+gi+'" style="--rc:'+GR[it.r][2]+'"><i>'+esc(g.k)+'</i><span>'+esc(g.n)+'</span><b>'+(on?'置いてる':'しまってる')+'</b></button>'});
     var hats=HATS.map(function(h){return '<button type="button" data-a="hat:'+h[0]+'" class="'+(S.hat===h[0]?'on':'')+'" style="background:'+h[1]+'" aria-label="帽子 '+h[2]+'"></button>'}).join('');
-    show(id,'<h2>自分の家　Lv'+level()+'（'+n+'×'+n+'マス）</h2><button type="button" class="drin" data-a="dress">👗 着せ替え（顔・服・ぼうし）</button><div class="hats">帽子の色'+hats+'</div><h3 class="fph">家具　置いてる '+pl.length+' / '+furCap()+'　<small>押すと しまう・置く</small></h3><div class="fpl">'+(cells.join('')||'<p class="note">まだ家具が無い</p>')+'</div>'+
+    show(id,'<h2>自分の家　Lv'+level()+'（'+n+'×'+n+'マス）</h2><button type="button" class="drin" data-a="dress">👗 着せ替え（顔・服・ぼうし）</button><button type="button" class="drin gdin" data-a="gd:start">🌷 庭いじり（家の前の庭）</button><div class="hats">帽子の色'+hats+'</div><h3 class="fph">家具　置いてる '+pl.length+' / '+furCap()+'　<small>押すと しまう・置く</small></h3><div class="fpl">'+(cells.join('')||'<p class="note">まだ家具が無い</p>')+'</div>'+
     '<p class="note">'+(inv.length?('持っている家具 '+inv.length+'種類'+(inv.length>furCap()?'（今の家に置けるのは '+furCap()+'個まで）':'')):'ガチャの家具ガチャで引くと部屋に並ぶ')+'　ゲームをクリアすると広がる（Lv5まで）　土地: '+KNAME[LOTS[S.lot].kind]+'（'+RNAME[LOTS[S.lot].ring]+'）</p>')}
   else if(id==='gac'){gachaOpen()} /* v0.35 種類ごとのガチャ（gacha.js） */
   else if(id==='box'&&V15.on)senkyoOpen(); /* v0.24 広場の目安箱は森の要望に */
@@ -2382,6 +2389,7 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='logcopy'){logCopy();return}
   if(a==='chest'){if(!S.chest){S.chest=1;fuka(50,'chest');save()}show('chest','<h2>50フカ入っていた</h2><p>誰の物かは分からない　手持ち '+S.coin+'フカ</p>');return}
   if(a.indexOf('ib:')===0){ichiBuy(a.slice(3));return}if(a.indexOf('is:')===0){ichiSell(a.slice(3));return} /* v0.42 朝市 */
+  if(a.indexOf('gd:')===0){gdAct(a.slice(3));return} /* v0.44 庭いじり */
   if(a.indexOf('hat:')===0){S.hat=a.slice(4);save();setHat();open('home');return}
   if(a.indexOf('fp:')===0){var fg=GACHA[+a.slice(3)];if(fg&&S.items[fg.n]>0){var fpl=furPlaced(),fon=fpl.indexOf(fg)>=0,fcap=furCap(),fmsg='';S.fon=fpl.map(function(q){return q.n});
     if(fon)S.fon.splice(S.fon.indexOf(fg.n),1);else if(fpl.length>=fcap)fmsg='部屋がいっぱい　何かしまってから置いてね';else S.fon.push(fg.n);save();if(ROOM.on&&!ROOM.kind)roomBuild();open('home');if(fmsg){var fm=$('#sheet .fph');if(fm)fm.insertAdjacentHTML('afterend','<p class="note fpm">'+fmsg+'</p>')}}return} /* v0.39 */
@@ -2531,6 +2539,34 @@ function dmgPaint(){if(!R||!window.THREE)return;AI.forEach(function(o){var s=o.L
 function quakeCheck(d){var q=d&&d.quake;if(!q)return;if(S.qSeen==null){S.qSeen=q.n;save();return}if(q.n<=S.qSeen)return;S.qSeen=q.n;save();
   var now=d.day*24+d.slot;if(now-q.at>4)return;var eq=/地震/.test(q.text);QK.t0=performance.now();QK.amp=eq?.35:.12;QK.len=eq?3.2:1.4;toast((eq?'⚠ 地震が来た！ ':'⚠ ')+q.text.slice(0,56),1);logEv('quake')}
 function quakeTick(){if(!QK.t0)return;var e=(performance.now()-QK.t0)/1000;if(e>QK.len){QK.t0=0;return}var a=QK.amp*(1-e/QK.len);camera.position.x+=Math.sin(e*41)*a;camera.position.y+=Math.sin(e*53+1)*a*.6;camera.updateMatrixWorld()}
+/* ===== v0.44 庭いじり（10/10 残りの3番目）=====
+   自分の家の前の庭に、花壇・ひまわり・木・パラソル・池・柵・灯りを好きに並べる。上から見下ろして、置きたい所をタッチ
+   S.garden=[{k,u,v,r}]（u,v は土地を南向きに置いた時の座標。l.B がそのまま回してくれる）。null の間は今まで通りのおまかせ。記録は住民票にも預かる */
+var GD={on:false,sel:'fb',ry:0},GDI={fb:['flowerbed',1.6,'🌼','花壇'],sf:['sunflower',1.0,'🌻','ひまわり'],tf:['tree_fruit',2.2,'🍎','実のなる木',.4],tr:['tree_round',2.6,'🌳','丸い木',.45],tp:['tree_pine',2.8,'🌲','とがった木',.4],pa:['parasol',2.5,'⛱','パラソル',.8],po:['pond',2.3,'💧','小さな池',.8],fe:['fence',2.0,'🪵','柵',.3],ln:['lantern',1.4,'🏮','灯り',.2]},GDMAX=24;
+function gdLot(){return LOTS[S.lot]}
+function gdFrame(x,z){var l=gdLot(),X=x-l.cx,Z=z-l.cz;return l.q===0?[x,z]:l.q===1?[l.cx+Z,l.cz-X]:l.q===2?[l.cx-X,l.cz-Z]:[l.cx-Z,l.cz+X]} /* l.G の逆: 森の座標 → 土地を南向きにした座標 */
+function gdOk(u,v){var l=gdLot(),c=l.c,s=houseOf[l.id],u3=s?s.userData:{},hw=(Math.max(u3.fw||5,u3.fd||5))/2+.7;
+  if(u<c.x0+.8||u>c.x1-.8||v<c.z0+.8||v>c.z1-1.2)return '庭の外';
+  if(Math.abs(u-c.hx)<hw&&v<c.hz+.6&&v>c.hz-(u3.fd||6)-1.2)return '家の上には置けない';
+  if(Math.abs(u-c.hx)<1.3&&v>=c.hz-.2)return '玄関までの道は空けておく';return ''}
+function gdOpen(msg){var pal=Object.keys(GDI).filter(function(k){return has(GDI[k][0])}).map(function(k){var d=GDI[k];return '<button type="button" class="gdp'+(GD.sel===k?' on':'')+'" data-a="gd:sel:'+k+'"><i>'+d[2]+'</i><span>'+d[3]+'</span></button>'}).join('')+
+    '<button type="button" class="gdp'+(GD.sel==='del'?' on':'')+'" data-a="gd:sel:del"><i>🧹</i><span>片付ける</span></button><button type="button" class="gdp" data-a="gd:rot"><i>↻</i><span>向き '+Math.round(GD.ry*57.3)+'°</span></button>';
+  show('gd','<div class="gdw"><p class="gdh"><b>🌷 庭いじり</b> '+(S.garden||[]).length+'/'+GDMAX+'個　<span>'+esc(msg||'選んでから庭をタッチ')+'</span></p><div class="gdpal">'+pal+'</div>'+
+    '<div class="row"><button class="sub" data-a="gd:auto">おまかせに戻す</button><button data-a="gd:done">できた</button></div></div>')}
+function gdAct(a){var p=a.split(':');
+  if(p[0]==='start'){if(ROOM.on)exitRoom();close();GD.on=true;GD.dir=null;GD.sel='fb';if(!Array.isArray(S.garden)){S.garden=[];save();buildTown()}var l=gdLot();me.x=l.fx;me.z=l.fz;me.path=[];gdOpen(S.garden.length?'':'おまかせの飾りは片付けた。好きに並べてね');logEv('gd:start');return}
+  if(p[0]==='sel'){GD.sel=p[1];gdOpen();return}
+  if(p[0]==='rot'){GD.ry=(GD.ry+Math.PI/4)%(Math.PI*2);gdOpen();return}
+  if(p[0]==='auto'){S.garden=null;save();buildTown();GD.on=false;close();toast('庭をおまかせに戻した');return}
+  if(p[0]==='done'){GD.on=false;close();toast('庭ができた');return}}
+function gdTap(cx,cy){if(!GD.on)return;ray=ray||new THREE.Raycaster();v2=v2||new THREE.Vector2();v2.set(cx/W*2-1,-(cy/H*2-1));ray.setFromCamera(v2,camera);if(ray.ray.direction.y>-1e-4)return;
+  var o=ray.ray.origin,d=ray.ray.direction,y0=0,tt,gx,gz,k;for(k=0;k<5;k++){tt=(y0-o.y)/d.y;gx=o.x+d.x*tt;gz=o.z+d.z*tt;y0=height(gx,gz)}
+  var g=unwarp(gx,gz),f=gdFrame(g[0],g[1]),u=Math.round(f[0]*2)/2,v=Math.round(f[1]*2)/2,G=S.garden||(S.garden=[]);
+  if(GD.sel==='del'){var bi=-1,bd=1.6;G.forEach(function(q,i){var dd=Math.hypot(q.u-u,q.v-v);if(dd<bd){bd=dd;bi=i}});if(bi<0){gdOpen('そこには何も無い');return}var gone=G.splice(bi,1)[0];save();buildTown();gdOpen(GDI[gone.k][3]+'を片付けた');return}
+  var ng=gdOk(u,v);if(ng){gdOpen(ng);return}if(G.length>=GDMAX){gdOpen('庭がいっぱい（'+GDMAX+'個まで）');return}
+  if(G.some(function(q){return Math.hypot(q.u-u,q.v-v)<(GDI[q.k][4]||.3)+(GDI[GD.sel][4]||.3)+.2})){gdOpen('近すぎる。少しずらしてね');return}
+  G.push({k:GD.sel,u:u,v:v,r:+GD.ry.toFixed(2)});save();buildTown();gdOpen(GDI[GD.sel][3]+'を置いた');logEv('gd:put:'+GD.sel)}
+function gdCam(){if(sheetOpen!=='gd'){GD.on=false;return}if(!GD.dir){var dv=new THREE.Vector3();camera.getWorldDirection(dv);dv.y=0;dv.normalize();GD.dir=[dv.x,dv.z]}var l=gdLot(),c=l.c,sz=Math.max(c.x1-c.x0,c.z1-c.z0)*(c.x1-c.x0>20?.85:1),dd=GD.dir,p=warp(l.cx,l.cz),y=height(p[0],p[1]);camera.position.set(p[0]-dd[0]*sz*.78,y+sz*.82,p[1]-dd[1]*sz*.78);camera.lookAt(p[0]+dd[0]*sz*.08,y,p[1]+dd[1]*sz*.08);camera.updateMatrixWorld() /* いつものカメラと同じ向きのまま、高い所から（絵の板が裏を向かないように） */}
 function aiPoll(){if(!V15.on||typeof fetch!=='function')return;fetch(MORI+'/api/forest?w=live',{cache:'no-store'}).then(function(r){return r.json()}).then(aiApply).catch(function(e){logEv('ai:off')})} /* つながらないのは不具合ではない（記録を送らない） */
 function stepAI(dt,t,mw){var i,o,p,y,a,c,s2,gx,gz,mv,hop,d;
   for(i=0;i<AI.length;i++){o=AI[i];var yk=o.a19&&ACT19[o.a19.k]&&ACT19[o.a19.k].at==='yakuba';if(!yk)o.inHall=false;else if(!o.inHall&&!o.path.length&&o.a19s&&Math.hypot(o.a19s.x-o.x,o.a19s.z-o.z)<1.2){o.inHall=true;o.hallAt=LIFE.clock;if(o.seg)o.seg.end=Math.max(o.seg.end,LIFE.clock+life19Rand(45,80))} /* v0.23 役場の前に着いたら中へ */
@@ -3837,7 +3873,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.43',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.44',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -3901,7 +3937,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={houseOfX:function(i){return houseOf[i]},dmgPaint:dmgPaint,quakeCheck:quakeCheck,QK:QK,AI:AI,aiApply:aiApply,ichiOpen:ichiOpen,ichiBuy:ichiBuy,ichiSell:ichiSell,V15:V15,bagList:bagList,WAL:WAL,fuka:fuka,walSync:walSync,walFlush:walFlush,G3up:function(t){G3upd(t)},FXP:FXP,FXBY:FXBY,fxSpark:fxSpark,gBadge:gBadge,GM:GM,gPool:gPool,drMini:drMini,GACHA:GACHA,furObj:furObj,furPlaced:furPlaced,roomBuild:roomBuild,FSLOT:FSLOT,furCap:furCap,lookOk:lookOk,lookN:lookN,MR:MR,cloudHash:cloudHash,save:save,cloudUp:cloudUp,cloudLoad:cloudLoad,cloudBlob:cloudBlob,gShow:gShow,g3skip:g3skip,G3get:function(){return G3},GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={warpX:warp,heightX:height,camX:function(){return camera},GD:GD,gdAct:gdAct,gdTap:gdTap,gdFrame:gdFrame,gdOk:gdOk,LOTS:LOTS,houseOfX:function(i){return houseOf[i]},dmgPaint:dmgPaint,quakeCheck:quakeCheck,QK:QK,AI:AI,aiApply:aiApply,ichiOpen:ichiOpen,ichiBuy:ichiBuy,ichiSell:ichiSell,V15:V15,bagList:bagList,WAL:WAL,fuka:fuka,walSync:walSync,walFlush:walFlush,G3up:function(t){G3upd(t)},FXP:FXP,FXBY:FXBY,fxSpark:fxSpark,gBadge:gBadge,GM:GM,gPool:gPool,drMini:drMini,GACHA:GACHA,furObj:furObj,furPlaced:furPlaced,roomBuild:roomBuild,FSLOT:FSLOT,furCap:furCap,lookOk:lookOk,lookN:lookN,MR:MR,cloudHash:cloudHash,save:save,cloudUp:cloudUp,cloudLoad:cloudLoad,cloudBlob:cloudBlob,gShow:gShow,g3skip:g3skip,G3get:function(){return G3},GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
