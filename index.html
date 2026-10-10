@@ -553,7 +553,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.37';
+var VERSION='v0.38';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -993,9 +993,9 @@ var DR={tab:'hat',cur:null,img:null,mk:null,cache:{},pv:null,
   clo:[['いつもの',''],['いちご','#EF7775'],['そら','#78BFE8'],['わかば','#83C879'],['たんぽぽ','#FFD34E'],['さくら','#F5A7C8'],['ぶどう','#B8A1E8'],['みかん','#F6A25D'],['ココア','#A97A5C']],
   clop:['無地','ボーダー','水玉','チェック','おほしさま','おはな'],
   pre:[['🍄 いつもの','00000000'],['🍓 いちごミルク','11111150'],['🌲 森の探検家','30010331'],['🌙 おやすみ','44333464'],['☁️ そらいろ','20443122'],['🍊 みかんボーダー','60666071'],['🌸 はるの妖精','55271245'],['🍇 ぶどうチェック','40514263']]};
-function lookDef(){var hi=['y','r','b','g','p'].indexOf(S.hat);return (hi<0?0:hi)+'0000000'}
-function lookCode(){return /^[0-9]{8}$/.test(S.look||'')?S.look:lookDef()}
-function lookOk(c){if(!/^[0-9]{8}$/.test(c||''))return false;var n=c.split('').map(Number),mx=[8,5,7,7,7,7,8,5];return n.every(function(v,i){return v<=mx[i]})}
+function lookDef(){var hi=['y','r','b','g','p'].indexOf(S.hat);return (hi<0?0:hi)+'00000000'}
+function lookCode(){var c=S.look||'';if(!lookOk(c))return lookDef();return c.length<9?c+'0':c} /* v0.38 9けた（顔の飾り） */
+function lookOk(c){if(!/^[0-9a-z]{8,9}$/.test(c||''))return false;var N=typeof lookN==='function'?lookN():[9,6,8,8,8,8,9,6,1];return c.split('').every(function(ch,i){return parseInt(ch,36)<N[i]})}
 (function(){var im=new Image();im.onload=function(){var c=document.createElement('canvas');c.width=c.height=512;var g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,0,0,512,512);DR.mk=g.getImageData(0,0,512,512).data;if(me&&me.sp)lookApply()};im.src=DRMASK})();
 function hexRGB(h){h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
 function drPat(kind,x,y,hh,clo){ /* 柄: 白をどれだけ混ぜるか（-1=暗い線）。x,y は絵の中の座標、hh はモデルの高さ(0〜1)。服の番号はぼうしの番号に読み替える */
@@ -1010,7 +1010,7 @@ function drPat(kind,x,y,hh,clo){ /* 柄: 白をどれだけ混ぜるか（-1=暗
   return 0}
 function drFace(g,L,mini){ /* 顔: L=[帽子色,帽子柄,目,口,ほっぺ,まゆ,服色,服柄]。g は顔の真ん中を原点に回した座標（右=+x・下=+y、1単位=12px）*/
   var u=12,K='#292724',B='#51433A',E=[[27,-9],[-28,-5]],line=function(w){g.lineWidth=w*u;g.lineCap='round';g.lineJoin='round';g.strokeStyle=K},ell=function(x,y,rx,ry,c){g.beginPath();g.ellipse(x,y,rx,ry,0,0,6.2832);g.fillStyle=c;g.fill()};
-  var ch=DR.cheek[L[4]];if(ch&&ch[1]){[[43,9],[-45,11]].forEach(function(p){if(L[4]===7){[[-3,-2],[3,-2],[0,3]].forEach(function(q){ell(p[0]+q[0],p[1]+q[1],1.2,1.2,ch[1])})}else ell(p[0],p[1],.55*u,.33*u,ch[1])})}
+  var ch=DR.cheek[L[4]];if(ch&&ch[1]&&L[4]<8){[[43,9],[-45,11]].forEach(function(p){if(L[4]===7){[[-3,-2],[3,-2],[0,3]].forEach(function(q){ell(p[0]+q[0],p[1]+q[1],1.2,1.2,ch[1])})}else ell(p[0],p[1],.55*u,.33*u,ch[1])})}
   E.forEach(function(p,i){var x=p[0],y=p[1],e=L[2];
     if(e===0)ell(x,y,.5*u,.5*u,K);
     else if(e===1){ell(x,y,.5*u,.5*u,K);ell(x+.17*u*(i?1:1),y-.17*u,.14*u,.14*u,'#fff')}
@@ -1036,39 +1036,41 @@ function drFace(g,L,mini){ /* 顔: L=[帽子色,帽子柄,目,口,ほっぺ,ま�
   else if(m===4){g.moveTo(mx-.6*u,my-.1*u);g.quadraticCurveTo(mx-.3*u,my+.35*u,mx,my);g.moveTo(mx,my);g.quadraticCurveTo(mx+.3*u,my+.35*u,mx+.6*u,my-.1*u);g.stroke()}
   else if(m===5){g.moveTo(mx-.45*u,my+.2*u);g.quadraticCurveTo(mx,my-.2*u,mx+.45*u,my+.2*u);g.stroke()}
   else if(m===6){g.moveTo(mx-.65*u,my-.15*u);g.lineTo(mx+.65*u,my-.15*u);g.quadraticCurveTo(mx+.6*u,my+.65*u,mx,my+.65*u);g.quadraticCurveTo(mx-.6*u,my+.65*u,mx-.65*u,my-.15*u);g.closePath();g.fillStyle='#70433D';g.fill();g.stroke()}
-  else if(m===7){g.moveTo(mx-.6*u,my+.1*u);g.lineTo(mx-.3*u,my-.15*u);g.lineTo(mx,my+.1*u);g.lineTo(mx+.3*u,my-.15*u);g.lineTo(mx+.6*u,my+.1*u);g.stroke()}}
+  else if(m===7){g.moveTo(mx-.6*u,my+.1*u);g.lineTo(mx-.3*u,my-.15*u);g.lineTo(mx,my+.1*u);g.lineTo(mx+.3*u,my-.15*u);g.lineTo(mx+.6*u,my+.1*u);g.stroke()};drFaceMore(g,L)}
 function lookTex(code){if(!MDL.kino||!DR.mk||!MIM.kino)return null;if(DR.cache[code])return DR.cache[code];
-  var L=code.split('').map(Number),c=document.createElement('canvas');c.width=c.height=512;var g=c.getContext('2d');g.drawImage(MIM.kino,0,0,512,512);
+  var L=code.split('').map(function(ch){return parseInt(ch,36)}),c=document.createElement('canvas');c.width=c.height=512;var g=c.getContext('2d');g.drawImage(MIM.kino,0,0,512,512);
   var id=g.getImageData(0,0,512,512),d=id.data,mk=DR.mk,hc=L[0]?hexRGB(DR.hat[L[0]][1]):null,cc=L[6]?hexRGB(DR.clo[L[6]][1]):null,i,p,lum,x,y,w,t,col;
   for(i=0;i<512*512;i++){p=i*4;var isH=mk[p]>127,isC=mk[p+1]>127;if(!isH&&!isC)continue;x=i%512;y=(i/512)|0;
     lum=(.299*d[p]+.587*d[p+1]+.114*d[p+2])/255;
     if(isH){if(!hc&&!L[1])continue;col=hc||[d[p],d[p+1],d[p+2]];var k=hc?Math.min(1.25,lum/.66):1;var r=hc?col[0]*k:col[0],gg=hc?col[1]*k:col[1],b=hc?col[2]*k:col[2];
-      if(L[1]){w=drPat(L[1],x,y,mk[p+2]/250,false);if(w>0){t=L[1]===2?[255,243,199]:[255,255,255];r+=(t[0]*Math.min(1.1,lum/.66)-r)*w*.9;gg+=(t[1]*Math.min(1.1,lum/.66)-gg)*w*.9;b+=(t[2]*Math.min(1.1,lum/.66)-b)*w*.9}}
+      if(L[1]>=6){var pn=patNew(false,L[1],x,y,mk[p+2]/250,hc||[255,206,72]);if(pn){var kk=Math.min(1.25,lum/.66);r=pn[0]*kk;gg=pn[1]*kk;b=pn[2]*kk}}
+      else if(L[1]){w=drPat(L[1],x,y,mk[p+2]/250,false);if(w>0){t=L[1]===2?[255,243,199]:[255,255,255];r+=(t[0]*Math.min(1.1,lum/.66)-r)*w*.9;gg+=(t[1]*Math.min(1.1,lum/.66)-gg)*w*.9;b+=(t[2]*Math.min(1.1,lum/.66)-b)*w*.9}}
       d[p]=Math.min(255,r);d[p+1]=Math.min(255,gg);d[p+2]=Math.min(255,b)}
     else if(isC){if(!cc&&!L[7])continue;if(lum<.33)continue; /* 濃い所（足の影など）はそのまま */
       col=cc||[244,232,205];var k2=Math.min(1.15,lum/.7),r2=col[0]*k2,g2=col[1]*k2,b2=col[2]*k2;
-      if(L[7]){w=drPat(L[7],x,y,mk[p+2]/250,true);if(w>0){r2+=(255*k2-r2)*w*.85;g2+=(250*k2-g2)*w*.85;b2+=(240*k2-b2)*w*.85}else if(w<0){r2*=.78;g2*=.78;b2*=.78}}
+      if(L[7]>=6){var pc2=patNew(true,L[7],x,y,mk[p+2]/250,col);if(pc2){r2=pc2[0]*k2;g2=pc2[1]*k2;b2=pc2[2]*k2}}
+      else if(L[7]){w=drPat(L[7],x,y,mk[p+2]/250,true);if(w>0){r2+=(255*k2-r2)*w*.85;g2+=(250*k2-g2)*w*.85;b2+=(240*k2-b2)*w*.85}else if(w<0){r2*=.78;g2*=.78;b2*=.78}}
       d[p]=Math.min(255,r2);d[p+1]=Math.min(255,g2);d[p+2]=Math.min(255,b2)}}
   g.putImageData(id,0,0);
-  if(code.slice(2,6)!=='0000'){ /* 顔: 今の目・口・ほっぺを、まわりの肌の色で消す */
+  if(code.slice(2,6)!=='0000'||(L[8]||0)){ /* 顔: 今の目・口・ほっぺを、まわりの肌の色で消す */
     var src=id.data,ring=function(cx,cy,r){var s=[0,0,0],n=0,a,xx,yy,q;for(a=0;a<24;a++){xx=Math.round(cx+Math.cos(a*.2618)*(r+3));yy=Math.round(cy+Math.sin(a*.2618)*(r+3));q=(yy*512+xx)*4;if(src[q]+src[q+1]+src[q+2]>600){s[0]+=src[q];s[1]+=src[q+1];s[2]+=src[q+2];n++}}return n?'rgb('+(s[0]/n|0)+','+(s[1]/n|0)+','+(s[2]/n|0)+')':'rgb(251,248,226)'};
     [[31,205,8],[35,260,8],[49,232,10],[49,189,8],[51,277,8]].forEach(function(q){var cs=ring(q[0],q[1],q[2]),gr=g.createRadialGradient(q[0],q[1],q[2]*.55,q[0],q[1],q[2]*1.25);gr.addColorStop(0,cs);gr.addColorStop(.6,cs);gr.addColorStop(1,cs.replace('rgb','rgba').replace(')',',0)'));g.beginPath();g.arc(q[0],q[1],q[2]*1.25,0,6.2832);g.fillStyle=gr;g.fill();g.fill()}); /* 縁はぼかして、まわりの肌となじませる */
     g.save();g.translate(40,232);g.rotate(-Math.PI/2);drFace(g,L);g.restore()}
   var tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;tx.flipY=false;tx.anisotropy=4;DR.cache[code]=tx;return tx}
-function lookApply(code){if(!me||!me.sp||!me.sp.userData.m3)return;code=code||lookCode();var t=code===lookDef()&&code.slice(1)==='0000000'?hatTex(S.hat):lookTex(code);if(t){me.sp.material.map=t;me.sp.material.needsUpdate=true}}
+function lookApply(code){if(!me||!me.sp||!me.sp.userData.m3)return;code=code||lookCode();var t=/^[0-4]0{7,8}$/.test(code)&&code===lookDef()?hatTex(S.hat):lookTex(code);if(t){me.sp.material.map=t;me.sp.material.needsUpdate=true}}
 function drMini(kind,v){var key=kind+v;if(DR.cache['m'+key])return DR.cache['m'+key];var c=document.createElement('canvas');c.width=c.height=96;var g=c.getContext('2d');
   if(kind==='hat'||kind==='clo'){var col=kind==='hat'?DR.hat[v][1]:(DR.clo[v][1]||'#F4E8CD');g.fillStyle=col;g.beginPath();g.arc(48,48,34,0,6.2832);g.fill();g.strokeStyle='rgba(23,58,44,.25)';g.lineWidth=2;g.stroke()}
   else if(kind==='hatp'||kind==='clop'){g.save();g.beginPath();g.arc(48,48,36,0,6.2832);g.clip();g.fillStyle=kind==='hatp'?'#F06465':'#78BFE8';g.fillRect(0,0,96,96);var id=g.getImageData(0,0,96,96),d=id.data;
-    for(var y=0;y<96;y++)for(var x=0;x<96;x++){var w=drPat(v,x*1.3,y*1.3,(96-y)/96*(kind==='clop'?.36:1),kind==='clop'),p=(y*96+x)*4;if(d[p+3]===0)continue;if(w>0){d[p]+=(255-d[p])*w;d[p+1]+=(250-d[p+1])*w;d[p+2]+=(240-d[p+2])*w}else if(w<0){d[p]*=.75;d[p+1]*=.75;d[p+2]*=.75}}g.putImageData(id,0,0);g.restore()}
-  else{g.fillStyle='#FBF8E2';g.beginPath();g.ellipse(48,50,47,42,0,0,6.2832);g.fill();var L=[0,0,0,0,6,0,0,0];if(kind==='eyes')L[2]=v;if(kind==='mouth'){L[3]=v;L[2]=0}if(kind==='cheek')L[4]=v;if(kind==='brow')L[5]=v;
+    for(var y=0;y<96;y++)for(var x=0;x<96;x++){var p=(y*96+x)*4;if(d[p+3]===0)continue;if(v>=6){var pz=patNew(kind==='clop',v,x*1.3,y*1.3,kind==='clop'?(96-y)/96*.36:.45+(96-y)/96*.55,[d[p],d[p+1],d[p+2]]);if(pz){d[p]=pz[0];d[p+1]=pz[1];d[p+2]=pz[2]}continue}var w=drPat(v,x*1.3,y*1.3,(96-y)/96*(kind==='clop'?.36:1),kind==='clop');if(w>0){d[p]+=(255-d[p])*w;d[p+1]+=(250-d[p+1])*w;d[p+2]+=(240-d[p+2])*w}else if(w<0){d[p]*=.75;d[p+1]*=.75;d[p+2]*=.75}}g.putImageData(id,0,0);g.restore()}
+  else{g.fillStyle='#FBF8E2';g.beginPath();g.ellipse(48,50,47,42,0,0,6.2832);g.fill();var L=[0,0,0,0,6,0,0,0];L[8]=0;if(kind==='acc')L[8]=v;if(kind==='eyes')L[2]=v;if(kind==='mouth'){L[3]=v;L[2]=0}if(kind==='cheek')L[4]=v;if(kind==='brow')L[5]=v;
     g.save();g.translate(48,50);g.scale(1.35,1.35);drFace(g,L);g.restore()}
   var u=c.toDataURL();DR.cache['m'+key]=u;return u}
 function dressOpen(msg){if(!ROOM.on||ROOM.kind==='yakuba'){toast('着せ替えは自分の家の中でできる');return}if(!DR.mk||!MDL.kino){toast('準備中…もう一度押してね');return}
-  if(DR.cur==null)DR.cur=lookCode();var L=DR.cur.split('').map(Number),tabs=[['hat','🍄','ぼうし'],['eyes','👀','目'],['mouth','😊','口'],['cheek','🍑','ほっぺ'],['brow','〰️','まゆ'],['clo','👕','服']];
+  if(DR.cur==null)DR.cur=lookCode();var L=DR.cur.split('').map(function(ch){return parseInt(ch,36)}),tabs=[['hat','🍄','ぼうし'],['eyes','👀','目'],['mouth','😊','口'],['cheek','🍑','ほっぺ'],['brow','〰️','まゆ'],['acc','✨','飾り'],['clo','👕','服']];
   var card=function(kind,v,name,on,pos){var own=drOwn(pos,v);return '<button type="button" class="drc'+(on?' on':'')+(own?'':' lock')+'" data-a="dr:'+(own?'set':'lock')+':'+pos+':'+v+'"><img alt="" src="'+drMini(kind,v)+'"><span>'+(own?esc(name):'🔒 ガチャ')+'</span></button>'},items='';
   if(DR.tab==='hat')items='<div class="drs">色</div><div class="drg">'+DR.hat.map(function(h,i){return card('hat',i,h[0],L[0]===i,0)}).join('')+'</div><div class="drs">柄</div><div class="drg">'+DR.hatp.map(function(n,i){return card('hatp',i,n,L[1]===i,1)}).join('')+'</div>';
   else if(DR.tab==='clo')items='<div class="drs">色</div><div class="drg">'+DR.clo.map(function(h,i){return card('clo',i,h[0],L[6]===i,6)}).join('')+'</div><div class="drs">柄</div><div class="drg">'+DR.clop.map(function(n,i){return card('clop',i,n,L[7]===i,7)}).join('')+'</div>';
-  else{var pos={eyes:2,mouth:3,cheek:4,brow:5}[DR.tab],arr=DR[DR.tab];items='<div class="drg">'+arr.map(function(a,i){return card(DR.tab,i,typeof a==='string'?a:a[0],L[pos]===i,pos)}).join('')+'</div>'}
+  else{var pos={eyes:2,mouth:3,cheek:4,brow:5,acc:8}[DR.tab],arr=DR[DR.tab];items='<div class="drg">'+arr.map(function(a,i){return card(DR.tab,i,typeof a==='string'?a:a[0],L[pos]===i,pos)}).join('')+'</div>'}
   var h='<div class="dr"><div class="chh" style="padding-right:74px"><b>👗 着せ替え</b></div><div class="drp"><canvas id="drcv" width="300" height="220" aria-label="自分の姿（なぞると回る）"></canvas><button type="button" class="drf" data-a="dr:front">正面</button></div>'+
     '<div class="drpre">'+DR.pre.map(function(p){return '<button type="button" data-a="dr:pre:'+p[1]+'">'+esc(p[0])+'</button>'}).join('')+'</div>'+
     '<div class="drt">'+tabs.map(function(t){return '<button type="button" data-a="dr:tab:'+t[0]+'" class="'+(DR.tab===t[0]?'on':'')+'"><b>'+t[1]+'</b>'+t[2]+'</button>'}).join('')+'</div>'+
@@ -1091,12 +1093,12 @@ function drPreview(){var cv=$('#drcv');if(!cv)return;var P=DR.pv;
   var t=lookTex(DR.cur);if(t&&P.m.material.map!==t){P.m.material.map=t;P.m.material.needsUpdate=true}}
 function drAct(p){var L=(DR.cur||lookCode()).split('');
   if(p[0]==='tab'){DR.tab=p[1];dressOpen();return}
-  if(p[0]==='set'){if(!drOwn(+p[1],p[2]))return;L[+p[1]]=p[2];DR.cur=L.join('');dressOpen();return}
-  if(p[0]==='lock'){var gp=+p[1];dressOpen('🔒 まだ持っていない　広場の「ガチャの祠」の '+(gp<2?'🍄小物ガチャ':gp<6?'😊顔パーツガチャ':'👕服ガチャ')+' で出る');return}
+  if(p[0]==='set'){if(!drOwn(+p[1],+p[2]))return;while(L.length<9)L.push('0');L[+p[1]]=Number(p[2]).toString(36);DR.cur=L.join('');dressOpen();return}
+  if(p[0]==='lock'){var gp=+p[1];dressOpen('🔒 まだ持っていない　広場の「ガチャの祠」の '+(gp<2?'🍄小物ガチャ':(gp<6||gp===8)?'😊顔パーツガチャ':'👕服ガチャ')+' で出る');return}
   if(p[0]==='pre'){if(!lookOk(p[1]))return;var miss=0,nw=p[1].split('').map(function(d,i){if(drOwn(i,d))return d;miss++;return L[i]}).join('');DR.cur=nw;dressOpen(miss?'持っていない部品（'+miss+'つ）は今のまま　ガチャで出る':'');return}
   if(p[0]==='front'){if(DR.pv){DR.pv.yaw=0;DR.pv.t=performance.now()+1e9}return}
   if(p[0]==='undo'){DR.cur=lookCode();dressOpen('保存してある姿に戻した');return}
-  if(p[0]==='rand'){var mx=[8,5,7,7,7,7,8,5],n,old=DR.cur;var tries=0;do{n=mx.map(function(m,i){var ok=[];for(var v=0;v<=m;v++)if(drOwn(i,v))ok.push(v);if((i===1||i===5||i===7)&&Math.random()<.5)return 0;return ok[Math.floor(Math.random()*ok.length)]}).join('')}while(n===old&&++tries<20);DR.cur=n;logEv('dr:rand');dressOpen();return}
+  if(p[0]==='rand'){var mx=lookN().map(function(x){return x-1}),n,old=DR.cur;var tries=0;do{n=mx.map(function(m,i){var ok=[];for(var v=0;v<=m;v++)if(drOwn(i,v))ok.push(v);if((i===1||i===5||i===7||i===8)&&Math.random()<.5)return '0';return ok[Math.floor(Math.random()*ok.length)].toString(36)}).join('')}while(n===old&&++tries<20);DR.cur=n;logEv('dr:rand');dressOpen();return}
   if(p[0]==='save'){S.look=DR.cur;var hc=+DR.cur[0];if(hc<5)S.hat=['y','r','b','g','p'][hc];save();NET.last='';if(typeof netSend==='function')netSend(true);logEv('dr:save');toast('この姿で森に出る👗');var k=DR.cur;DR.cur=null;close();lookApply(k);return}}
 
 /* ===== v0.35 ガチャを作り直す（ゆい Y-3「ガチャの演出つける（10連も）　服、顔のパーツ、小物、家具、乗り物　別のガチャ」＋Y-7 主「どっちも」＝公開処刑ガチャ）=====
@@ -1109,7 +1111,7 @@ var GR={common:['ふつう',1,'#A8B3A5',2],uncommon:['ちょっといい',2,'#70
   GRW={n:{common:60,uncommon:25,rare:10,epic:4,legendary:1},p:{common:40,uncommon:40,rare:15,epic:4,legendary:1}},
   GM=[['cloth','服ガチャ','👕','#FF8C83','今日の自分を、着替えよう。'],['face','顔パーツガチャ','😊','#FFC66D','顔で語ろう、森の暮らし。'],['hat','小物ガチャ','🍄','#78C9A0','頭の上まで、盛っていこう。'],
     ['fur','家具ガチャ','🛋️','#B6A0E8','必要かどうかは、置いてから考える。'],['ride','乗り物ガチャ','🚲','#92C9E8','森を駆ける日は、まだ遠い。'],['public','公開処刑ガチャ','📢','#FF6B52','引いた瞬間、森じゅうが知っている。']],
-  GPRE='hpemcbkq',GX={m:null,busy:0,conf:0};
+  GPRE='hpemcbkqa',GX={m:null,busy:0,conf:0};
 var GI=(function(){var L=[],R=function(m,o){return o},add=function(m,pos,v,name,lab,r){L.push({m:m,pos:pos,v:v,key:GPRE[pos]+v,name:name,lab:lab,r:r})};
   var cr={'いちご':'common','そら':'common','わかば':'common','たんぽぽ':'common','さくら':'uncommon','ぶどう':'uncommon','みかん':'uncommon','ココア':'uncommon'};
   for(var i=1;i<=8;i++)add('cloth',6,i,DR.clo[i][0],'服の色',cr[DR.clo[i][0]]);
@@ -1121,14 +1123,14 @@ var GI=(function(){var L=[],R=function(m,o){return o},add=function(m,pos,v,name,
   var fr={'盛りすぎたソファ':'uncommon','自称トロフィー':'rare','ゴールポスト型ベッド':'epic','鉄格子の窓':'uncommon','未使用の灰皿':'rare','自分の指名手配ポスター':'epic','金のフカシ像':'legendary'};
   GACHA.forEach(function(g){L.push({m:'fur',key:'f:'+g.n,name:g.n,lab:'家具',r:fr[g.n]||'common',fk:g.k})});return L})();
 function gOwnInit(){if(!S.own||typeof S.own!=='object'){S.own={};if(/^[0-9]{8}$/.test(S.look||''))S.look.split('').forEach(function(d,i){if(+d)S.own[GPRE[i]+d]=1});save()}} /* v0.34 で着ていた物は持っていることにする */
-function drOwn(pos,v){v=+v;if(!v)return true;if(pos===0&&v<5)return true;gOwnInit();return !!S.own[GPRE[pos]+v]}
+function drOwn(pos,v){v=typeof v==='string'&&/[a-z]/.test(v)?parseInt(v,36):+v;if(!v)return true;if(pos===0&&v<5)return true;gOwnInit();return !!S.own[GPRE[pos]+v]}
 function gPool(m){return m==='public'?GI:GI.filter(function(it){return it.m===m})}
 function gRates(m){var pool=gPool(m),W=GRW[m==='public'?'p':'n'],has={},tot=0;pool.forEach(function(it){has[it.r]=(has[it.r]||0)+1});Object.keys(W).forEach(function(r){if(has[r])tot+=W[r]});
   var out={};Object.keys(W).forEach(function(r){if(has[r])out[r]={all:W[r]/tot*100,each:W[r]/tot*100/has[r],n:has[r]}});return out}
 function gHave(it){return it.m==='fur'?(S.items[it.name]||0)>0:drOwn(it.pos,it.v)}
 function gDraw(m){var R=gRates(m),x=Math.random()*100,acc=0,rr=null;Object.keys(R).forEach(function(r){if(rr)return;acc+=R[r].all;if(x<acc)rr=r});if(!rr)rr=Object.keys(R).pop();
   var c=gPool(m).filter(function(it){return it.r===rr});return c[Math.floor(Math.random()*c.length)]}
-function gIcon(it,big){var s=big?'g-ic big':'g-ic';if(it.m==='fur')return '<i class="'+s+' fur">'+esc(it.fk||'？')+'</i>';var kind={0:'hat',1:'hatp',2:'eyes',3:'mouth',4:'cheek',5:'brow',6:'clo',7:'clop'}[it.pos];return '<img class="'+s+'" alt="" src="'+drMini(kind,it.v)+'">'}
+function gIcon(it,big){var s=big?'g-ic big':'g-ic';if(it.m==='fur')return '<i class="'+s+' fur">'+esc(it.fk||'？')+'</i>';var kind={0:'hat',1:'hatp',2:'eyes',3:'mouth',4:'cheek',5:'brow',6:'clo',7:'clop',8:'acc'}[it.pos];return '<img class="'+s+'" alt="" src="'+drMini(kind,it.v)+'">'}
 function gStars(r){return '<b class="g-st" style="color:'+GR[r][2]+'">'+'★'.repeat(GR[r][1])+'</b>'}
 function gachaOpen(msg){gOwnInit();GX.m=null;GX.conf=0;
   var h='<div class="g"><div class="chh" style="padding-right:74px"><b>🎰 森のガチャ屋さん</b></div><div class="g-coin">手持ち <b>'+S.coin+'</b> フカ</div><div class="g-list">'+
@@ -1177,7 +1179,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   if(a==='skip'){if(G3)g3skip();else if(GX.done)GX.done();return}
   if(a==='close'){g3close();o.className='';o.innerHTML='';gMachine(GX.m||'cloth');return}
   if(a==='again'){var n=GX.last?GX.last.n:1;g3close();o.className='';o.innerHTML='';if(GX.m==='public'){GX.conf=1;gMachine('public');return}gPull(n);return}
-  if(a==='wear'){var it=GX.last.res[0].it,L=lookCode().split('');L[it.pos]=String(it.v);S.look=L.join('');if(it.pos===0&&it.v<5)S.hat=['y','r','b','g','p'][it.v];save();lookApply();NET.last='';netSend(true);toast('身につけた　'+it.name);g3close();o.className='';o.innerHTML='';gMachine(GX.m);return}});
+  if(a==='wear'){var it=GX.last.res[0].it,L=lookCode().split('');while(L.length<9)L.push('0');L[it.pos]=Number(it.v).toString(36);S.look=L.join('');if(it.pos===0&&it.v<5)S.hat=['y','r','b','g','p'][it.v];save();lookApply();NET.last='';netSend(true);toast('身につけた　'+it.name);g3close();o.className='';o.innerHTML='';gMachine(GX.m);return}});
 function gAct(p){if(p[0]==='m'){GX.conf=0;gMachine(p[1]);return}if(p[0]==='back'){gachaOpen();return}if(p[0]==='conf'){GX.conf=1;gMachine('public');return}if(p[0]==='unconf'){GX.conf=0;gMachine('public');return}if(p[0]==='pull'){gPull(+p[1]);return}}
 
 /* ===== v0.36 3Dのガチャ大演出（10/10 19:48 主「ガチャ演出はもっと3Dにしてよ！！面白演出で頼むよ！グロックにも頼んで超絶わくわくする大演出を」）=====
@@ -1196,7 +1198,7 @@ function g3tex(w,h,f){var c=document.createElement('canvas');c.width=w;c.height=
 function g3itemTex(it){var c=document.createElement('canvas');c.width=c.height=128;var g=c.getContext('2d'),t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;
   g.fillStyle='#FFFDF3';g.beginPath();g.arc(64,64,60,0,6.2832);g.fill();g.lineWidth=6;g.strokeStyle='#'+G3COL[GR[it.r][1]].toString(16).padStart(6,'0');g.stroke();
   if(it.m==='fur'){g.fillStyle='#4b3a72';g.font='800 64px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(it.fk||'？',64,68);t.needsUpdate=true}
-  else{var im=new Image();im.onload=function(){g.drawImage(im,14,14,100,100);t.needsUpdate=true};im.src=drMini({0:'hat',1:'hatp',2:'eyes',3:'mouth',4:'cheek',5:'brow',6:'clo',7:'clop'}[it.pos],it.v)}
+  else{var im=new Image();im.onload=function(){g.drawImage(im,14,14,100,100);t.needsUpdate=true};im.src=drMini({0:'hat',1:'hatp',2:'eyes',3:'mouth',4:'cheek',5:'brow',6:'clo',7:'clop',8:'acc'}[it.pos],it.v)}
   return t}
 function g3plan(res,n,m){var sorted=res.map(function(q,i){return {q:q,i:i,s:GR[q.it.r][1]}}).sort(function(a,b){return a.s-b.s||a.i-b.i}),top=sorted[sorted.length-1].s,R=Math.random;
   var P={n:n,m:m,top:top,res:res,order:sorted,fake:top===5&&R()<.2,promo:[],pub:m==='public',gagLeaf:top===1,climb:n===10,end:n===1?6.6+(top===5?2.2:0):10.6+(top===5?1.4:0)};
@@ -1292,7 +1294,7 @@ function G3upd(t){var g=G3,P=g.P,cl=function(v){return v<0?0:v>1?1:v},seg=functi
     if(t>5.5&&t<8)spin=(t-5.5)*5;if(t>8)hop=Math.abs(Math.sin((t-8)*6))*.5}
   var face=one?ez(seg(5.0,5.6)):ez(seg(8,8.6));m3.position.y=hop;m3.rotation.x=lean*(face>.5?-1:1);m3.rotation.y=Math.PI*(1-face)+spin; /* 結果が出たらこっちを向く */
   /* 部品が出たら、その場で着てみせる（保存はしない） */
-  if(one&&t>5.4&&P.res[0].it.m!=='fur'&&!g.lookT){var it=P.res[0].it,L=lookCode().split('');L[it.pos]=String(it.v);var tt=lookTex(L.join(''));if(tt){m3.material.map=tt;m3.material.needsUpdate=true;g.lookT=1}}
+  if(one&&t>5.4&&P.res[0].it.m!=='fur'&&!g.lookT){var it=P.res[0].it,L=lookCode().split('');while(L.length<9)L.push('0');L[it.pos]=Number(it.v).toString(36);var tt=lookTex(L.join(''));if(tt){m3.material.map=tt;m3.material.needsUpdate=true;g.lookT=1}}
   if(one&&P.res[0].it.m==='fur'&&t>5.4)m3.scale.setScalar(lerp(1.55,.8,ez(seg(5.4,6.0))));else m3.scale.setScalar(sc0);
   /* ★1: 木の葉がポトリ */
   g.leaf.visible=P.gagLeaf&&t>5.6;if(g.leaf.visible){var lt=t-5.6;g.leaf.position.set(.3+Math.sin(lt*4)*.4,Math.max(2.6,5-lt*1.6),1.6);g.leaf.rotation.set(lt*3,lt*2,0)}
@@ -1317,6 +1319,86 @@ function G3upd(t){var g=G3,P=g.P,cl=function(v){return v<0?0:v>1?1:v},seg=functi
   var bt='';if(one&&P.promo.length&&t>2.95&&t<4.0)bt='おっと、昇格だぞ！';if(!one&&t>4.2&&t<5.4)bt='（木に登ろうとして すべった）';
   if(g.bub.textContent!==bt){g.bub.textContent=bt;g.bub.className='gx-bub'+(bt?' on':'')}
   camP.x+=(Math.random()-.5)*shake;camP.y+=(Math.random()-.5)*shake;g.cam.position.copy(camP);g.cam.lookAt(look)}
+
+/* ===== v0.38 素材をたくさん（10/10 20:22 主「ガチャから出てくるパーツとか色々とにかく素材とかたくさん作って欲しい」）=====
+   中身・色・形・珍しさはチャッピー chatgpt_materials.json（服の色+12・服の柄+10・ぼうしの色+10・ぼうしの柄+8・目+8・口+8・ほっぺ+6・まゆ+6・新しい部位「顔の飾り」12）
+   見た目の番号（LOOK）は 1けた＝1部位のまま、0-9 の次は a-z（36まで）。9けた目に「顔の飾り」 */
+var MR={}; /* 新しい物の珍しさ（名前→珍しさ） */
+(function(){var C=function(arr,list,two){list.forEach(function(q){arr.push(two?[q[0],q[1]]:q[0]);MR[(arr===DR.clo?'k':arr===DR.hat?'h':arr===DR.clop?'q':arr===DR.hatp?'p':arr===DR.eyes?'e':arr===DR.mouth?'m':arr===DR.cheek?'c':arr===DR.brow?'b':'a')+(arr.length-1)]=q[two?2:1]})};
+  C(DR.clo,[['クリームソーダ','#A8E6CF','common'],['ラムネ','#91D8F7','common'],['プリン','#F5D77A','common'],['あんず','#F4A77D','common'],['ラベンダー','#C6B5F2','common'],['ミルク','#FFF1DB','common'],['サーモン','#F58F91','uncommon'],['ピスタチオ','#B7CE8A','uncommon'],['ソーダブルー','#67C7D4','uncommon'],['カスタード','#F4C95D','uncommon'],['すもも','#CE8BB7','rare'],['夜空ネイビー','#354B78','rare']],1);
+  C(DR.clop,[['こまかいギンガム','common'],['ちびドット','common'],['ちびハート','common'],['つぶつぶ','common'],['こもれびドット','uncommon'],['ちびクローバー','uncommon'],['おやつの粒','uncommon'],['ふた色ボーダー','uncommon'],['三段ミルフィーユ','rare'],['夜明けボーダー','epic']]);
+  C(DR.hat,[['レモンミルク','#F8E99A','common'],['ソーダミント','#85DCCB','common'],['ベビーピンク','#F7B9CC','common'],['あじさい','#A99BE8','common'],['マシュマロ','#FFF7EB','common'],['キャラメル','#C98C58','uncommon'],['アクア','#72D9E4','uncommon'],['チェリー','#E85D75','uncommon'],['オリーブ','#8BA65B','rare'],['星明かり','#39466E','epic']],1);
+  C(DR.hatp,[['ミニミニドット','common'],['ちびチェック','common'],['キャンディ粒','common'],['四つ葉模様','uncommon'],['ちび月','uncommon'],['二色リボン帯','uncommon'],['おやつボーダー','rare'],['銀河のしま','epic']]);
+  C(DR.eyes,[['ほしのひとみ','uncommon'],['おおきな黒目','common'],['ほそめ','common'],['にこにこ三日月','common'],['まんぷく目','uncommon'],['うずまき','rare'],['てんてん星','rare'],['夢みる目','epic']]);
+  C(DR.mouth,[['ちいさなへの字','common'],['おにぎり口','common'],['はむはむ','uncommon'],['ちいさな歯','uncommon'],['おどろき丸','common'],['おすまし','uncommon'],['ふにゃ口','rare'],['しあわせ口','epic']]);
+  C(DR.cheek,[['さくらもち','#F5AFC4','common'],['アプリコット','#F4A06B','common'],['ほかほか','#F27F75','uncommon'],['ゆめいろ','#C4A6F5','uncommon'],['きらりチーク','#FFB7D5','rare'],['にじいろ','#F6A8C8','epic']],1);
+  C(DR.brow,[['ふんわり','common'],['ぴょこん','common'],['るんるん','uncommon'],['きりり','uncommon'],['はの字','rare'],['おねむ','rare']]);
+  DR.acc=['なし'];C(DR.acc,[['まるめがね','uncommon'],['おほしシール','uncommon'],['ちびばんそうこう','common'],['そばかすハート','uncommon'],['ねこひげ','uncommon'],['ちび涙','rare'],['ほっぺハート','rare'],['まるいそばかす','common'],['ほしのきらめき','rare'],['ちびおひげ','epic'],['月のしるし','legendary']]);
+  DR.pre.push(['🌌 星明かり','idfdbdkfb'],['🍦 クリームソーダ','a69f88970'],['🧁 おやつの日','g8caa9be4'],['🐱 ねこのきもち','e94490d65']);
+})();
+function lookN(){return [DR.hat.length,DR.hatp.length,DR.eyes.length,DR.mouth.length,DR.cheek.length,DR.brow.length,DR.clo.length,DR.clop.length,DR.acc.length]}
+var PATN={ /* 新しい柄（6番から）。grid=小さな模様のくり返し・bands=高さで分けた帯。'B'=元の色・'D'=元の色を濃く・'W'=白・ほかは色 */
+  clo:{6:['grid','gingham',10],7:['grid','dot',20,['#FFFFFF'],4],8:['grid','heart',28,['#F9B3C8']],9:['grid','dot',10,['#FFFFFF','#FFF4B0'],1.8],10:['grid','dot',30,['#DDF2A8','#FFF4D6'],5],11:['grid','clover',34,['#7BC96F']],12:['grid','oval',26,['#F58FA5','#FFC69A']],
+    13:['bands',['B','#FFF4D6','D','#FFF4D6']],14:['bands',['#F7B3C8','#FFF4D6','#FFF0A8','#FFF4D6','#D2C2F5','#FFF4D6']],15:['bands',['#D6C6F5','#F9C9D6','#FFF4D6','#F9C9A0','#FFF0A8']]},
+  hat:{6:['grid','dot',24,['#FFF0C8'],4],7:['grid','check',13],8:['grid','dot',21,['#F7A8C4','#FFF0A0','#A8DCF5'],3.2],9:['grid','clover',32,['#D8F0A0']],10:['grid','moon',34,['#FFF2A8']],
+    11:['bands',['B','#FFF4D6','D']],12:['bands',['#F7B3C8','#FFF4D6','#FFF0A8','#FFF4D6','#A8DCF5']],13:['bands',['#2C3566','#5B5BA8','#B9A8E8','#BFE6F5','#5B5BA8','#2C3566']]}};
+function patNew(clo,idx,x,y,hh,base){ /* [r,g,b] を返す（変えない所は null） */
+  var P=PATN[clo?'clo':'hat'][idx];if(!P)return null;var H=function(c){return c==='B'?base:c==='D'?[base[0]*.72,base[1]*.72,base[2]*.72]:c==='W'?[255,255,255]:hexRGB(c)};
+  if(P[0]==='bands'){var n=P[1].length,f=clo?hh/.36:(hh-.45)/.55;f=Math.max(0,Math.min(.999,f));return H(P[1][n-1-Math.floor(f*n)])} /* 上から下へ */
+  var sp=P[2],gx=Math.floor(x/sp),gy=Math.floor(y/sp),ox=(x%sp)-sp/2,oy=(y%sp)-sp/2,cols=P[3]||['#FFFFFF'],cc=H(cols[(gx+gy)%cols.length]),r=P[4]||sp*.22,d=Math.hypot(ox,oy);
+  if(P[1]==='gingham'){var a=(gx%2)===0,b=(gy%2)===0;return a&&b?H('W'):(a||b)?[base[0]*.82+40,base[1]*.82+40,base[2]*.82+40]:null}
+  if(P[1]==='check')return (x%sp<2||y%sp<2)?H('D'):null;
+  if(P[1]==='dot')return d<r?cc:null;
+  if(P[1]==='oval')return (ox*ox)/(sp*.26*sp*.26)+(oy*oy)/(sp*.17*sp*.17)<1?cc:null;
+  if(P[1]==='heart'){var hx=ox/(sp*.18),hy=-oy/(sp*.18)+.25;return Math.pow(hx*hx+hy*hy-1,3)-hx*hx*hy*hy*hy<0?cc:null}
+  if(P[1]==='clover'){for(var k=0;k<4;k++)if(Math.hypot(ox-Math.cos(k*1.5708+.785)*sp*.11,oy-Math.sin(k*1.5708+.785)*sp*.11)<sp*.11)return cc;return d<sp*.05?hexRGB('#FFE066'):null}
+  if(P[1]==='moon'){return d<sp*.2&&Math.hypot(ox-sp*.09,oy-sp*.05)>sp*.17?cc:null}
+  return null}
+function drFaceMore(g,L){ /* 6番目より後の目・口・ほっぺ・まゆと、顔の飾り */
+  var u=12,K='#292724',Bc='#51433A',E=[[27,-9],[-28,-5]],CH=[[43,9],[-45,11]],ell=function(x,y,rx,ry,c){g.beginPath();g.ellipse(x,y,rx,ry,0,0,6.2832);g.fillStyle=c;g.fill()},ln=function(w,c){g.lineWidth=w*u;g.lineCap='round';g.lineJoin='round';g.strokeStyle=c||K},
+    star=function(x,y,r,c){g.beginPath();for(var i=0;i<10;i++){var a=-1.5708+i*.6283,rr=i%2?r*.45:r;g.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}g.closePath();g.fillStyle=c;g.fill()},
+    heart=function(x,y,s,c){g.beginPath();g.moveTo(x,y+s*.35);g.bezierCurveTo(x-s*.9,y-s*.3,x-s*.4,y-s*.9,x,y-s*.35);g.bezierCurveTo(x+s*.4,y-s*.9,x+s*.9,y-s*.3,x,y+s*.35);g.fillStyle=c;g.fill()};
+  var e=L[2];if(e>=8)E.forEach(function(p,i){var x=p[0],y=p[1];
+    if(e===8){ell(x,y,.45*u,.45*u,K);star(x+.12*u,y-.1*u,.2*u,'#fff');ell(x-.18*u,y+.15*u,.07*u,.07*u,'#fff')}
+    else if(e===9){ell(x,y,.5*u,.62*u,K);ell(x-.15*u,y-.25*u,.13*u,.13*u,'#fff');ell(x+.12*u,y-.12*u,.07*u,.07*u,'#fff')}
+    else if(e===10){ln(.12);g.beginPath();g.moveTo(x-.42*u,y);g.quadraticCurveTo(x,y-.12*u,x+.42*u,y);g.stroke()}
+    else if(e===11){ln(.1);g.beginPath();g.moveTo(x-.5*u,y+.12*u);g.quadraticCurveTo(x,y-.42*u,x+.5*u,y+.12*u);g.stroke()}
+    else if(e===12){ell(x,y,.45*u,.45*u,K);ln(.06,'#fff');g.beginPath();g.arc(x,y+.05*u,.25*u,.4,2.7);g.stroke()}
+    else if(e===13){ln(.09);g.beginPath();for(var a=0;a<5.6;a+=.2){var rr=.42*u*(1-a/7);g.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}g.stroke()}
+    else if(e===14){ell(x,y,.47*u,.47*u,K);[[0,-.18],[-.16,.1],[.16,.1]].forEach(function(q){ell(x+q[0]*u,y+q[1]*u,.07*u,.07*u,'#fff')})}
+    else if(e===15){ell(x,y,.5*u,.5*u,K);ln(.08,'#9ED8F5');g.beginPath();g.arc(x,y,.36*u,.3,2.84);g.stroke();ell(x-.15*u,y-.2*u,.11*u,.11*u,'#fff');ell(x+.14*u,y-.25*u,.06*u,.06*u,'#fff')}});
+  var b=L[5];if(b>=8)E.forEach(function(p,i){var x=p[0],y=p[1]-.95*u,o=i?1:-1;ln(.08,Bc);g.beginPath();
+    if(b===8){g.moveTo(x-.25*u,y+.05*u);g.quadraticCurveTo(x,y-.12*u,x+.25*u,y+.05*u)}else if(b===9){g.moveTo(x-.21*u*o,y-.06*u);g.quadraticCurveTo(x,y-.02*u,x+.21*u*o,y+.06*u)}
+    else if(b===10){g.moveTo(x-.24*u*o,y+.06*u);g.quadraticCurveTo(x,y,x+.24*u*o,y-.1*u)}else if(b===11){g.moveTo(x-.27*u*o,y+.05*u);g.lineTo(x+.27*u*o,y-.07*u)}
+    else if(b===12){g.moveTo(x-.22*u*o,y-.1*u);g.quadraticCurveTo(x,y-.05*u,x+.22*u*o,y+.08*u)}else if(b===13){g.moveTo(x-.25*u,y-.04*u);g.quadraticCurveTo(x,y+.1*u,x+.25*u,y-.04*u)}g.stroke()});
+  var m=L[3],mx=0,my=9;if(m>=8){ln(.08);g.beginPath();
+    if(m===8){g.moveTo(mx-.22*u,my+.06*u);g.quadraticCurveTo(mx,my-.08*u,mx+.22*u,my+.06*u);g.stroke()}
+    else if(m===9){g.moveTo(mx,my-.2*u);g.lineTo(mx+.22*u,my+.15*u);g.lineTo(mx-.22*u,my+.15*u);g.closePath();g.fillStyle='#70433D';g.fill();g.stroke()}
+    else if(m===10){g.ellipse(mx,my,.27*u,.13*u,0,0,6.2832);g.fillStyle='#70433D';g.fill();g.stroke();g.beginPath();g.moveTo(mx-.08*u,my-.2*u);g.lineTo(mx+.08*u,my-.2*u);g.stroke()}
+    else if(m===11){g.moveTo(mx-.3*u,my-.05*u);g.quadraticCurveTo(mx,my+.3*u,mx+.3*u,my-.05*u);g.stroke();g.fillStyle='#fff';g.fillRect(mx-.08*u,my+.02*u,.16*u,.1*u)}
+    else if(m===12){g.ellipse(mx,my,.15*u,.2*u,0,0,6.2832);g.fillStyle='#70433D';g.fill();g.stroke()}
+    else if(m===13){g.moveTo(mx-.25*u,my);g.quadraticCurveTo(mx,my+.12*u,mx+.25*u,my);g.stroke()}
+    else if(m===14){g.moveTo(mx-.28*u,my);g.bezierCurveTo(mx-.1*u,my+.15*u,mx+.1*u,my-.15*u,mx+.28*u,my);g.stroke()}
+    else if(m===15){g.moveTo(mx-.32*u,my-.1*u);g.quadraticCurveTo(mx,my+.4*u,mx+.32*u,my-.1*u);g.stroke();ln(.06,'#fff');g.beginPath();g.moveTo(mx-.12*u,my+.06*u);g.quadraticCurveTo(mx,my+.14*u,mx+.12*u,my+.06*u);g.stroke()}}
+  var c=L[4];if(c>=8){var ch=DR.cheek[c][1];CH.forEach(function(p){var x=p[0],y=p[1];
+    if(c===8){ell(x,y,.3*u,.2*u,ch);ell(x,y,.17*u,.11*u,'#F08CAA')}else if(c===9){ell(x-.08*u,y,.2*u,.2*u,ch);ell(x+.1*u,y+.03*u,.18*u,.18*u,ch)}
+    else if(c===10){ell(x,y,.22*u,.22*u,ch);ell(x,y,.08*u,.08*u,'#FFF4D6')}else if(c===11){ell(x,y,.28*u,.18*u,ch);ell(x+.06*u,y,.08*u,.08*u,'#F9C9D6')}
+    else if(c===12){ell(x,y,.24*u,.22*u,ch);star(x,y-.3*u,.12*u,'#fff')}else if(c===13){ell(x,y,.3*u,.2*u,ch);['#F58FA5','#F9C9A0','#FFF0A0'].forEach(function(cc,j){ell(x+(j-1)*.14*u,y,.05*u,.05*u,cc)})}})}
+  var a=L[8]||0;if(a){var R=E[0],Lf=E[1];
+    if(a===1){ln(.1,'#5B3A2A');E.forEach(function(p){g.beginPath();g.arc(p[0],p[1],.5*u,0,6.2832);g.stroke()});g.beginPath();g.moveTo(R[0]-.5*u,R[1]);g.lineTo(Lf[0]+.5*u,Lf[1]);g.stroke()}
+    else if(a===2)star(R[0]+.75*u,R[1]-.2*u,.22*u,'#FFD84D');
+    else if(a===3){g.save();g.translate(CH[1][0],CH[1][1]-3);g.rotate(-.3);g.fillStyle='#F7C9B0';g.beginPath();if(g.roundRect)g.roundRect(-.4*u,-.12*u,.8*u,.25*u,.1*u);else g.rect(-.4*u,-.12*u,.8*u,.25*u);g.fill();ln(.03,'#D99A85');g.beginPath();g.moveTo(-.05*u,-.08*u);g.lineTo(-.05*u,.08*u);g.moveTo(.05*u,-.08*u);g.lineTo(.05*u,.08*u);g.stroke();g.restore()}
+    else if(a===4)heart(CH[0][0],CH[0][1]-.15*u,.16*u,'#F07070');
+    else if(a===5){ln(.04,'#5B3A2A');CH.forEach(function(p,i){var o=i?-1:1;for(var k=-1;k<=1;k++){g.beginPath();g.moveTo(p[0]-.05*u*o,p[1]+k*.1*u);g.quadraticCurveTo(p[0]+.2*u*o,p[1]+k*.12*u,p[0]+.42*u*o,p[1]+k*.16*u);g.stroke()}})}
+    else if(a===6){g.beginPath();var tx=R[0]+.1*u,ty=R[1]+.55*u;g.moveTo(tx,ty-.18*u);g.quadraticCurveTo(tx+.13*u,ty,tx,ty+.1*u);g.quadraticCurveTo(tx-.13*u,ty,tx,ty-.18*u);g.fillStyle='#8FD3F5';g.fill()}
+    else if(a===7)CH.forEach(function(p){heart(p[0],p[1],.15*u,'#F7A8C4')});
+    else if(a===8)CH.forEach(function(p,i){var o=i?-1:1;[[.15,-.1],[.25,0],[.2,.12]].forEach(function(q){ell(p[0]+q[0]*u*o,p[1]+q[1]*u,.05*u,.05*u,'#B98769')})});
+    else if(a===9){ln(.05,'#FFF4D6');var sx=R[0]+.8*u,sy=R[1]-.3*u;g.beginPath();g.moveTo(sx-.15*u,sy);g.lineTo(sx+.15*u,sy);g.moveTo(sx,sy-.15*u);g.lineTo(sx,sy+.15*u);g.stroke();ell(sx,sy,.04*u,.04*u,'#FFF4D6')}
+    else if(a===10){ln(.06,'#5B3A2A');[-1,1].forEach(function(o){g.beginPath();g.moveTo(o*.35*u,9-.05*u);g.quadraticCurveTo(o*.5*u,9-.2*u,o*.62*u,9-.05*u);g.stroke()})}
+    else if(a===11){ln(.13,'#FFE27A');g.beginPath();g.arc(0,-1.9*u,.17*u,1.1,5.2);g.stroke()}}}
+
+(function(){var mach={h:'hat',p:'hat',e:'face',m:'face',c:'face',b:'face',a:'face',k:'cloth',q:'cloth'},lab={h:'ぼうしの色',p:'ぼうしの柄',e:'目',m:'口',c:'ほっぺ',b:'まゆ',a:'顔の飾り',k:'服の色',q:'服の柄'},arr={h:DR.hat,p:DR.hatp,e:DR.eyes,m:DR.mouth,c:DR.cheek,b:DR.brow,a:DR.acc,k:DR.clo,q:DR.clop};
+  Object.keys(MR).forEach(function(key){var pre=key[0],v=+key.slice(1),a=arr[pre][v];GI.push({m:mach[pre],pos:GPRE.indexOf(pre),v:v,key:key,name:typeof a==='string'?a:a[0],lab:lab[pre],r:MR[key]})})})(); /* ガチャの中身に足す */
 
 function setHat(){ if(!me.sp)return;if(me.sp.userData.m3){if(S.look&&lookOk(S.look)){var hi=['y','r','b','g','p'].indexOf(S.hat);if(hi>=0&&+S.look[0]<5&&+S.look[0]!==hi){S.look=hi+S.look.slice(1);save()}}lookApply();return}var t=TX['kino_'+S.hat].clone();t.needsUpdate=true;t.repeat.set(1/8,1);t.offset.x=(me.pose||0)/8;me.sp.material.map.dispose();me.sp.material.map=t;me.sp.material.needsUpdate=true}
 function buildPlace(p){var w,s;
@@ -3253,7 +3335,7 @@ function netGot(q){if(!q||typeof q!=='object'||NET.st!=='on')return;var id=Strin
   p.at=now;p.tx=x;p.tz=z;p.ya=isFinite(+q.a)?+q.a:0;p.v=q.v?1:0;
   var nm=netName(q.n),hat=HATS.some(function(h){return h[0]===q.h})?q.h:'y';
   if(nm!==p.name){p.name=nm;netTag(p)}
-  var lo=lookOk(q.o)?q.o:'';if(hat!==p.hat||lo!==p.lo){p.hat=hat;p.lo=lo;if(p.sp.userData.m3){var lt=lo&&lo.slice(1)!=='0000000'?lookTex(lo):null;p.sp.material.map=lt||hatTex(hat);p.sp.material.needsUpdate=true}} /* v0.34 着せ替え */
+  var lo=lookOk(q.o)?q.o:'';if(hat!==p.hat||lo!==p.lo){p.hat=hat;p.lo=lo;if(p.sp.userData.m3){var lt=lo&&!/^[0-9a-z]0+$/.test(lo)?lookTex(lo):null;p.sp.material.map=lt||hatTex(hat);p.sp.material.needsUpdate=true}} /* v0.34 着せ替え */
   if(fresh){toast(p.name+'が森にいる');netRef()}}
 function netStep(dt,now){var ids=Object.keys(NET.peers),i,p,dx,dz,d,mv,sp,w,y,hop,a,c,s2,show,hi;
   for(i=0;i<ids.length;i++){p=NET.peers[ids[i]];if(now-p.at>NET.DEAD){netDrop(ids[i]);continue}
@@ -3417,7 +3499,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.37',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.38',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -3481,7 +3563,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={cloudHash:cloudHash,save:save,cloudUp:cloudUp,cloudLoad:cloudLoad,cloudBlob:cloudBlob,gShow:gShow,g3skip:g3skip,G3get:function(){return G3},GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={lookOk:lookOk,lookN:lookN,MR:MR,cloudHash:cloudHash,save:save,cloudUp:cloudUp,cloudLoad:cloudLoad,cloudBlob:cloudBlob,gShow:gShow,g3skip:g3skip,G3get:function(){return G3},GI:GI,GX:GX,gRates:gRates,gPull:gPull,gMachine:gMachine,gachaOpen:gachaOpen,drOwn:drOwn,DR:DR,dressOpen:dressOpen,drAct:drAct,lookTex:lookTex,lookCode:lookCode,lookApply:lookApply,phNav:phNav,PH:PH,HR:HR,hRoomAt:hRoomAt,CH:CH,chOpen:chOpen,chAct:chAct,chGot:chGot,chSay:chSay,WM:WM,wmOpen:wmOpen,wmClose:wmClose,wmGo:wmGo,wmTab:wmTab,goList:goList,NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
