@@ -36,11 +36,12 @@ img{max-width:100%}
 html,body{height:100%}
 /* v0.20.3 拡大の止め（10/10 主「なんで途中で拡大になるのー」） */
 input,textarea,select{font-size:16px!important}
+#sheet .skc{border:2px solid #e2d6b0;border-radius:14px;padding:8px 12px;margin:6px 0;background:#fffaf0}#sheet #wishtext{width:100%;min-height:64px;border:2px solid #cdbf8f;border-radius:12px;padding:8px;font:inherit;color:var(--ink);background:#fff}
 #sheet .tprow{margin-top:6px;gap:6px;flex-wrap:wrap;justify-content:flex-end}#sheet .tprow button{flex:0 0 auto;width:auto;min-height:36px;padding:6px 14px;font-size:13px}
 /* v0.20.4 キーボードを出しても森が縮まない（10/10 主「この問題どうする？」） */
 html body #app{height:var(--apph,100%)}
 body.kb #sheet{position:fixed;left:8px;right:8px;top:auto;bottom:calc(var(--kbb,0px) + 6px);max-height:calc(var(--kbh,60vh) - 14px);z-index:30;animation:none}
-body.kb #sheet>*:not(.log):not(.row.say){display:none!important}body.kb #sheet>.row.say:not(:focus-within){display:none!important}body.kb #sheet{padding-top:10px;padding-bottom:10px}
+body.kbc #sheet>*:not(.log):not(.row.say){display:none!important}body.kbc #sheet>.row.say:not(:focus-within){display:none!important}body.kb #sheet{padding-top:10px;padding-bottom:10px}
 body.kb #sheet .log{max-height:min(calc(var(--kbh,60vh) * 0.3),150px);min-height:0}
 body{background:var(--night);color:var(--cream);font-family:var(--body);font-weight:500;overflow:hidden;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
@@ -271,7 +272,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.23';
+var VERSION='v0.24';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1365,6 +1366,7 @@ function open(id){
     '<p class="note">'+(inv.length?('家具 '+inv.length+'個'+(inv.length>n*n?'（'+(inv.length-n*n)+'個は入りきらず外に置いてある）':'')):'まだ家具が無い　ガチャの祠で引くと部屋に並ぶ')+'　ゲームをクリアすると広がる（Lv5まで）　土地: '+KNAME[LOTS[S.lot].kind]+'（'+RNAME[LOTS[S.lot].ring]+'）</p>')}
   else if(id==='gac'){var rows=GACHA.map(function(g){return '<tr><td>'+g.n+' ×'+(S.items[g.n]||0)+'</td><td>'+g.w+'%</td></tr>'}).join('');
     show(id,'<h2>ガチャの祠</h2><table>'+rows+'</table><div class="row"><button data-a="pull"'+(S.coin<10?' disabled':'')+'>10フカで1回引く</button></div><p class="note" id="msg">右の数字は出る割合　ご褒美の中身は仮</p>')}
+  else if(id==='box'&&V15.on)senkyoOpen(); /* v0.24 広場の目安箱は森の要望に */
   else if(id==='box')show(id,'<h2>目安箱</h2><p>追加してほしいゲームを書いて入れる　今 '+S.box.length+'通</p><textarea id="boxtext" maxlength="80" placeholder="例: フカシの釣り"></textarea>'+
     '<div class="row"><button data-a="post">投函する</button></div><p class="note" id="msg">試作ではこの端末にだけ保存される（まだ主には届かない）</p>');
   else if(id==='npc')show(id,'<h2>森の住人</h2><p>今の関係: '+stageName()+'（挨拶 '+S.like+'回）</p><div class="row"><button data-a="greet">挨拶する</button></div>'+
@@ -1415,6 +1417,8 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a.indexOf('oshi:')===0){oshiSet(a.slice(5));return}
   if(a==='yakubaGo'){yakubaOpen();return}if(a==='yakin'){yakEnter();return}
   if(a==='pname'){var pn=(($('#pname')||{}).value||'').trim().slice(0,12);if(pn){S.pname=pn;save();renderChat()}return}
+  if(a==='wish'){wishSend();return}
+  if(a==='senkyo'){senkyoOpen();return}
   if(a.indexOf('vote:')===0){var vv=a.split(':');voteSend(+vv[1],+vv[2]);return}
   if(a.indexOf('talkai:')===0){var oo=AIBY[a.slice(7)];if(oo)openChat(oo);return}
   if(a==='say'){var cv2=($('#chatin').value||'').trim();if(cv2)chatSend('text',cv2);return}
@@ -1539,7 +1543,7 @@ function yakubaOpen(){show('yakuba','<h2>森の役場</h2><p class="note">読み
   var h='<p>森の'+w.day+'日目 '+w.slot+'時　天気 '+esc(w.weather||'')+'　住人 '+ppl.length+'人　役場のお金 '+((w.town||{}).coin||0)+'フカ</p>'+myBox(w);
   h+='<h3>きのうの日誌</h3>'+ppl.map(function(r){return '<p><b>'+esc(r.name)+'</b>　'+esc(last(r)).slice(0,90)+'</p>'}).join('');
   h+='<h3>役場の記録</h3>'+(w.hall||[]).slice(-6).reverse().map(function(x){return '<p class="note">'+x.day+'日 '+x.slot+'時 ['+esc(x.kind)+'] '+esc(x.text)+'</p>'}).join('');
-  var b=w.ballot;if(b){h+='<h3>投票中（'+b.closes+'日目の夜に開票）</h3><p class="note">一番多い物が森にできる　住人1人1票・旅人1人1票</p>'+b.cands.map(function(c,i){var mine=S.vote&&S.vote.n===b.n&&S.vote.c===i;return '<p><b>'+(i+1)+'. '+esc(c.title)+'</b>　'+(c.res+c.pl)+'票（住人'+c.res+'・旅人'+c.pl+'）<br><span class="note">'+esc(c.detail)+'</span></p><div class="row"><button'+(mine?' class="sub" disabled':'')+' data-a="vote:'+b.n+':'+i+'">'+(mine?'入れた':'これに入れる')+'</button></div>'}).join('')}
+  h+='<div class="row"><button type="button" data-a="senkyo">投票所・目安箱を見る</button></div>';var b=w.ballot;if(b){h+='<h3>投票中（'+b.closes+'日目の夜に開票）</h3><p class="note">一番多い物が森にできる　住人1人1票・旅人1人1票</p>'+b.cands.map(function(c,i){var mine=S.vote&&S.vote.n===b.n&&S.vote.c===i;return '<p><b>'+(i+1)+'. '+esc(c.title)+'</b>　'+(c.res+c.pl)+'票（住人'+c.res+'・旅人'+c.pl+'）<br><span class="note">'+esc(c.detail)+'</span></p><div class="row"><button'+(mine?' class="sub" disabled':'')+' data-a="vote:'+b.n+':'+i+'">'+(mine?'入れた':'これに入れる')+'</button></div>'}).join('')}
   var dc=(w.decided||[]).slice(-2).reverse();if(dc.length)h+='<h3>決まった物</h3>'+dc.map(function(x){return '<p class="note">'+esc(x.title)+'（'+x.status+'）</p>'}).join('');
   if(!b){var rq=(w.requests||[]).filter(function(q){return !q.used}).slice(0,3);if(rq.length)h+='<h3>住人からの要望</h3>'+rq.map(function(q){return '<p class="note">'+esc(q.text)+'（'+q.count+'回）</p>'}).join('')}
   h+='<div class="row"><a class="btn" href="'+MORI+'/" target="_blank" rel="noopener">役場の記録を全部見る</a></div>';show('yakuba','<h2>森の役場</h2>'+h);sheet.scrollTop=0},function(){if(sheetOpen==='yakuba')show('yakuba','<h2>森の役場</h2><p>役場に人がいないみたい（つながらなかった）</p>')})}
@@ -1547,8 +1551,34 @@ function news15(){if(S.n15||!V15.on)return;S.n15=1;save();toast('森が狭くな
 function buildV15(){if(!V15.on)return;try{buildFarm();buildFence();buildYakuba();buildAI();wxPaint();aiPoll();setInterval(aiPoll,120000);setInterval(q15Auto,1500);juminSync();var hb=$('#hunb');if(hb){hb.hidden=false;hb.onclick=bagOpen}hunTick();setInterval(hunTick,5000)}catch(e){logPush('ai','v0.15の組み立てに失敗',String(e&&e.message||e).slice(0,100))}}
 function nameRow(w){return plan19(w)+give19Row(w)+nameRow0(w)}
 function nameRow0(w){return V15.on&&(w.kind==='ai'||w===cop)&&!S.acct?'<div class="row say"><button data-a="jumin">森の住民票を作って話す</button></div><p class="note">住人と話すには住民票（呼び名だけ）が要る</p>':''} /* v0.17: 名前は住民票の呼び名 */
+
+/* ===== v0.24 要望→投票→実装（10/10 主「住人の要望→投票→実装の流れ これをもっと詰めてさきにやりたい」）
+   主が選んだ: 当選は家族LINEの秘書で知らせる／1人1票のまま（住人も旅人も）／候補は大きくてもいい／実装待ち（工事中）が2つたまったら投票はお休み
+   投票所＝役場の「選挙管理委員会」の部屋と、広場の目安箱。旅人も目安箱に要望を入れられる（住民票1枚で1日1通・80字）→ 住人の要望と同じ箱に入って、次の投票の候補になる */
+var SK={busy:false,msg:''};
+function senkyoOpen(msg){if(msg!==undefined)SK.msg=msg;show('senkyo','<h2>投票所（選挙管理委員会）</h2><p class="note">読み込み中…</p>');HALL.ct=0;
+  hallData(function(w){if(sheetOpen!=='senkyo')return;if(!w){show('senkyo','<h2>投票所（選挙管理委員会）</h2><p>役場につながらなかった</p>');return}
+    var b=w.ballot,cap=w.pendingCap||2,dec=w.decided||[],pend=dec.filter(function(d){return d.status==='実装待ち'}),done=dec.filter(function(d){return d.status==='実装済み'}).slice(-5).reverse(),h='';
+    h+='<p class="note">住人と旅人の要望 → 3日ごとに投票 → 一番多い物を森の外の作り手が本当に作る。住人1人1票・旅人1人1票（入れ直しできる）</p>';
+    if(b){h+='<h3>投票'+b.n+' 受付中（'+b.closes+'日目の夜に開票）</h3>'+b.cands.map(function(c,i){var mine=S.vote&&S.vote.n===b.n&&S.vote.c===i,why=(c.voters||[]).map(function(v){return '<span class="note">'+esc(v.name)+'「'+esc(v.why||'')+'」</span>'}).join('<br>');
+        return '<div class="skc"><p><b>'+(i+1)+'. '+esc(c.title)+'</b>　<b>'+(c.res+c.pl)+'票</b>（住人'+c.res+'・旅人'+c.pl+'）</p><p class="note">'+esc(c.detail||'')+'</p><p class="note">言い出した人: '+esc((c.from||[]).join('・')||'不明')+'</p>'+(why?'<p>'+why+'</p>':'')+
+          '<div class="row"><button type="button"'+(mine?' class="sub" disabled':'')+' data-a="vote:'+b.n+':'+i+'">'+(mine?'これに入れた':'これに入れる')+'</button></div></div>'}).join('')}
+    else if(pend.length>=cap)h+='<h3>投票はお休み中</h3><p>工事中が'+pend.length+'つたまっている。できたら次の投票が始まる</p>';
+    else h+='<h3>次の投票を準備中</h3><p class="note">要望がたまると、夜22時に役場が候補にまとめて投票が始まる</p>';
+    h+='<h3>工事中 '+pend.length+'/'+cap+'</h3>'+(pend.map(function(d){return '<p><b>'+esc(d.title)+'</b>　<span class="note">'+d.day+'日目に決定（住人'+d.res+'・旅人'+d.pl+'）</span><br><span class="note">'+esc(d.detail||'')+'</span></p>'}).join('')||'<p class="note">いまは無い</p>');
+    if(done.length)h+='<h3>できた物</h3>'+done.map(function(d){return '<p>🎉 <b>'+esc(d.title)+'</b>　<span class="note">'+(d.doneDay||'')+'日目にできた</span></p>'}).join('');
+    var rq=(w.requests||[]).filter(function(q){return !q.used}).slice(0,8);
+    h+='<h3>目安箱（要望を出す）</h3><p class="note">森に無い物・仕組みで、あったらいい物を1つ。住民票1枚で1日1通・80字まで。名前・学校・連絡先などは（ひみつ）になる</p>'+
+      '<textarea id="wishtext" maxlength="80" placeholder="例: 池で泳げる季節イベント"></textarea><div class="row"><button type="button" data-a="wish"'+(SK.busy?' disabled':'')+'>目安箱に入れる</button></div>'+(SK.msg?'<p class="note" id="msg">'+esc(SK.msg)+'</p>':'');
+    h+='<h3>たまっている要望（次の候補のもと）</h3>'+(rq.map(function(q){return '<p class="note">'+esc(q.text)+'　<b>'+q.count+'回</b>　'+esc((q.who||[]).join('・'))+'</p>'}).join('')||'<p class="note">いまは無い（投票の候補になった物は消える）</p>');
+    var past=(w.ballotPast||[]).slice(-3).reverse();if(past.length)h+='<h3>前の投票</h3>'+past.map(function(p){return '<p class="note">投票'+p.n+'（'+p.closed+'日目）: '+p.cands.map(function(c){return esc(c.title)+' '+(c.res+c.pl)+'票'}).join('／')+'</p>'}).join('');
+    show('senkyo','<h2>投票所（選挙管理委員会）</h2>'+h);SK.msg=''})}
+function wishSend(){if(SK.busy)return;if(!S.acct){juminOpen();return}var t=(($('#wishtext')||{}).value||'').trim();if(t.length<4){SK.msg='4字以上で書いてね';senkyoOpen();return}
+  SK.busy=true;fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'wish',text:t})}).then(function(r){return r.json()}).then(function(j){SK.busy=false;
+    var R={today:'今日はもう入れた（また明日）',short:'4字以上で書いてね',ng:'その言葉は入れられない',login:'住民票が要る'};
+    if(j&&j.ok){logEv('wish');senkyoOpen('目安箱に入れた。次の投票の候補になるかも'+(j.masked?'（名前などは（ひみつ）にした）':''))}else{if(j&&j.reason==='login')juminOpen();else senkyoOpen(R[j&&j.reason]||'入れられなかった')}},function(){SK.busy=false;senkyoOpen('役場につながらなかった')})}
 function voteSend(n,c){if(!S.acct){juminOpen();return}
-  fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
+  fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');if(sheetOpen==='senkyo')senkyoOpen();else yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
 
 /* ===== v0.16 「性格診断 → 推し／分身」 =====
    10/9 主「僕らが入っていく時に、お気に入りの住人（AI）を選ぶようにする？性格診断的なものをして作る？ 気になって見る要因になると思う」
@@ -2041,7 +2071,7 @@ function stepHall(dt,t){var jx=joy.x+(keys.r?1:0)-(keys.l?1:0),jz=joy.y+(keys.d?
   if(!sheetOpen&&land.hidden){var al=yakLabel();if(actBtn.hidden||actBtn.textContent!==al){actBtn.textContent=al;actBtn.hidden=false}}else if(!actBtn.hidden)actBtn.hidden=true}
 /* 部署ごとの板 */
 function hallSheet(id){var w=HALL.cache;
-  if(id==='jumin'){myOpen();return}if(id==='senkyo'){yakubaOpen();return}
+  if(id==='jumin'){myOpen();return}if(id==='senkyo'){senkyoOpen();return}
   if(!w){show('yaku2','<h2>森の役場</h2><p class="note">読み込み中…</p>');hallData(function(x){if(x)hallSheet(id);else show('yaku2','<h2>森の役場</h2><p>役場につながらなかった</p>')});return}
   var h='',R=w.residents||[],ppl=R.filter(function(r){return r.alive}),nm=function(id){var r=R.find(function(x){return x.id===id});return r?r.name:id};
   if(id==='kiroku'){h='<h2>記録室</h2><p class="note">住人が毎晩22時に書く日誌と、役場の記録</p>'+ppl.map(function(r){var d=(r.diary||[]).slice(-1)[0];return '<p><b>'+esc(r.name)+'</b>　<span class="note">'+(d?d.day+'日目':'')+'</span><br>'+esc(d?d.text:'まだ日誌がない')+'</p>'}).join('')+
@@ -2485,7 +2515,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.23',APP_BUILD='1010-1800',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.24',APP_BUILD='1010-1900',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -2567,7 +2597,7 @@ loadImgs(function(){imgsOk=true;if(fontsOk)boot()});fr.then(function(){fontsOk=t
 (function(){var R=document.documentElement,B=document.body;
 function inp(){var a=document.activeElement;return a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&!/checkbox|radio/.test(a.type)}
 function setH(){if(!inp())R.style.setProperty('--apph',window.innerHeight+'px')}
-function kb(){var sh=document.getElementById('sheet');var on=inp()&&!!(sh&&sh.contains(document.activeElement));B.classList.toggle('kb',on);if(!on)return;
+function kb(){var sh=document.getElementById('sheet');var on=inp()&&!!(sh&&sh.contains(document.activeElement));B.classList.toggle('kb',on);B.classList.toggle('kbc',on&&!!(document.activeElement.closest&&document.activeElement.closest('.row.say')));if(!on)return;
  var v=window.visualViewport,vh=v?v.height:window.innerHeight,top=v?v.offsetTop:0;
  R.style.setProperty('--kbb',Math.max(0,window.innerHeight-(top+vh))+'px');R.style.setProperty('--kbh',vh+'px');
  ['chatlog','netlog'].forEach(function(id){var lg=document.getElementById(id);if(lg)lg.scrollTop=lg.scrollHeight})}
