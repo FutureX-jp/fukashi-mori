@@ -36,6 +36,22 @@ img{max-width:100%}
 html,body{height:100%}
 /* v0.20.3 拡大の止め（10/10 主「なんで途中で拡大になるのー」） */
 input,textarea,select{font-size:16px!important}
+/* v0.28 ポップなスマホ */
+body #phd{border-color:#FFF0B8;background:#FFF0B8;border-radius:34px;box-shadow:0 0 0 3px #FF8B9A,0 18px 50px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.6)}
+body #ph.on #phd{animation:phpop 280ms cubic-bezier(0.22,1,0.36,1)}@keyframes phpop{0%{transform:translateY(40px) scale(.82);filter:blur(3px)}100%{transform:none;filter:none}}
+body #phw{inset:0;border-radius:29px;background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.85) 0 3px,transparent 4px),radial-gradient(circle at 80% 35%,rgba(255,200,61,.55) 0 5px,transparent 6px),radial-gradient(circle at 65% 80%,rgba(255,130,145,.45) 0 4px,transparent 5px),radial-gradient(ellipse at 15% 18%,rgba(255,222,125,.95) 0%,transparent 24%),radial-gradient(ellipse at 85% 32%,rgba(255,151,170,.75) 0%,transparent 25%),radial-gradient(ellipse at 50% 65%,rgba(120,202,139,.9) 0%,transparent 36%),radial-gradient(circle at 25% 72%,#FFCB70 0%,transparent 12%),linear-gradient(165deg,#9EDFD1 0%,#B8E8CF 35%,#D8EDB2 68%,#FFE2A8 100%)}
+body #phw i{background:#fff;width:4px;height:4px}
+body #phi{width:70px;height:20px;margin-left:-35px;top:10px;background:#234D3A}
+body #phs{color:#234D3A}body #phs svg rect{fill:#234D3A;stroke:#234D3A}body #phh{background:#315C3A}body #pht{color:#234D3A}
+body #phc{position:absolute;left:10px;right:10px;top:52px;bottom:118px;display:flex;flex-direction:column;justify-content:space-evenly;gap:8px}
+body #phc #phg{position:static;padding:0;row-gap:12px;column-gap:6px}
+body #ph .phwr{display:grid;grid-template-columns:1fr 1fr;gap:8px}body #ph .pwd{display:flex;align-items:center;gap:8px;min-height:58px;padding:8px 10px;border-radius:18px;border:2px solid rgba(255,255,255,.9);box-shadow:0 3px 0 rgba(70,90,54,.12),0 5px 12px rgba(47,76,55,.12);color:#315C3A;font:800 13px/1.25 system-ui,sans-serif;overflow:hidden}
+body #ph .pwd b{font-size:24px;flex:none}body #ph .pwd span{display:flex;flex-direction:column;min-width:0}body #ph .pwd small{font-size:10px;font-weight:700;opacity:.75}body #ph .pwd em{font-style:normal;font-size:20px;font-weight:900}body #ph .pwd i{font-style:normal;font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}body #ph .pwd[data-ph]{cursor:pointer}
+body #ph .pa{color:#234D3A;font-weight:700;font-size:10px}body #ph .pa span{background:rgba(255,250,225,.72);border-radius:999px;padding:2px 6px}
+body #ph .pa b{width:52px;height:52px;border-radius:17px;font-size:27px;border:2px solid rgba(255,255,255,.9);box-shadow:0 3px 0 rgba(70,90,54,.12),0 5px 12px rgba(47,76,55,.12),inset 0 -4px 0 rgba(0,0,0,.06),inset 0 3px 0 rgba(255,255,255,.45)}
+body #ph .pa:active b{transform:scale(.88) rotate(-4deg);filter:brightness(1.08);transition:transform 100ms ease-out}
+body #phk{background:rgba(255,250,225,.88);border-radius:24px;border:2px solid rgba(255,255,255,.9)}body #phk .pa b{width:46px;height:46px;font-size:24px}
+body #phd.app #phc{visibility:hidden}
 #mapbtn{display:none}body.inroom #mapbtn{display:block} /* v0.27 左上の地図ボタンは無し（部屋の中の「外に出る」だけ） */#stage #chb{left:8px}body.inroom #stage #chb{left:118px}
 #land{overflow-y:auto;z-index:7}.gol{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:6px;overflow-x:auto;max-width:100%;padding:2px 2px 6px;scrollbar-width:none;flex:none}.gol::-webkit-scrollbar{display:none}.gol button{min-height:32px;padding:3px 10px;font-size:12.5px;white-space:nowrap;background:var(--cream);color:var(--ink);border-radius:999px} /* 行き先は2段の横スクロール（地図を下へ押しやらない） */
 #stage #phb{left:auto;right:148px}#stage:has(#mmw.fold) #phb{right:52px}#stage #chb{left:118px} /* v0.26 主「スマホのアイコンは右側に」: 右上の地図のすぐ左 */
@@ -297,7 +313,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.27';
+var VERSION='v0.28';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -1642,18 +1658,28 @@ function benchSit(i){var b=BENCH[i];if(!b)return;var gx=-b[0],gz=-b[1],l=Math.hy
 /* ===== v0.26 スマホを本物のスマホみたいに（10/10 15:11 主「スマホ開いた時、実際のスマホ開いたみたいにして欲しい」）
    見た目・動きはチャッピー「ゲーム内スマホ仕様」（10/10・chatgpt_phone_spec.json）: 本体の縁・角丸・切り欠き・ホームバー・夜の森の壁紙・4×2のアプリ＋ドック4つ・下からせり上がる・アイコンから広がるアプリ起動・とじるは置かない（ホームバーを下へ／外をタッチ）
    アプリの中身は今の板（#sheet）をそのままスマホの画面に入れる（板を作り直さない）。アプリの中でホームバー＝ホームへ戻る、ホームでホームバー＝スマホを閉じる */
-var PHA=[{"id": "chat", "label": "チャット", "emoji": "💬", "bg": "linear-gradient(145deg, #6FE7B7 0%, #168F76 100%)"}, {"id": "senkyo", "label": "投票・目安箱", "emoji": "🗳️", "bg": "linear-gradient(145deg, #FFE58A 0%, #ECA83A 100%)"}, {"id": "bag", "label": "リュック", "emoji": "🎒", "bg": "linear-gradient(145deg, #FFB58B 0%, #E96C52 100%)"}, {"id": "zukan", "label": "魚図鑑", "emoji": "🐟", "bg": "linear-gradient(145deg, #83DEFF 0%, #388DD6 100%)"}, {"id": "land", "label": "土地マップ", "emoji": "🗺️", "bg": "linear-gradient(145deg, #B8E89A 0%, #529D62 100%)"}, {"id": "my", "label": "住民票", "emoji": "🪪", "bg": "linear-gradient(145deg, #D5C5FF 0%, #8A70D8 100%)"}, {"id": "yakuba", "label": "役場の様子", "emoji": "🏛️", "bg": "linear-gradient(145deg, #FFE0A3 0%, #C78D55 100%)"}, {"id": "log", "label": "不具合を送る", "emoji": "🐛", "bg": "linear-gradient(145deg, #FFC1D2 0%, #D85E87 100%)"}],PHDOCK=["chat", "bag", "land", "zukan"],PH={on:false,app:false,busy:false};
+var PHA=[{"id": "chat", "label": "チャット", "emoji": "💬", "bg": "#FFB7C5"}, {"id": "senkyo", "label": "投票・目安箱", "emoji": "🗳️", "bg": "#B9B5FF"}, {"id": "bag", "label": "リュック", "emoji": "🎒", "bg": "#FFD27F"}, {"id": "zukan", "label": "魚図鑑", "emoji": "🐟", "bg": "#FFAAA0"}, {"id": "land", "label": "地図", "emoji": "🗺️", "bg": "#A9DFA8"}, {"id": "my", "label": "住民票", "emoji": "🪪", "bg": "#FFD9A3"}, {"id": "yakuba", "label": "役場の様子", "emoji": "🏛️", "bg": "#A8D9F0"}, {"id": "log", "label": "不具合を送る", "emoji": "🐛", "bg": "#F4C5E8"}],PHDOCK=["chat", "bag", "land", "zukan"],PH={on:false,app:false,busy:false};
 function phBuild(){if($('#ph'))return;var d=document.createElement('div');d.id='ph';d.hidden=true;
   var ic=function(a){return '<button type="button" class="pa" data-ph="'+a.id+'"><b style="background:'+a.bg+'">'+a.emoji+'</b><span>'+esc(a.label)+'</span></button>'};
   var st='';for(var i=0;i<26;i++){var r=Math.sin(i*91.7)*43758.5;r-=Math.floor(r);var q=Math.sin(i*17.3)*12345.6;q-=Math.floor(q);st+='<i style="left:'+(r*100).toFixed(1)+'%;top:'+(q*62).toFixed(1)+'%;opacity:'+(.2+((i*7)%5)/8).toFixed(2)+'"></i>'}
   d.innerHTML='<div id="phd"><div id="phw">'+st+'</div><div id="phi"></div><div id="phs"><span id="pht0">--:--</span><span class="r"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="#fff"/><rect x="4.5" y="5" width="3" height="6" rx="1" fill="#fff"/><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="#fff"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="#fff"/></svg>森<svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="#fff" opacity=".6"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#fff"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="#fff" opacity=".6"/></svg></span></div>'+
-    '<div id="phg">'+PHA.map(ic).join('')+'</div><div id="phk">'+PHDOCK.map(function(k){return ic(PHA.find(function(a){return a.id===k}))}).join('')+'</div><div id="pht">下にスワイプで閉じる</div><div id="phh" role="button" aria-label="ホームバー"></div></div>';
+    '<div id="phc"><div class="phwr" id="phwA"></div><div id="phg">'+PHA.map(ic).join('')+'</div><div class="phwr" id="phwB"></div></div><div id="phk">'+PHDOCK.map(function(k){return ic(PHA.find(function(a){return a.id===k}))}).join('')+'</div><div id="pht">下にスワイプで閉じる</div><div id="phh" role="button" aria-label="ホームバー"></div></div>';
   document.body.appendChild(d);
   d.addEventListener('click',function(e){if(e.target===d){phClose();return}var b=e.target.closest('[data-ph]');if(b)phLaunch(b.getAttribute('data-ph'),b)});
   var hb=$('#phh'),y0=null;hb.addEventListener('pointerdown',function(e){y0=e.clientY;try{hb.setPointerCapture(e.pointerId)}catch(_){}});
   hb.addEventListener('pointerup',function(e){var dy=y0==null?0:e.clientY-y0;y0=null;if(PH.app&&dy<20){phHome();return}if(dy>=-20)phClose()}); /* アプリの中: 上へ(か押す)=ホーム／ホーム: 下へ(か押す)=閉じる */
   setInterval(function(){if(PH.on){var t=new Date(Date.now()+9*3600e3).toISOString().slice(11,16);$('#pht0').textContent=t}},10000)}
-function phoneOpen(){if(PH.busy)return;phBuild();if(!S.phone){S.phone=1;save();toast('役場からスマホが支給された📱',1)}
+
+/* v0.28 ポップなスマホ（10/10 15:20 主「もっとポップな感じにしない？」）: チャッピー「ポップ版の仕様」（chatgpt_phone_pop_spec.json）
+   クリーム色の水玉の本体・明るい森の壁紙・粘土おもちゃ風のアイコン・ウィジェット4つ（森の何日目／天気／手持ちフカ／いまの推し）でアプリの下の空きを埋める */
+function phWidgets(){var A=$('#phwA'),B=$('#phwB');if(!A)return;var wd=['日','月','火','水','木','金','土'][new Date(Date.now()+9*3600e3).getUTCDay()];
+  var wx=V15.weather||'',wi=/雨/.test(wx)?'🌧️':/嵐/.test(wx)?'⛈️':/くもり|曇/.test(wx)?'☁️':wx?'☀️':'🌙';
+  var o=S.oshi,op=o&&(V15.people||[]).find(function(p){return p.id===o.id}),say=op&&op.say?String(op.say).slice(0,14):'';
+  A.innerHTML='<div class="pwd" style="background:linear-gradient(135deg,#FFF7D9,#FFE9B8)"><b>🍄</b><span><small>'+wd+'曜日</small>🌲 森の'+(V15.day||1)+'日目</span></div>'+
+    '<div class="pwd" style="background:linear-gradient(135deg,#D5F1FF,#E5E4FF)"><b>'+wi+'</b><span><small>今夜の森</small>'+esc(wx||'しずか')+'</span></div>';
+  B.innerHTML='<div class="pwd" style="background:linear-gradient(135deg,#FFF0A8,#FFD56D)"><b>🪙</b><span><small>手持ちフカ</small><em>'+S.coin+'</em></span></div>'+
+    '<div class="pwd" data-ph="'+(o?'chatoshi':'my')+'" style="background:linear-gradient(135deg,#FFDCE7,#FFECCF)"><b>'+(o?'💗':'🍄')+'</b><span><small>いまの推し</small>'+(o?esc(o.name)+(say?'<i>「'+esc(say)+'」</i>':''):'森で推しを見つけよう')+'</span></div>'}
+function phoneOpen(){if(PH.busy)return;phBuild();phWidgets();if(!S.phone){S.phone=1;save();toast('役場からスマホが支給された📱',1)}
   var d=$('#ph');PH.on=true;PH.app=false;$('#phd').classList.remove('app');document.body.classList.add('phon');
   if(sheet.parentNode!==$('#phd')){sheetOpen=null;sheet.hidden=true;$('#phd').appendChild(sheet)}
   $('#pht0').textContent=new Date(Date.now()+9*3600e3).toISOString().slice(11,16);d.hidden=false;d.classList.remove('out');void d.offsetWidth;d.classList.add('on');
@@ -1665,7 +1691,7 @@ function phLaunch(k,btn){if(k==='land'){phClose();setTimeout(function(){if(ROOM.
   var r=btn&&btn.getBoundingClientRect(),dr=$('#phd').getBoundingClientRect();if(r){sheet.style.setProperty('--ox',((r.left+r.width/2-dr.left)/dr.width*100).toFixed(1)+'%');sheet.style.setProperty('--oy',((r.top+r.height/2-dr.top-47)/(dr.height-47-22)*100).toFixed(1)+'%')}
   phoneGo(k)}
 function phApp(){if(!PH.on)return;if(!PH.app){PH.app=true;var p=$('#phd');p.classList.remove('app');void p.offsetWidth;p.classList.add('app')}}
-function phoneGo(k){if(k==='chat'||k==='net'){netOpen();return}if(k==='senkyo'){senkyoOpen();return}if(k==='bag'){bagOpen();return}if(k==='zukan'){zukanOpen();return}if(k==='land'){close();if(ROOM.on)exitRoom();openLand();return}
+function phoneGo(k){if(k==='chatoshi'){var oo=S.oshi&&AIBY[S.oshi.id];if(oo){openChat(oo);return}k='my'}if(k==='chat'||k==='net'){netOpen();return}if(k==='senkyo'){senkyoOpen();return}if(k==='bag'){bagOpen();return}if(k==='zukan'){zukanOpen();return}if(k==='land'){close();if(ROOM.on)exitRoom();openLand();return}
   if(k==='my'){myOpen();return}if(k==='yakuba'){yakubaOpen();return}if(k==='log'){open('log');return}}
 function voteSend(n,c){if(!S.acct){juminOpen();return}
   fetch(MORI+'/api/vote?w=live',{method:'POST',headers:MH(),body:JSON.stringify({c:c})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.vote={n:n,c:c};save();toast('投票した');if(sheetOpen==='senkyo')senkyoOpen();else yakubaOpen()}else if(j&&j.reason==='login'){juminOpen()}else if(j&&j.reason==='new')toast('住民票を作ってから6時間たつと投票できる');else toast('投票できなかった（もう締め切りかも）')},function(){toast('役場につながらなかった')})}
@@ -2607,7 +2633,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.27',APP_BUILD='1010-2200',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.28',APP_BUILD='1010-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
