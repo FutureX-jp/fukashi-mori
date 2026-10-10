@@ -216,7 +216,7 @@ const ok = (name, cond, info) => { res.push([!!cond, name, info]); };
 
   // ---------- E. 全体 ----------
   const build = await page.evaluate(() => window.__mori.log.doc('t').build);
-  ok('E1 版の印が 1010-1200', build === '1010-1200', build);
+  ok('E1 版の印が 1010-1230', build === '1010-1230', build);
   ok('E2 画面のエラーが0件', errors.length === 0, errors.join(' | ').slice(0, 300));
 
   await browser.close();

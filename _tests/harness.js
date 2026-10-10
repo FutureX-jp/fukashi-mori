@@ -27,7 +27,8 @@ function relayAttach(ws, who) {
     const t = topic.toString(); let body = null; try { body = JSON.parse(pay.toString()); } catch (e) { }
     RELAY.frames.push({ who, t: Date.now(), ev: ev.toString(), body });
     const out = Buffer.concat([Buffer.from([4, tl, el, ml, enc]), topic, ev, meta, pay]);
-    RELAY.socks.forEach(s => { if (s !== me && s.topics.has(t)) s.ws.send(out); });
+    // 本物と同じ癖: 送った直後に部屋を出ると、その1通は相手に届かない（10/10 本物の Supabase で確かめた）。少し遅らせて、まだ部屋にいる時だけ配る
+    setTimeout(() => { if (!me.topics.has(t)) return; RELAY.socks.forEach(s => { if (s !== me && s.topics.has(t)) { try { s.ws.send(out); } catch (e) { } } }); }, 60);
   });
 }
 const NAMES = { gonzo: 'ゴンゾウ', mitsu: 'ミツ', haru: 'ハル', rin: 'リン', popo: 'ポポ', jiro: 'ジロ' };
@@ -45,8 +46,9 @@ function world(over) {
 
 async function openMori(file, opt) {
   opt = opt || {};
-  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  const ctx = await browser.newContext({ viewport: opt.viewport || { width: 393, height: 852 }, deviceScaleFactor: opt.dpr || 2, hasTouch: true, isMobile: true, locale: 'ja-JP', timezoneId: 'Asia/Tokyo' });
+  const lo = { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] };
+  const browser = await chromium.launch(lo);
+  const ctx = await browser.newContext({ viewport: opt.viewport || { width: 393, height: 852 }, deviceScaleFactor: opt.dpr || 2, hasTouch: true, isMobile: true, locale: 'ja-JP', timezoneId: 'Asia/Tokyo', ignoreHTTPSErrors: !!opt.real });
   const page = await ctx.newPage();
   const errors = [], state = { world: world(opt.world), posts: [] };
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
@@ -68,7 +70,17 @@ async function openMori(file, opt) {
     }
     return route.abort();
   });
-  await page.routeWebSocket(/realtime\/v1\/websocket/, ws => relayAttach(ws, opt.who || 'A'));
+  if (opt.real) await page.routeWebSocket(/realtime\/v1\/websocket/, ws => {
+    // 本物の Supabase へつなぐ橋。画面の中の公式部品が出した物を、そのまま本物の中継へ渡し、返事もそのまま返す（中身には触らない）
+    // この作業場のブラウザは通り道の都合で WebSocket を直接張れないので、Node 側から同じ通り道（HTTPS_PROXY＋配られた証明書）で張る
+    const WS = require('ws'), { HttpsProxyAgent } = require('https-proxy-agent');
+    const real = new WS(ws.url(), { agent: new HttpsProxyAgent(process.env.HTTPS_PROXY), ca: fs.readFileSync('/root/.ccr/ca-bundle.crt') }), q = [];
+    real.on('open', () => { q.splice(0).forEach(m => real.send(m)); });
+    real.on('message', (d, bin) => { try { ws.send(bin ? d : d.toString()); } catch (e) { } });
+    real.on('close', () => { try { ws.close(); } catch (e) { } }); real.on('error', () => { try { ws.close({ code: 1011, reason: 'bridge' }); } catch (e) { } });
+    ws.onMessage(m => { if (real.readyState === 1) real.send(m); else q.push(m); }); ws.onClose(() => { try { real.close(); } catch (e) { } });
+  });
+  else await page.routeWebSocket(/realtime\/v1\/websocket/, ws => relayAttach(ws, opt.who || 'A'));
   if (opt.save) await page.addInitScript(s => { try { for (const k in s) localStorage.setItem(k, s[k]); } catch (e) { } }, opt.save);
   await page.goto('http://mori.test/index.html' + (opt.hash || ''));
   await page.waitForFunction(() => window.__mori && window.__mori.three && window.__mori.three().R, null, { timeout: 60000 });

@@ -2294,9 +2294,9 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    同意: 居場所と名前を外へ出すので、最初に「何が見えるか」を見せて選んでもらう。S.net = 未定(undefined)／入る(1)／ひとり(0)。未定のままでは1通も送らない。「とじる」は同意にしない
    守り: 送る側と受ける側の両方で同じふるい（netClean）を通す。電話番号・ID・リンクは伏せ字、禁止ワードは伏せ字、名前は分身と同じ決まり。1人ずつ「字を見ない」
    回数: 無料枠は1秒100通（受け取る人1人で1通）。人数が増えたら送る間隔を自動でのばす（2人=1秒4回、5人=1秒2回、8人=1秒1回）。止まっている間は4秒に1回だけ
-   確かめ: この作業場から本物の Supabase にはつなげない。検査は公式の部品＋まねた中継で行った（2画面が互いに見える所まで）。本物での確認は実機 */
+   確かめ: 公式の部品＋まねた中継で2画面（_tests/net20.js）と、本物の Supabase の検査用の部屋で2画面（_tests/real20.js。居場所が届くまで 55〜96ms）。実機のスマホ2台はまだ */
 var NETSTAMP=['やあ！','いいね','ありがとう','こっち来て','またね','おやすみ'],NETNG=/死|殺|うんこ|うんち|ちんこ|まんこ|ばか|バカ|アホ|あほ|くそ|クソ|ブス|でぶ|デブ|fuck|shit|sex/gi,
-  NET={st:'off',err:'',id:'',ch:null,sb:null,peers:{},n:0,sendT:0,last:'',lastAt:0,helloAt:0,log:[],saidAt:0,lib:0,ngAt:0,said:0,hud:'',old:!!S.q16s,TOPIC:'mori-live-v1',MAXP:24,DEAD:12000}; /* old=前から遊んでいる人（初めての人には、住民票と性格診断の板に重ねて聞かない。次に来た時に聞く） */
+  NET={st:'off',err:'',id:'',ch:null,sb:null,peers:{},n:0,sendT:0,last:'',lastAt:0,helloAt:0,log:[],saidAt:0,lib:0,ngAt:0,said:0,hud:'',closeAt:0,old:!!S.q16s,TOPIC:'mori-live-v1',MAXP:24,DEAD:12000}; /* old=前から遊んでいる人（初めての人には、住民票と性格診断の板に重ねて聞かない。次に来た時に聞く） */
 function netId(){if(NET.id)return NET.id;var v='',i;try{v=localStorage.getItem('mori_nid')||''}catch(e){}
   if(!/^[a-z0-9]{10}$/.test(v)){v='';for(i=0;i<10;i++)v+='abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random()*36));try{localStorage.setItem('mori_nid',v)}catch(e){}}NET.id=v;return v} /* 森の中だけの番号。住民票の番号や端末の番号とは別（つなげられないようにする） */
 function netName(n){n=String(n==null?(S.pname||''):n).replace(/[\u0000-\u001f]/g,'').trim().slice(0,12);return (!n||QNG.test(n))?'旅人':n}
@@ -2307,7 +2307,7 @@ function netClean(s){s=String(s==null?'':s).replace(/[\u0000-\u001f<>]/g,'').sli
   return s.replace(NETNG,'＊').trim()}
 function netWant(){return V15.on&&S.net===1}
 function netPush(ev,pl){try{var pr=NET.ch.send({type:'broadcast',event:ev,payload:pl});if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}
-function netBoot(){if(!netWant()||NET.st==='on'||NET.st==='wait')return;NET.st='wait';NET.err='';
+function netBoot(){if(!netWant()||NET.st==='on'||NET.st==='wait'||performance.now()<NET.closeAt)return;NET.st='wait';NET.err=''; /* closeAt: 前の部屋を片づけている間は入り直さない（同じ名前の部屋を取り違える） */
   var go=function(){try{if(!window.supabase||!window.supabase.createClient)throw new Error('部品が無い');
       NET.sb=NET.sb||window.supabase.createClient(SB.url,SB.key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
       var ch=NET.ch=NET.sb.channel(NET.TOPIC,{config:{broadcast:{self:false,ack:false}}});
@@ -2319,7 +2319,8 @@ function netBoot(){if(!netWant()||NET.st==='on'||NET.st==='wait')return;NET.st='
     catch(e){NET.st='ng';NET.ngAt=performance.now();NET.err='始められない（'+String(e&&e.message||e).slice(0,40)+'）'}};
   if(window.supabase){go();return}if(NET.lib)return;NET.lib=1;
   var sc=document.createElement('script');sc.src='supabase.js';sc.async=true;sc.onload=go;sc.onerror=function(){NET.lib=0;NET.st='ng';NET.ngAt=performance.now();NET.err='中継の部品を読めない（この開き方では使えない）'};document.head.appendChild(sc)}
-function netStop(){if(NET.ch&&NET.st==='on')netPush('x',{i:netId()});var ch=NET.ch;NET.ch=null;NET.st='off';try{if(NET.sb&&ch)NET.sb.removeChannel(ch)}catch(e){}Object.keys(NET.peers).forEach(netDrop);netHud()}
+function netLeave(ch,wait){NET.closeAt=performance.now()+wait+500;setTimeout(function(){try{if(NET.sb&&ch)NET.sb.removeChannel(ch)}catch(e){}},wait)}
+function netStop(){var ch=NET.ch,was=NET.st==='on';if(ch&&was)netPush('x',{i:netId()});NET.ch=null;NET.st='off';if(ch)netLeave(ch,was?350:0);Object.keys(NET.peers).forEach(netDrop);netHud()} /* 「出た」を送ってすぐ部屋を閉じると、本物の中継では相手に届かない（10/10 本物で確かめた）。0.35秒待ってから閉じる */
 function netSend(force,now){if(NET.st!=='on'||!NET.ch)return;now=now||performance.now();
   var st={i:netId(),n:netName(),h:S.hat,x:+me.x.toFixed(2),z:+me.z.toFixed(2),a:+(((me.sp&&me.sp.rotation.y)||0)).toFixed(2),v:(ROOM.on||DV.on||intro)?0:1},key=st.n+'|'+st.h+'|'+st.x+'|'+st.z+'|'+st.v;
   if(!force&&key===NET.last&&now-NET.lastAt<4000)return;NET.last=key;NET.lastAt=now;NET.sendT=now;netPush('p',st)} /* 役場や家の中・水の中にいる間は v=0（相手の画面から消える。居場所は送るが使わない） */
@@ -2353,7 +2354,7 @@ function netFrame(dt,t){var now=performance.now();netHud();
   if(S.net===undefined&&!S.netAsk&&NET.old&&V15.on&&S.j17s&&S.q16s&&!intro&&!sheetOpen&&land.hidden&&!ROOM.on&&!DV.on&&!FS.on&&!TQ.length&&TT<=0&&now>9000&&!me.path.length){S.netAsk=1;save();netOpen();return} /* 初めての時に1回だけこちらから聞く（あとは左上の札から） */
   if(!netWant()){if(NET.st!=='off')netStop();return}
   if(NET.st==='off')netBoot();
-  else if(NET.st==='ng'&&now-NET.ngAt>30000){var ch=NET.ch;NET.ch=null;NET.st='off';try{if(NET.sb&&ch)NET.sb.removeChannel(ch)}catch(e){}} /* 30秒おきにつなぎ直す */
+  else if(NET.st==='ng'&&now-NET.ngAt>30000){var ch=NET.ch;NET.ch=null;NET.st='off';if(ch)netLeave(ch,0)} /* 30秒おきにつなぎ直す */
   if(NET.st!=='on')return;
   var n=NET.n,f=n?Math.min(4,70/((n+1)*n)):.33;if(now-NET.sendT>=1000/Math.max(.33,f))netSend(false,now);
   netStep(dt,now)}
@@ -2398,7 +2399,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.20',APP_BUILD='1010-1200',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.20',APP_BUILD='1010-1230',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
