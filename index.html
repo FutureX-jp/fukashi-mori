@@ -36,6 +36,8 @@ img{max-width:100%}
 html,body{height:100%}
 /* v0.20.3 拡大の止め（10/10 主「なんで途中で拡大になるのー」） */
 input,textarea,select{font-size:16px!important}
+#mapbtn{display:none}body.inroom #mapbtn{display:block} /* v0.27 左上の地図ボタンは無し（部屋の中の「外に出る」だけ） */#stage #chb{left:8px}body.inroom #stage #chb{left:118px}
+#land{overflow-y:auto;z-index:7}.gol{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:6px;overflow-x:auto;max-width:100%;padding:2px 2px 6px;scrollbar-width:none;flex:none}.gol::-webkit-scrollbar{display:none}.gol button{min-height:32px;padding:3px 10px;font-size:12.5px;white-space:nowrap;background:var(--cream);color:var(--ink);border-radius:999px} /* 行き先は2段の横スクロール（地図を下へ押しやらない） */
 #stage #phb{left:auto;right:148px}#stage:has(#mmw.fold) #phb{right:52px}#stage #chb{left:118px} /* v0.26 主「スマホのアイコンは右側に」: 右上の地図のすぐ左 */
 #ph{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(0,0,0,0.58);opacity:0;transition:opacity .28s}#ph.on{opacity:1}#ph[hidden]{display:none}
 #phd{position:relative;width:min(82vw,320px,calc((100dvh - 24px) * 9 / 19.5));aspect-ratio:9 / 19.5;border:5px solid #171A1B;border-radius:38px;box-shadow:0 20px 70px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,.08);background:#10251F;overflow:hidden;transform:translateY(110%) scale(.96);transition:transform 420ms cubic-bezier(0.22, 1, 0.36, 1)}
@@ -255,7 +257,7 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
     <button id="netb" type="button" hidden aria-label="ほかの旅人"></button>
     <button id="phb" type="button" aria-label="スマホ">📱</button><button id="chb" type="button" aria-label="チャット">💬</button>
     <div id="mmw">
-      <button id="mm" type="button" aria-label="ミニマップ（タッチでたたむ）"><canvas id="mmc" width="264" height="264"></canvas></button>
+      <button id="mm" type="button" aria-label="地図を開く"><canvas id="mmc" width="264" height="264"></canvas></button>
       <button id="mmf" type="button" aria-label="ミニマップをひらく" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 6.5l5.5-2 6 2 5.5-2v13l-5.5 2-6-2-5.5 2z M9 4.5v13 M15 6.5v13" fill="none" stroke="#FFEFBF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8.2l3 6.6-3-1.5-3 1.5z" fill="#FFC83D"/></svg></button>
       <button id="cmp" type="button" aria-label="方位磁針（タッチで北向きに戻す）"><svg viewBox="0 0 32 32" aria-hidden="true"><g id="cmpd"><polygon points="16,10.4 19,17 13,17" fill="#E94B3C"/><polygon points="16,26 19,17 13,17" fill="#F5E9C8"/><text id="cmpn" x="16" y="9.4" text-anchor="middle" font-size="8.5" font-weight="700" font-family="Arial,sans-serif" fill="#FFC83D">N</text></g><circle cx="16" cy="17" r="1.5" fill="#0a1830"/></svg></button>
     </div>
@@ -295,7 +297,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.26';
+var VERSION='v0.27';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -570,7 +572,7 @@ function mmStep(){var show=!ROOM.on&&!intro&&!DV.on&&!FS.on;if(MM.el.hidden===sh
   var deg=Math.round((CAM.yaw+angAt(me.x,me.z))*180/Math.PI*2)/2;if(deg!==MM.deg){MM.deg=deg;MM.dial.setAttribute('transform','rotate('+deg+' 16 17)');MM.nl.setAttribute('transform','rotate('+(-deg)+' 16 6.6)')}
   if(S.mm!==0&&(MM.tick++%6)===0)mmDraw()}
 function north(){CAM.yaw=-angAt(me.x,me.z);CAM.tilt=0;logEv('north')}
-$('#mm').addEventListener('click',function(){if(!MM.big){MM.big=true;MM.R=95;MM.el.classList.add('big');MM.tick=0;logEv('mm:big')}else{MM.big=false;MM.R=50;MM.el.classList.remove('big');mmFold(true)}}); /* v0.25 ゆい「右上のマップを拡大できるように」: 1回目のタッチで大きく、2回目でたたむ */$('#mmf').addEventListener('click',function(){mmFold(false)});$('#cmp').addEventListener('click',function(e){e.stopPropagation();if(!ROOM.on)north()});
+$('#mm').addEventListener('click',function(){if(ROOM.on)return;close();openLand();logEv('mm:open')}); /* v0.27 地図を1つに: 小さい地図をタッチ＝大きい地図（行き先つき） */ /* v0.25 ゆい「右上のマップを拡大できるように」: 1回目のタッチで大きく、2回目でたたむ */$('#mmf').addEventListener('click',function(){mmFold(false)});$('#cmp').addEventListener('click',function(e){e.stopPropagation();if(!ROOM.on)north()});
 function waterTex(){return canvasTex(256,256,function(g,w,h){var r=rnd(21),i;var gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,'#14465c');gr.addColorStop(1,'#0e3248');g.fillStyle=gr;g.fillRect(0,0,w,h);
   g.lineCap='round';for(i=0;i<46;i++){var x=r()*w,y=r()*h,l=10+r()*26;g.strokeStyle=i%3?'rgba(90,170,190,.28)':'rgba(190,230,240,.3)';g.lineWidth=1.5+r()*1.5;for(var dx=-1;dx<=1;dx++)for(var dy=-1;dy<=1;dy++){g.beginPath();g.moveTo(x+dx*w,y+dy*h);g.quadraticCurveTo(x+dx*w+l/2,y+dy*h-3,x+dx*w+l,y+dy*h);g.stroke()}}
   for(i=0;i<10;i++){g.fillStyle='rgba(255,236,170,.5)';g.beginPath();g.arc(r()*w,r()*h,1.3,0,7);g.fill()}},true)}
@@ -1607,6 +1609,23 @@ function wishSend(){if(SK.busy)return;if(!S.acct){juminOpen();return}var t=(($('
 /* ===== v0.25 ゆいの要望（10/10 14:26・構想メモ「ゆいの要望」Y-1〜Y-8） ===== */
 /* Y-6 広場に椅子: 広場の真ん中を向いたベンチ4つ。近づくと「座る」。歩き出すと立つ */
 var BENCH=[[-6,5.5],[6,5.5],[-6,-4.5],[6,-4.5]],BENCHO=[];
+
+/* ===== v0.27 地図を1つに・行き先一覧（10/10 15:19 主「右上の地図と左上の地図統合しない？」「それぞれの場所を一覧にして、そのボタンを押したら自動で移動するように」）
+   右上の小さい地図をタッチ＝大きい地図（土地の地図）。左上の「土地の地図」ボタンは無くした（部屋の中の「外に出る」だけ残す）
+   大きい地図の上に「行き先」を並べる。押すと地図を閉じて、道を通ってそこまで自動で歩き、着いたらその場所を開く（スティックをさわると止まる） */
+function goList(){var L=[],sp=function(id){return SPOT[id]?{x:SPOT[id].ax,z:SPOT[id].az}:null};
+  var y=LOTS[YAKUBA_LOT];if(y)L.push(['🏛','役場',{x:y.fx,z:y.fz+.8},'yakuroom']);
+  if(S.lot!=null&&LOTS[S.lot])L.push(['🏠','自分の家',{x:LOTS[S.lot].fx,z:LOTS[S.lot].fz+.8},{lot:S.lot}]);
+  [['pk','⚽'],['gac','🎰'],['box','📮'],['kob','👮'],['dil','🔒'],['tab','💨']].forEach(function(q){var p=PLACES.find(function(x){return x.id===q[0]});if(p)L.push([q[1],p.name,{x:p.x,z:p.z+1.6},q[0]])});
+  L.push(['🪑','広場のベンチ',{x:BENCH[0][0]*.82,z:BENCH[0][1]*.82},'bench0']);
+  (FARM.fields||[]).forEach(function(F){var p=sp('farm'+F.lot);if(p)L.push(['🌱',F.title,p,'farm'+F.lot])});
+  var r0=sp('rod0');if(r0)L.push(['🎣','釣り場',r0,'rod0']);
+  var rc=sp('rec');if(rc)L.push(['🐟','池の記録',rc,'rec']);
+  var gr=sp('gear');if(gr)L.push(['🤿','潜り道具',gr,'gear']);
+  var ml=sp('mail');if(ml)L.push(['📬','郵便受け',ml,'mail']);
+  AI.forEach(function(o){if(o.dead||o.sleep||o.inHall||!o.sp.visible)return;L.push(['🍄',o.name+'（住人）',{x:o.x,z:o.z},'ai_'+o.id])});
+  return L}
+function goTo(i){var L=goList(),g=L[i];if(!g)return;land.hidden=true;if(ROOM.on)exitRoom();me.sit=null;walkTo({x:g[2].x,z:g[2].z},g[3]);toast(g[0]+' '+g[1]+'へ向かう（スティックで止まる）');logEv('goto:'+(typeof g[3]==='string'?g[3]:'home'))}
 function benchFace(x,z){var gx=-x,gz=-z,l=Math.hypot(gx,gz)||1;gx/=l;gz/=l;var pa=angAt(x,z),pc=Math.cos(pa),ps=Math.sin(pa);return Math.atan2(gx*pc-gz*ps,gx*ps+gz*pc)}
 function buildBenches(){if(!V15.on||BENCHO.length)return;var B=new THREE.BoxGeometry(1,1,1),mW=new THREE.MeshLambertMaterial({color:col(0xB07A48)}),mL=new THREE.MeshLambertMaterial({color:col(0x5E4129)});
   BENCH.forEach(function(b,i){var w=warp(b[0],b[1]),y=height(w[0],w[1]),g=new THREE.Group(),yaw=benchFace(b[0],b[1]);g.position.set(w[0],y,w[1]);g.rotation.y=yaw;
@@ -2452,13 +2471,13 @@ function renderLand(sel,msg){var h='',x,y,c;
   else{d=where+'の空き地　'+(pr?pr+'フカ':'無料')+'　手持ち '+S.coin+'フカ';
     b='<button type="button" data-l="move"'+(S.coin<pr?' disabled':'')+'>'+(S.coin<pr?'あと'+(pr-S.coin)+'フカ足りない':'ここに引っ越す')+'</button>'}
   if(msg)d=msg;
-  land.innerHTML='<h2>土地の地図<span class="here"><i></i>現在地</span></h2><div class="grid">'+h+'</div>'+
+  var GL=goList();land.innerHTML='<h2>地図<span class="here"><i></i>現在地</span></h2><div class="gol">'+GL.map(function(g,i){return '<button type="button" data-go="'+i+'">'+g[0]+' '+esc(g[1])+'</button>'}).join('')+'</div><div class="grid">'+h+'</div>'+
     '<div class="legend"><span><i style="background:var(--r1)"></i>広場の隣 800</span><span><i style="background:var(--r2)"></i>2つ目 600</span><span><i style="background:var(--r3)"></i>3〜4つ目 450・300</span><span><i style="background:var(--r4)"></i>5つ目〜 200・100・0</span>'+
     '<span><i class="nw"></i>池 <i class="ng"></i>林 <i class="nk"></i>公園 <i class="nf"></i>花畑</span><span>空き 小'+cnt.S[1]+' 中'+cnt.M[1]+' 大'+cnt.L[1]+'</span></div><p id="ldet">'+d+'</p>'+
     '<div class="row">'+b+'<button type="button" class="sub" data-l="close">森にもどる</button></div>'+
     '<p class="note">数字は森の住人の頭の良さ（1〜5段）　土地の値段＝場所の値段×広さ（小×1・中×2・大×4）</p>';
   land.dataset.sel=sel}
-land.addEventListener('click',function(e){var p=e.target.closest('[data-p]'),a=e.target.closest('[data-l]');
+land.addEventListener('click',function(e){var gq=e.target.closest('[data-go]');if(gq){goTo(+gq.getAttribute('data-go'));return}var p=e.target.closest('[data-p]'),a=e.target.closest('[data-l]');
   if(p){renderLand(+p.getAttribute('data-p'));return}
   if(!a)return;a=a.getAttribute('data-l');var s=+land.dataset.sel;
   if(a==='close'){land.hidden=true;return}
@@ -2588,7 +2607,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.26',APP_BUILD='1010-2100',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.27',APP_BUILD='1010-2200',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
