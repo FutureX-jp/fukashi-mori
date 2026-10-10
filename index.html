@@ -168,6 +168,23 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
 .plot[data-r="3"]{background:var(--r3);color:var(--cream)}.plot[data-r="4"]{background:var(--r4);color:var(--cream)}
 .plot.own{background:var(--cream);color:var(--night);box-shadow:0 0 0 2px var(--danger) inset}
 #sheet td.nw19{white-space:nowrap}
+/* v0.20 ほかの旅人 */
+#netb{position:absolute;left:8px;top:92px;flex:none;min-height:32px;padding:4px 12px;font-size:13px;background:#d6f0ff;color:var(--ink);z-index:3}#netb.on{background:#9be0b4}body.inroom #netb{top:52px}
+#sheet{z-index:5} /* 板は左上の札（リュック・旅人）より手前。前は札が板の題名に重なっていた */
+#netlog{max-height:min(24vh,190px)}#sheet table.netc td{text-align:left;color:var(--ink)}
+.netp{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px}.netp button{flex:0 0 auto;min-height:34px;padding:4px 12px;font-size:12px}
+/* v0.19.6 魚図鑑: 上に選んだ魚（池の色の札）、下に10種のます */
+.zkd{display:grid;grid-template-columns:40% 1fr;gap:12px;align-items:center;background:linear-gradient(170deg,#2a7f86,#12404f);border-radius:14px;padding:10px 12px;color:#fff3c7;min-height:128px}
+.zkd .zkp{position:relative}.zkd .zkp i{position:absolute;left:0;top:-2px;font-style:normal;font-size:11px;font-weight:700;color:#bfe3dc;letter-spacing:.04em}
+.zkd img,.zk img{width:100%;aspect-ratio:8/5;object-fit:contain;display:block}
+.zkd b{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.2;display:block}
+#sheet .zkd p{margin:4px 0 0;font-size:12.5px;line-height:1.45;color:#eaf6f1}#sheet .zkd p.q{color:#ffe7a0}
+.zk{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.zk button{min-height:0;padding:3px 2px 4px;border-radius:12px;background:#f3e6b8;border:2px solid transparent;display:flex;flex-direction:column;align-items:stretch;gap:0;flex:none;min-width:0}
+.zk button.on{border-color:var(--leaf);background:#ffe59a}
+.zk span{font-size:10px;font-weight:700;line-height:1.25;color:var(--ink);white-space:nowrap;overflow:hidden;text-align:center}
+.zk img.no,.zkd img.no{filter:brightness(0);opacity:.3}.zkd img.no{filter:brightness(0) invert(1);opacity:.22}
+.zkph{display:grid;place-items:center;aspect-ratio:8/5;font-style:normal;font-size:22px}.zkph.no{filter:grayscale(1) brightness(.4);opacity:.4}
 .plot.pub{background:#7a5a3c;color:var(--cream);box-shadow:0 0 0 1px rgba(255,243,199,.55) inset}
 .plot.sel{outline:3px solid var(--cream);outline-offset:-1px;z-index:1}
 .nat{border-radius:3px;opacity:.9}.nw{background:#2f7f9f}.ng{background:#123a2a}.nk{background:#c9eaa0}.nf{background:#e9a9c4}
@@ -204,6 +221,7 @@ header.t1 .pre,header.t2 .pre,header.t2 #ver,header.t2 .sep{display:none} /* 上
     <div id="big" hidden></div>
     <button id="mapbtn" type="button">土地の地図</button>
     <button id="hunb" type="button" hidden aria-label="リュックとおなか">🍙 リュック <b id="hunv">90%</b></button>
+    <button id="netb" type="button" hidden aria-label="ほかの旅人"></button>
     <div id="mmw">
       <button id="mm" type="button" aria-label="ミニマップ（タッチでたたむ）"><canvas id="mmc" width="264" height="264"></canvas></button>
       <button id="mmf" type="button" aria-label="ミニマップをひらく" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 6.5l5.5-2 6 2 5.5-2v13l-5.5 2-6-2-5.5 2z M9 4.5v13 M15 6.5v13" fill="none" stroke="#FFEFBF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8.2l3 6.6-3-1.5-3 1.5z" fill="#FFC83D"/></svg></button>
@@ -234,7 +252,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.19';
+var VERSION='v0.20';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -821,11 +839,39 @@ function bookAdd(k,cm){var B=S.book=S.book||{},e=B[k],D=FISHDEF.filter(function(
   e.n++;if(cm>e.max)e.max=cm;
   if(!S.bookAll&&FISHDEF.slice(0,5).every(function(d){return B[d.k]})){S.bookAll=1;S.coin+=75;toast('池の魚を、5種類知りました　＋75フカ',1)} /* はじめの5種（v0.19.4 までの「全部」。もらった人はそのまま） */
   if(!S.bookAll2&&FISHDEF.every(function(d){return B[d.k]})){S.bookAll2=1;S.coin+=150;toast('池の魚を、すべて知りました　＋150フカ',1)}save()}
-function recOpen(tab){S.recTab=tab;var B=S.book||{},rows='',got=0;FISHDEF.forEach(function(D){var e=B[D.k];if(e)got++;
-    rows+=tab==='book'?'<tr><td class="nw19">'+(e?D.n:'？？？')+'</td><td class="nw19">'+(e?D.price+'フカ':'')+'</td><td>'+(e?FTIP[D.mode]:'底の深さ'+D.dmin+'〜'+D.dmax+'mのあたり')+(D.when?'　'+FWHEN[D.when]:'')+'</td></tr>'
-      :'<tr><td>'+(e?D.n:'？？？')+'</td><td>'+(e?'最大：'+e.max+'cm':'')+'</td><td>'+(e?'捕獲：'+e.n+'匹':'')+'</td></tr>'});
-  show('rec','<h2>池の記録</h2><div class="row"><button class="'+(tab==='book'?'':'sub')+'" data-a="rec:book">図鑑</button><button class="'+(tab==='best'?'':'sub')+'" data-a="rec:best">自己ベスト</button></div><table>'+rows+'</table><p class="note">'+
-    (tab==='book'?'図鑑 '+got+'/'+FISHDEF.length+'　初めて獲ると＋5フカ　はじめの5種類で＋75フカ、'+FISHDEF.length+'種類ぜんぶで＋150フカ'+(S.bookAll2?'　池の魚を、すべて知りました':''):'真珠貝：'+(S.shell||0)+'個　釣った魚：'+(S.rod||0)+'匹　銛で獲っても釣っても、同じ記録に入る')+'</p>')}
+/* ===== v0.19.6 魚図鑑（10/10 主「魚図鑑も追加してね」） =====
+   前は池の看板の「池の記録」に字だけの表があった。魚の絵つきにして、リュックからも開けるようにした
+   絵: 池を泳いでいるのと同じ立体・同じ色を、その場で小さく描いて使う（絵のファイルは増やさない）。まだ獲っていない魚は影だけ
+   並べ方・ひとことの文は Claude の仮（チャッピーにはまだ見せていない） */
+var ZK={img:{},sel:''},FNOTE={a:'毎日いる。来ない日は、池のほうが心配する',b:'金色なのは体だけで、貯金の話になると黙る',c:'昼は寝ている。夜も、だいたい寝ている',d:'池を守っている。何から守っているのかは、本人も知らない',e:'池の底の9割はこの魚の土地。残りの1割も、たぶんそう',
+  f:'先週来た。まだ誰にも名前を覚えられていない',g:'派手な色は自前。逃げ足の速さも自前',h:'雨の日だけ出てくる。濡れるのは平気らしい',i:'朝4時に帰ってきて、9時には寝る。どこに行っていたかは言わない',j:'昔は番人だった。今は岩かげで、昔の話をしている'};
+function zkShot(D){if(ZK.img[D.k]!==undefined)return ZK.img[D.k];var out='',rt=null,mat=null,own=null;
+  try{var mk=(D.m&&MDL[D.m])?D.m:'koi',M=MDL[mk];if(!R||!M)throw new Error('no model');
+    var tex=mk!=='koi'?M.tex:(D.wc?(own=koiTex(D.wc,D.pc)):M.tex),W=320,H=200;
+    rt=new THREE.WebGLRenderTarget(W,H);rt.texture.encoding=THREE.sRGBEncoding;mat=new THREE.MeshBasicMaterial({map:tex});
+    if(!M.geo.boundingBox)M.geo.computeBoundingBox();var b=M.geo.boundingBox,sc=new THREE.Scene(),m=new THREE.Mesh(M.geo,mat),g=new THREE.Group();
+    m.position.set(-(b.min.x+b.max.x)/2,-(b.min.y+b.max.y)/2,-(b.min.z+b.max.z)/2);g.add(m);g.rotation.y=.32;g.rotation.x=.1;sc.add(g); /* 頭は -x 向き＝左向き。少しだけこちらへ向ける */
+    var hw=Math.max((b.max.x-b.min.x)*.56,(b.max.y-b.min.y)*.62*W/H),cam=new THREE.OrthographicCamera(-hw,hw,hw*H/W,-hw*H/W,.01,60);cam.position.set(0,0,20);cam.lookAt(0,0,0);
+    var prev=R.getRenderTarget(),cc=new THREE.Color(),ca=R.getClearAlpha();R.getClearColor(cc);
+    R.setRenderTarget(rt);R.setClearColor(0x000000,0);R.clear();R.render(sc,cam);var px=new Uint8Array(W*H*4);R.readRenderTargetPixels(rt,0,0,W,H,px);R.setRenderTarget(prev);R.setClearColor(cc,ca);
+    var c=document.createElement('canvas');c.width=W;c.height=H;var g2=c.getContext('2d'),im=g2.createImageData(W,H),y,row=W*4;for(y=0;y<H;y++)im.data.set(px.subarray((H-1-y)*row,(H-y)*row),y*row);g2.putImageData(im,0,0);out=c.toDataURL('image/png')}
+  catch(e){out='';try{logEv('zk:shot:ng')}catch(_){}}
+  if(rt)rt.dispose();if(mat)mat.dispose();if(own)own.dispose();ZK.img[D.k]=out;return out}
+function zkImg(D,got){var u=zkShot(D);return u?'<img'+(got?'':' class="no"')+' src="'+u+'" alt="">':'<i class="zkph'+(got?'':' no')+'">🐟</i>'}
+function zukanHtml(){var B=S.book||{},got=0,sel=ZK.sel,tiles='';FISHDEF.forEach(function(D){if(B[D.k])got++});
+  if(!sel||!FISHDEF.some(function(D){return D.k===sel}))sel=ZK.sel=(FISHDEF.filter(function(D){return B[D.k]})[0]||FISHDEF[0]).k;
+  FISHDEF.forEach(function(D,ix){var e=B[D.k];tiles+='<button type="button" class="'+(D.k===sel?'on':'')+'" data-a="zk:'+D.k+'" aria-label="'+(e?D.n:'まだ獲っていない魚')+'">'+zkImg(D,!!e)+'<span>'+(e?D.n:'No.'+(ix<9?'0':'')+(ix+1))+'</span></button>'});
+  var D=FISHDEF.filter(function(q){return q.k===sel})[0],e=B[D.k],no=FISHDEF.indexOf(D)+1,dep='底の深さ '+D.dmin+'〜'+D.dmax+'m',h;
+  if(e)h='<b>'+D.n+'</b><p>売ると '+D.price+'フカ　最大 '+e.max+'cm　'+e.n+'匹</p><p>'+dep+'　'+FTIP[D.mode]+(D.when?'　'+FWHEN[D.when]:'')+'</p><p class="q">'+FNOTE[D.k]+'</p>';
+  else h='<b>？？？</b><p>まだ獲っていない</p><p>'+dep+'のあたり'+(D.when?'　'+FWHEN[D.when]:'')+'</p>';
+  return '<div class="zkd"><div class="zkp">'+zkImg(D,!!e)+'<i>No.'+(no<10?'0':'')+no+'</i></div><div>'+h+'</div></div><div class="zk">'+tiles+'</div>'+
+    '<p class="note">図鑑 '+got+'/'+FISHDEF.length+'　初めて獲ると＋5フカ　はじめの5種類で＋75フカ、'+FISHDEF.length+'種類ぜんぶで＋150フカ'+(S.bookAll2?'　池の魚を、すべて知りました':'')+'</p>'}
+function zukanOpen(){show('zukan','<h2>魚図鑑</h2>'+zukanHtml()+'<div class="row"><button class="sub" data-a="bag">リュックにもどる</button></div>');logEv('zukan')}
+function zkPick(k){ZK.sel=k;if(sheetOpen==='rec')recOpen('book');else zukanOpen()}
+function recOpen(tab){S.recTab=tab;var B=S.book||{},rows='',tabs='<div class="row"><button class="'+(tab==='book'?'':'sub')+'" data-a="rec:book">図鑑</button><button class="'+(tab==='best'?'':'sub')+'" data-a="rec:best">自己ベスト</button></div>';
+  if(tab==='book'){show('rec','<h2>池の記録</h2>'+tabs+zukanHtml());return}
+  FISHDEF.forEach(function(D){var e=B[D.k];rows+='<tr><td>'+(e?D.n:'？？？')+'</td><td>'+(e?'最大：'+e.max+'cm':'')+'</td><td>'+(e?'捕獲：'+e.n+'匹':'')+'</td></tr>'});
+  show('rec','<h2>池の記録</h2>'+tabs+'<table>'+rows+'</table><p class="note">真珠貝：'+(S.shell||0)+'個　釣った魚：'+(S.rod||0)+'匹　銛で獲っても釣っても、同じ記録に入る</p>')}
 /* ---- 潜り道具（池のそばの宝箱）。チャッピー: 息 30→40→50秒（500・1,500フカ）／溜め −15%・−30%（800・2,000）／銛の射程 ＋1m・＋2m（1,000・3,000） ---- */
 var GEAR={b:{n:'息',lv:[['30→40秒',500],['40→50秒',1500]]},c:{n:'溜め',lv:[['溜め時間−15%',800],['溜め時間−30%',2000]]},r:{n:'銛',lv:[['射程＋1m',1000],['射程＋2m',3000]]}};
 function gearApply(){var g=S.gear=S.gear||{b:0,c:0,r:0};DV.MAX=30+10*g.b;DV.CT=.9*(1-[0,.15,.3][g.c]);DV.RG=g.r}
@@ -1039,6 +1085,7 @@ function diveStep(dt,t,mh,dep){
   if(actBtn.hidden&&!sheetOpen){actBtn.textContent='銛';actBtn.hidden=false}else if(!actBtn.hidden&&sheetOpen)actBtn.hidden=true}
 function step(dt,t){ /* 歩く */
   toastStep(dt);
+  netFrame(dt,t); /* v0.20 ほかの旅人 */
   if(ROOM.on){stepRoom(dt,t);return}
   var moving=false,ddx=0,ddz=0;
   if(me.path.length&&!intro){var p=me.path[0],dx=p.x-me.x,dz=p.z-me.z,d=Math.hypot(dx,dz),s=SPD()*dt;
@@ -1270,13 +1317,14 @@ function stepPeople(dt,t,mw,mh){var i,R2,dx,dz,d,near=null,nd=4.6,p,y,a,c,s2,gx,
     y=height(p[0],p[1]);a=angAt(R2.x,R2.z);c=Math.cos(a);s2=Math.sin(a);hop=dirPose(R2,gx*c-gz*s2,gx*s2+gz*c,mv,dt,4.5);R2.sp.position.set(p[0],y+hop,p[1])}
   [npc,cop].forEach(function(q){var dq=Math.hypot(q.x-me.x,q.z-me.z);if(dq<nd){nd=dq;near=q}});
   if(G.talk){if(near&&talkable){p=wpos(near);G.talk.position.set(p[0],p[1]+2.35+Math.sin(t*.004)*.05,p[2]);G.talk.userData.who=near;G.talk.visible=true}else G.talk.visible=false}
-  var now=performance.now();for(i=SAYS.length-1;i>=0;i--){var sy2=SAYS[i];if(now>sy2.until){scene.remove(sy2.s);sy2.s.material.map.dispose();sy2.s.material.dispose();SAYS.splice(i,1);continue}p=wpos(sy2.o);sy2.s.position.set(p[0],p[1]+2.3,p[2])}}
+  var now=performance.now();for(i=SAYS.length-1;i>=0;i--){var sy2=SAYS[i];if(now>sy2.until){scene.remove(sy2.s);sy2.s.material.map.dispose();sy2.s.material.dispose();SAYS.splice(i,1);continue}p=wpos(sy2.o);sy2.s.position.set(p[0],p[1]+(sy2.o.bubY||2.3),p[2])}}
 function show(id,h){sheetOpen=id;sheet.innerHTML='<button class="sub" id="x" data-a="close">とじる</button>'+h;sheet.hidden=false}
 function close(){sheetOpen=null;sheet.hidden=true}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
 function open(id){
   if(id.indexOf('farm')===0){farmOpen(+id.slice(4));return}
+  if(id.indexOf('net_')===0){netOpen();return}
   if(id==='yakuba'){yakubaOpen();return}if(id==='yakuroom'){yakEnter();return}if(id==='mail'){mailOpen();return}if(id==='rec'){recOpen(S.recTab||'book');return}if(id==='gear'){gearOpen();return}if(id.indexOf('rod')===0){fishStart(+id.slice(3));return}
   var jl=jailLeft();
   if(id==='pk')show(id,'<h2>PKスタジアム（フカシPK）</h2><p>ストーリーを1章クリアするごとに、森の家が1段広がる　今 '+S.clear.pk+'章クリア</p>'+
@@ -1321,6 +1369,8 @@ sheet.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if
   if(a==='close'){close();return}
   if(a==='qtake'){var q0=qNow();q0.on=1;save();mailOpen();logEv('quest:take');return}
   if(a.indexOf('rec:')===0){recOpen(a.slice(4));return}
+  if(a==='net'){netOpen();return}if(a.indexOf('net:')===0){netAct(a.slice(4));return}
+  if(a==='zukan'){zukanOpen();return}if(a.indexOf('zk:')===0){zkPick(a.slice(3));return}
   if(a.indexOf('gear:')===0){var gk=a.slice(5),gn=GEAR[gk].lv[S.gear[gk]];if(!gn||S.coin<gn[1])return;S.coin-=gn[1];S.gear[gk]++;gearApply();save();gearOpen('少しだけ、本気になりました');logEv('gear:'+gk+S.gear[gk]);return}
   if(a==='logsend'){LOG.note=String($('#lognote').value||'').replace(/[<>]/g,'').trim().slice(0,200);(LOG.notes=LOG.notes||[]).push({t:Date.now(),note:LOG.note,x:+me.x.toFixed(1),z:+me.z.toFixed(1),room:ROOM.on?1:0,dive:DV.on?+(WS-DV.y).toFixed(1):-1});b.disabled=true;b.textContent='送っている';
     logSend('manual').then(function(ok){LOG.note='';if(sheetOpen==='log')show('log',logHtml(ok?'送った　ありがとう':(LOG.sink?'送れなかった（通信できない）':'今の開き方では送り先が無い')+'　「全部コピー」で渡せる'))});return}
@@ -1815,7 +1865,7 @@ function bagOpen(){bagSpoil();var b=bagList(),h=hunNow(),full=Math.round(100-h),
 '<button class="sub" data-a="bag:sell:'+i+'">売る ＋'+p+'</button></div></div>'}).join('');
   show('bag','<h2>リュック</h2><div class="hunbar" role="meter" aria-label="おなか" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+full+'"><i style="width:'+full+'%"></i></div><p class="note">おなか '+full+'%　'+(h>=90?'ぺこぺこで歩くのがおそい':h>=70?'すいてきた':'まだ大丈夫')+'（10時間で空っぽになる・倒れることはない）</p>'+
     (rows||'<p class="note">からっぽ。池で釣った魚がここに入る</p>')+'<p class="note">'+b.length+' / '+BAG.MAX+'こ　食べ物は日がたつと傷む（魚1日・パン2日・野菜3日・木の実7日）'+'　住人にあげる時は、その住人に話しかける'+'</p>'+
-    '<div class="row"><button class="sub" data-a="bag:buy">パンを買う（'+BAG.BREAD+'フカ・いま '+S.coin+'フカ）</button></div>')}
+    '<div class="row"><button class="sub" data-a="bag:buy">パンを買う（'+BAG.BREAD+'フカ・いま '+S.coin+'フカ）</button><button class="sub" data-a="zukan">魚図鑑</button></div>')}
 function bagAct(a){var p=a.split(':');if(p[0]==='eat')bagEat(+p[1]);else if(p[0]==='sell')bagSell(+p[1]);else if(p[0]==='gift')bagGift(+p[1]);else if(p[0]==='buy')bagBuy()}
 /* 釣れた魚はリュックへ（v0.15 の森のとき）。前の「その場でフカ」は #v14 のまま */
 function bagCatch(D,cm){var ok=bagAdd({k:'魚',name:D.n,cm:cm,price:D.price,fk:D.k});return ok?'リュックへ（売ると＋'+D.price+'フカ）':'その場で売った　＋'+D.price+'フカ'}
@@ -2236,6 +2286,110 @@ function buyLot(id){var t=resOf(id),pr=askOf(id);if(!t||S.coin<pr||lotLock(id))r
 function moveLot(id){var l=LOTS[id];if(!l||lotLock(id)||isMine(id)||resOf(id)||S.coin<landPrice(l))return false;S.coin-=landPrice(l);S.lot=id;save();buildTown();return true}
 function openLand(){close();renderLand(S.lot);land.hidden=false}
 $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else openLand()});
+/* ===== v0.20 同じワールド（10/10 主「昨日ゆいと一緒にプレイしたけどゆいがワールドにいなかった」→「最初から同じワールドじゃだめなのか」） =====
+   前: 住人・畑・役場だけがみんなで共通で、主人公の居場所はその端末の中だけ。同じ時間に遊んでも互いに見えなかった
+   今: 同じ時間に森にいる旅人が、きのコロ・帽子の色・名前つきで互いに見える。ひとこと（60字）とスタンプを送れる
+   中継: Supabase の Realtime（Broadcast・公開の部屋 mori-live-v1）。森のサーバー（住人の頭）は触っていない。部品は公式の supabase-js を同じ場所に置いて読む
+        サーバー側に載せ替える時は netBoot / netSend / netSay の3つを差し替えればいい（受け取る側 netGot / netSaid はそのまま使える）
+   同意: 居場所と名前を外へ出すので、最初に「何が見えるか」を見せて選んでもらう。S.net = 未定(undefined)／入る(1)／ひとり(0)。未定のままでは1通も送らない。「とじる」は同意にしない
+   守り: 送る側と受ける側の両方で同じふるい（netClean）を通す。電話番号・ID・リンクは伏せ字、禁止ワードは伏せ字、名前は分身と同じ決まり。1人ずつ「字を見ない」
+   回数: 無料枠は1秒100通（受け取る人1人で1通）。人数が増えたら送る間隔を自動でのばす（2人=1秒4回、5人=1秒2回、8人=1秒1回）。止まっている間は4秒に1回だけ
+   確かめ: この作業場から本物の Supabase にはつなげない。検査は公式の部品＋まねた中継で行った（2画面が互いに見える所まで）。本物での確認は実機 */
+var NETSTAMP=['やあ！','いいね','ありがとう','こっち来て','またね','おやすみ'],NETNG=/死|殺|うんこ|うんち|ちんこ|まんこ|ばか|バカ|アホ|あほ|くそ|クソ|ブス|でぶ|デブ|fuck|shit|sex/gi,
+  NET={st:'off',err:'',id:'',ch:null,sb:null,peers:{},n:0,sendT:0,last:'',lastAt:0,helloAt:0,log:[],saidAt:0,lib:0,ngAt:0,said:0,hud:'',old:!!S.q16s,TOPIC:'mori-live-v1',MAXP:24,DEAD:12000}; /* old=前から遊んでいる人（初めての人には、住民票と性格診断の板に重ねて聞かない。次に来た時に聞く） */
+function netId(){if(NET.id)return NET.id;var v='',i;try{v=localStorage.getItem('mori_nid')||''}catch(e){}
+  if(!/^[a-z0-9]{10}$/.test(v)){v='';for(i=0;i<10;i++)v+='abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random()*36));try{localStorage.setItem('mori_nid',v)}catch(e){}}NET.id=v;return v} /* 森の中だけの番号。住民票の番号や端末の番号とは別（つなげられないようにする） */
+function netName(n){n=String(n==null?(S.pname||''):n).replace(/[\u0000-\u001f]/g,'').trim().slice(0,12);return (!n||QNG.test(n))?'旅人':n}
+function netClean(s){s=String(s==null?'':s).replace(/[\u0000-\u001f<>]/g,'').slice(0,60);
+  s=s.replace(/https?:\/\/\S+|www\.\S+|[\w\-]+\.(com|jp|net|org|io|me|gg|tv|co)\b\S*/gi,'＊＊＊'); /* リンク */
+  s=s.replace(/(line|ライン|らいん|インスタ|insta\w*|discord|ディスコ\S*|twitter|ツイッター|tiktok|カカオ\S*)\s*(の)?\s*(id|ＩＤ|アイディー)?\s*[:：は]?\s*[\w.\-]{3,}/gi,'＊＊＊'); /* SNSのID */
+  s=s.replace(/[@＠][\w.\-]{2,}/g,'＊＊＊').replace(/[0-9０-９][0-9０-９\-－ー\s()（）]{5,}[0-9０-９]/g,'＊＊＊'); /* @〜 と、7けた以上の数字の並び（電話番号） */
+  return s.replace(NETNG,'＊').trim()}
+function netWant(){return V15.on&&S.net===1}
+function netPush(ev,pl){try{var pr=NET.ch.send({type:'broadcast',event:ev,payload:pl});if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}
+function netBoot(){if(!netWant()||NET.st==='on'||NET.st==='wait')return;NET.st='wait';NET.err='';
+  var go=function(){try{if(!window.supabase||!window.supabase.createClient)throw new Error('部品が無い');
+      NET.sb=NET.sb||window.supabase.createClient(SB.url,SB.key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+      var ch=NET.ch=NET.sb.channel(NET.TOPIC,{config:{broadcast:{self:false,ack:false}}});
+      ch.on('broadcast',{event:'p'},function(m){netGot(m&&m.payload)}).on('broadcast',{event:'c'},function(m){netSaid(m&&m.payload)}).on('broadcast',{event:'x'},function(m){var q=m&&m.payload;if(q&&NET.peers[String(q.i)])netDrop(String(q.i))})
+        .subscribe(function(st,err){if(ch!==NET.ch)return;
+          if(st==='SUBSCRIBED'){NET.st='on';NET.err='';NET.sendT=0;NET.last='';logEv('net:on');netSend(true)}
+          else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED'){NET.st='ng';NET.ngAt=performance.now();NET.err=st+(err&&err.message?' '+String(err.message).slice(0,60):'');if(!NET.said){NET.said=1;logPush('net','同じワールドにつながらない（'+NET.err+'）','')}}
+          netHud();if(sheetOpen==='net')netOpen()})}
+    catch(e){NET.st='ng';NET.ngAt=performance.now();NET.err='始められない（'+String(e&&e.message||e).slice(0,40)+'）'}};
+  if(window.supabase){go();return}if(NET.lib)return;NET.lib=1;
+  var sc=document.createElement('script');sc.src='supabase.js';sc.async=true;sc.onload=go;sc.onerror=function(){NET.lib=0;NET.st='ng';NET.ngAt=performance.now();NET.err='中継の部品を読めない（この開き方では使えない）'};document.head.appendChild(sc)}
+function netStop(){if(NET.ch&&NET.st==='on')netPush('x',{i:netId()});var ch=NET.ch;NET.ch=null;NET.st='off';try{if(NET.sb&&ch)NET.sb.removeChannel(ch)}catch(e){}Object.keys(NET.peers).forEach(netDrop);netHud()}
+function netSend(force,now){if(NET.st!=='on'||!NET.ch)return;now=now||performance.now();
+  var st={i:netId(),n:netName(),h:S.hat,x:+me.x.toFixed(2),z:+me.z.toFixed(2),a:+(((me.sp&&me.sp.rotation.y)||0)).toFixed(2),v:(ROOM.on||DV.on||intro)?0:1},key=st.n+'|'+st.h+'|'+st.x+'|'+st.z+'|'+st.v;
+  if(!force&&key===NET.last&&now-NET.lastAt<4000)return;NET.last=key;NET.lastAt=now;NET.sendT=now;netPush('p',st)} /* 役場や家の中・水の中にいる間は v=0（相手の画面から消える。居場所は送るが使わない） */
+function netTag(p){var tx=textTex('👤 '+p.name,{fs:44,pill:1,body:1,fg:'#173a2c',bg:'rgba(214,240,255,.97)'}),h=p.tag.userData.h||.42;if(p.tag.material.map)p.tag.material.map.dispose();p.tag.material.map=tx;p.tag.material.needsUpdate=true;p.tag.scale.x=h*tx.userData.asp;p.tag.userData.w=p.tag.scale.x}
+function netMk(id,x,z){var sp=chara('kino_y');sp.userData.off=true;sp.visible=false;
+  var p={kind:'net',id:id,name:'',hat:'y',x:x,z:z,tx:x,tz:z,ya:0,ph:0,sp:sp,tag:null,v:0,at:0,shown:false,bubY:2.82}; /* 吹き出しは名前の札の上（名前が隠れないように） */
+  p.tag=label(textTex('👤 旅人',{fs:44,pill:1,body:1,fg:'#173a2c',bg:'rgba(214,240,255,.97)'}),.42,x,z,0,2.5,{far:30});p.tag.userData.off=true;p.tag.visible=false;
+  p.hit={type:'sign',id:'net_'+id,who:p,w:1.4,h:2.1};NET.peers[id]=p;NET.n++;logEv('net:peer:'+NET.n);netHud();return p}
+function netDrop(id){var p=NET.peers[id];if(!p)return;delete NET.peers[id];NET.n=Math.max(0,NET.n-1);var i=hits.indexOf(p.hit);if(i>=0)hits.splice(i,1);i=bills.indexOf(p.tag);if(i>=0)bills.splice(i,1);
+  for(i=SAYS.length-1;i>=0;i--)if(SAYS[i].o===p){scene.remove(SAYS[i].s);SAYS[i].s.material.map.dispose();SAYS[i].s.material.dispose();SAYS.splice(i,1)}
+  scene.remove(p.sp);if(p.sp.material)p.sp.material.dispose();scene.remove(p.tag);if(p.tag.material.map)p.tag.material.map.dispose();p.tag.material.dispose();if(p.name)toast(p.name+'が森を出た');netHud();if(sheetOpen==='net')netOpen()}
+function netGot(q){if(!q||typeof q!=='object'||NET.st!=='on')return;var id=String(q.i||''),x=+q.x,z=+q.z;if(!/^[a-z0-9]{10}$/.test(id)||id===netId()||!isFinite(x)||!isFinite(z)||Math.abs(x)>TOWN+10||Math.abs(z)>TOWN+10)return;
+  var now=performance.now(),p=NET.peers[id],fresh=!p;if(fresh){if(NET.n>=NET.MAXP)return;p=netMk(id,x,z);if(now-NET.helloAt>400){NET.helloAt=now;netSend(true,now)}} /* 初めて見る人には、すぐ自分の居場所を返す（相手の画面にもすぐ出るように） */
+  p.at=now;p.tx=x;p.tz=z;p.ya=isFinite(+q.a)?+q.a:0;p.v=q.v?1:0;
+  var nm=netName(q.n),hat=HATS.some(function(h){return h[0]===q.h})?q.h:'y';
+  if(nm!==p.name){p.name=nm;netTag(p)}
+  if(hat!==p.hat){p.hat=hat;if(p.sp.userData.m3){p.sp.material.map=hatTex(hat);p.sp.material.needsUpdate=true}}
+  if(fresh){toast(p.name+'が森にいる');if(sheetOpen==='net')netOpen()}}
+function netStep(dt,now){var ids=Object.keys(NET.peers),i,p,dx,dz,d,mv,sp,w,y,hop,a,c,s2,show,hi;
+  for(i=0;i<ids.length;i++){p=NET.peers[ids[i]];if(now-p.at>NET.DEAD){netDrop(ids[i]);continue}
+    show=!!(p.v&&!ROOM.on&&!DV.on&&Math.hypot(p.tx-me.x,p.tz-me.z)<95);
+    if(show!==p.shown){p.shown=show;p.sp.visible=show;p.tag.visible=show;hi=hits.indexOf(p.hit);if(show&&hi<0)hits.push(p.hit);if(!show&&hi>=0)hits.splice(hi,1);if(show){p.x=p.tx;p.z=p.tz}}
+    if(!show){p.x=p.tx;p.z=p.tz;continue}
+    dx=p.tx-p.x;dz=p.tz-p.z;d=Math.hypot(dx,dz);mv=false;
+    if(d>30){p.x=p.tx;p.z=p.tz;dx=dz=0}else if(d>.05){sp=Math.max(SPEED*.5,Math.min(SPEED*1.7,d*2.6))*dt;if(d<=sp){p.x=p.tx;p.z=p.tz}else{p.x+=dx/d*sp;p.z+=dz/d*sp}mv=true}else p.yawT=p.ya; /* 届いた場所へ歩いて追いかける。離れすぎたら飛ばす */
+    w=warp(p.x,p.z);y=Math.max(height(w[0],w[1]),WS-1.25);a=angAt(p.x,p.z);c=Math.cos(a);s2=Math.sin(a);hop=dirPose(p,dx*c-dz*s2,dx*s2+dz*c,mv,dt,7.5);
+    p.sp.position.set(w[0],y+hop,w[1]);p.tag.position.set(w[0],y+2.5,w[1])}}
+function netHud(){var b=$('#netb');if(!b)return;var hide=!V15.on||DV.on||!!intro||FS.on,t=S.net===undefined?'👥 ほかの旅人と遊ぶ':S.net!==1?'👥 ひとりで遊び中':NET.st==='on'?'👥 旅人 '+NET.n+'人':NET.st==='ng'?'👥 つながらない':'👥 つなぎ中',k=(hide?'h':'s')+t;
+  if(k===NET.hud)return;NET.hud=k;b.hidden=hide;b.textContent=t;b.className=S.net===1&&NET.st==='on'&&NET.n?'on':''}
+function netFrame(dt,t){var now=performance.now();netHud();
+  if(S.net===undefined&&!S.netAsk&&NET.old&&V15.on&&S.j17s&&S.q16s&&!intro&&!sheetOpen&&land.hidden&&!ROOM.on&&!DV.on&&!FS.on&&!TQ.length&&TT<=0&&now>9000&&!me.path.length){S.netAsk=1;save();netOpen();return} /* 初めての時に1回だけこちらから聞く（あとは左上の札から） */
+  if(!netWant()){if(NET.st!=='off')netStop();return}
+  if(NET.st==='off')netBoot();
+  else if(NET.st==='ng'&&now-NET.ngAt>30000){var ch=NET.ch;NET.ch=null;NET.st='off';try{if(NET.sb&&ch)NET.sb.removeChannel(ch)}catch(e){}} /* 30秒おきにつなぎ直す */
+  if(NET.st!=='on')return;
+  var n=NET.n,f=n?Math.min(4,70/((n+1)*n)):.33;if(now-NET.sendT>=1000/Math.max(.33,f))netSend(false,now);
+  netStep(dt,now)}
+function netSay(text){if(NET.st!=='on'){netOpen('まだつながっていない');return}var now=performance.now();if(now-NET.saidAt<1200)return;var raw=String(text||'').trim(),t=netClean(raw);if(!t)return;NET.saidAt=now;
+  sayOver(me,t,t.length>22?7000:4500);NET.log.push([netName(),t,1]);if(NET.log.length>20)NET.log.shift();netPush('c',{i:netId(),t:t});logEv('net:say');if(sheetOpen==='net')netOpen(t!==raw?'個人の情報や使えない言葉は ＊ にして送った':'')}
+function netSaid(q){if(!q||typeof q!=='object')return;var id=String(q.i||''),p=NET.peers[id];if(!p||(S.netMute&&S.netMute[id]))return;var now=performance.now();if(now-(p.saidAt||0)<900)return;p.saidAt=now;var t=netClean(q.t);if(!t)return;
+  NET.log.push([p.name,t,0]);if(NET.log.length>20)NET.log.shift();if(p.shown)sayOver(p,t,t.length>22?8000:5000);if(sheetOpen==='net')netOpen();else toast(p.name+'「'+t.slice(0,22)+(t.length>22?'…':'')+'」')}
+function netOpen(msg){var h;
+  if(S.net!==1){h='<h2>ほかの旅人と同じ森に入る</h2><p>入ると、同じ時間に森にいる旅人が互いに見える。ひとことも送り合える。相手は本物の人</p>'+
+      '<table class="mytab netc"><tr><th>相手に見える</th><td>森の中の居場所・帽子の色・名前（いまは「'+esc(netName())+'」）・自分が書いたひとこと</td></tr>'+
+      '<tr><th>見えない</th><td>フカ・家・リュック・住民票・役場や家の中と水の中にいる時の姿</td></tr>'+
+      '<tr><th>通り道</th><td>中継に Supabase（不具合の記録と同じ会社）を通す。居場所もひとことも、その場で相手に届けるだけで保存しない</td></tr></table>'+
+      '<div class="row"><button data-a="net:yes">同じ森に入る</button><button class="sub" data-a="net:no">ひとりで遊ぶ</button></div>'+
+      '<p class="note">あとからいつでも切り替えられる（左上の 👥 の札）。本名・住所・学校・電話番号・SNSのIDは書かないでね（電話番号・ID・リンクは自動で ＊ になる）</p>';
+    show('net',h);return}
+  var ps=Object.keys(NET.peers).map(function(k){return NET.peers[k]}),mu=S.netMute||{},keep=$('#netin')?$('#netin').value:'';
+  var st=NET.st==='on'?(ps.length?'いま森にいる旅人 '+ps.length+'人':'いま森にいる旅人は自分だけ（だれか来ると、ここと森に出る）'):NET.st==='ng'?'つながらない（'+esc(NET.err||'理由は分からない')+'）　30秒おきにつなぎ直している':'つないでいる…';
+  var who=ps.map(function(p){return '<div class="netp"><b>👤 '+esc(p.name)+'</b><button type="button" class="sub" data-a="net:mute:'+p.id+'">'+(mu[p.id]?'字を見る':'字を見ない')+'</button></div>'}).join('');
+  var lines=NET.log.slice(-8).map(function(l){return '<p class="'+(l[2]?'me':'bot')+'"><span class="bb">'+(l[2]?'':esc(l[0])+'：')+esc(l[1])+'</span></p>'}).join('')||'<p class="note">スタンプか、ひとことを送ると、森にいる旅人みんなに見える</p>';
+  h='<h2>ほかの旅人</h2><p>'+st+'</p>'+who+'<div class="log" id="netlog">'+lines+'</div>'+
+    '<div class="stamps">'+NETSTAMP.map(function(s,i){return '<button type="button" class="st" data-a="net:st:'+i+'">'+s+'</button>'}).join('')+'</div>'+
+    '<div class="row say"><input id="netin" type="text" maxlength="60" placeholder="ひとこと書く（みんなに見える）" autocomplete="off" enterkeyhint="send" aria-label="ひとこと"><button data-a="net:say">送る</button></div>'+
+    '<div class="row say"><input id="netname" type="text" maxlength="12" value="'+esc(S.pname||'')+'" placeholder="名前（12字まで）" autocomplete="off" aria-label="ほかの旅人に見える名前"><button class="sub" data-a="net:name">名前を変える</button></div>'+
+    '<div class="row"><button class="sub" data-a="net:no">ひとりで遊ぶ（自分も相手も見えなくなる）</button></div>'+
+    '<p class="note" id="msg">'+(msg?esc(msg):'相手は本物の人。いまの名前は「'+esc(netName())+'」　本名・住所・電話番号・SNSのIDは書かないでね')+'</p>';
+  show('net',h);if(keep&&$('#netin'))$('#netin').value=keep;var lg=$('#netlog');if(lg)lg.scrollTop=lg.scrollHeight}
+function netAct(a){var p=a.split(':');
+  if(p[0]==='yes'){S.net=1;S.netAsk=1;save();logEv('net:yes');netBoot();netHud();netOpen();return}
+  if(p[0]==='no'){S.net=0;S.netAsk=1;save();logEv('net:no');netStop();close();toast('ひとりで遊ぶ（左上の 👥 の札で、いつでも変えられる）');return}
+  if(p[0]==='st'){netSay(NETSTAMP[+p[1]]||'');return}
+  if(p[0]==='say'){var v=($('#netin')||{}).value||'';if(v.trim()){$('#netin').value='';netSay(v)}return}
+  if(p[0]==='mute'){S.netMute=S.netMute||{};if(S.netMute[p[1]])delete S.netMute[p[1]];else{var ks=Object.keys(S.netMute);if(ks.length>=50)delete S.netMute[ks[0]];S.netMute[p[1]]=1}save();netOpen();return}
+  if(p[0]==='name'){var nv=(($('#netname')||{}).value||'').trim().slice(0,12);if(nv&&QNG.test(nv)){netOpen('その名前は使えない言葉が入ってる。ほかの名前にしてね');return}S.pname=nv;save();NET.last='';netSend(true);netOpen(nv?'名前を「'+nv+'」にした':'名前を消した（「旅人」と出る）');return}}
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='netin'){e.preventDefault();netAct('say')}});
+window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('x',{i:netId()})});
+(function(){var nb=$('#netb');if(nb)nb.onclick=function(){if(sheetOpen==='net')close();else netOpen()}})();
 /* ---- 記録（ログ）（v0.11。10/6 13:39 主「この段階でもうログを回収できる仕組みがほしい　pkのときみたいな」）----
    フカシPK の型（kit/src/core/30_errlog.js）と同じ考え方:
    ①端末の中に直近30件を必ず残す（エラー・Promise の失敗・console.error・重さ・操作の足跡・その時の状態）
@@ -2244,7 +2398,7 @@ $('#mapbtn').addEventListener('click',function(){if(ROOM.on)exitRoom();else open
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.19',APP_BUILD='1010-1040',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.20',APP_BUILD='1010-1200',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
@@ -2308,7 +2462,7 @@ setTimeout(function(){logBadge();if(logAuto())logSend('start')},3000);
 /* 開いたままの画面が更新されても続きから */
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(function(){return {S:S}});
-window.__mori={bubLines:bubLines,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
+window.__mori={NET:NET,netOpen:netOpen,netClean:netClean,netName:netName,netGot:netGot,netSaid:netSaid,netBoot:netBoot,netStop:netStop,netSay:netSay,netId:netId,bubLines:bubLines,zukanOpen:zukanOpen,zkShot:zkShot,ZK:ZK,rodPick:rodPick,fishOn:fishOn,lotLock:lotLock,farmOpen:farmOpen,RODRW:RODRW,RODS_STR:RODS_STR,bookAdd:bookAdd,recOpen:recOpen,LIFE:LIFE,life19Pick:life19Pick,A19:A19,ACT19:ACT19,act19Prop:act19Prop,act19Label:act19Label,act19Cur:act19Cur,act19Apply:act19Apply,act19Spot:act19Spot,plan19:plan19,farmXY:farmXY,FIELDS:FIELDS,SKIPLOT:SKIPLOT,yakEnter:yakEnter,yakNear:yakNear,HALL:HALL,hallSheet:hallSheet,ROOMX:function(){return ROOM},bagOpen:bagOpen,hunNow:hunNow,hunK:hunK,hunTick:hunTick,bagAdd:bagAdd,F3:F3,FARM18:function(){return FARM},BR:BR,FARMV:FARMV,J17:J17,juminOpen:juminOpen,myOpen:myOpen,MH:MH,Q16:Q16,q15Open:q15Open,q15Act:q15Act,qScore:qScore,QZ:QZ,tagsPaint:tagsPaint,myBox:myBox,cop:function(){return cop},ME:function(){return me},openLot:openLot,V15:V15,AI:AI,AIBY:AIBY,inZone:inZone,lotInZone:lotInZone,aiApply:aiApply,FARM:FARM,ZONE:ZONE,FARM_LOT:FARM_LOT,YAKUBA_LOT:YAKUBA_LOT,FS:FS,rods:function(){return RODS},SPOT:SPOT,QDEF:QDEF,qNow:qNow,qEv:qEv,bookAdd:bookAdd,gearApply:gearApply,GEAR:GEAR,fishK:fishK,rod:{start:fishStart,tap:fishTap,down:fishDown,up:fishUp,end:fishEnd},toasts:function(){return TQ},toastNow:function(){var e=$('#toast');return (e.hidden?[]:[[e.firstChild.textContent,e.className==='gold'?1:0]]).concat(TQ)},toastClear:function(){TQ.length=0;TT=0;$('#toast').hidden=true},hitsAll:function(){return hits},rocks:function(){return ROCKS},shells:function(){return SHELLS},SHELL_PRICE:SHELL_PRICE,held:function(){return DV.held},DV:DV,fish:function(){return FISH},FISHDEF:FISHDEF,dive:{in:diveIn,out:diveOut,down:spearDown,up:spearUp,ray:spearRay,bank:diveBank,tap:hookTap,dir:eyeDir},gh:gh,pkSync:pkSync,onHub:ON_HUB,tick:function(sec){var n=Math.round(sec*60),i;for(i=0;i<n;i++)step(1/60,performance.now())},MM:MM,mmDraw:mmDraw,north:north,faceYaw:function(l){var a=angAt(l.fx,l.fz),c=Math.cos(a),sn=Math.sin(a);return Math.atan2(l.fd[0]*c-l.fd[1]*sn,l.fd[0]*sn+l.fd[1]*c)},log:{L:LOG,push:logPush,send:logSend,doc:logDoc,frame:logFrame,ev:logEv,auto:logAuto,setSink:function(f){LOG.sink=f?{kind:'fn',fn:f}:null}},CAM:CAM,MDL:MDL,ROOM:ROOM,BR:BR,chest:function(){return CHEST},enterRoom:enterRoom,exitRoom:exitRoom,open:open,basin:basin,res:function(){return RES},cols:allCols,pondIn:pondIn,WS:function(){return WS},openChat:openChat,chatSend:chatSend,botReply:botReply,whoOf:whoOf,says:function(){return SAYS},talk:function(){return G.talk},setSample:function(f){sampleFn=f},warp:warp,unwarp:unwarp,height:height,angAt:angAt,WATER:WATER,joy:joy,collide:collide,S:S,open:open,openLot:openLot,places:PLACES,openLand:openLand,landCount:landCount,resOf:resOf,askOf:askOf,landPrice:landPrice,isMine:isMine,renderLand:renderLand,lots:LOTS,town:TOWNDEF,natAt:natAt,hasH:hasH,hasV:hasV,lineX:lineX,me:me,npc:npc,cop:cop,route:route,walkTo:walkTo,lotFront:lotFront,pick:pick,tapAt:tapAt,buyLot:buyLot,moveLot:moveLot,
   three:function(){return {R:R,scene:scene,camera:camera,town:town,intro:intro,bills:bills,hits:hits,houseOf:houseOf}},
   sim:function(sec,each){var n=Math.round(sec*60),i;for(i=0;i<n;i++){step(1/60,performance.now());if(each)each();if(!me.path.length&&!joy.x&&!joy.y)break}return i},skip:function(){endIntro()},
   draw:function(){step(0,performance.now());R.render(scene,camera)},
