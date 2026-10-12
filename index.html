@@ -424,7 +424,7 @@ body.kbc #sheet .ch>.chst,body.kbc #sheet .ch>.chset{display:none!important}
 #sheet .drc img{width:56px;height:56px;display:block}
 #sheet .drc.on{border:3px solid #FFC83D;padding:5px 3px 5px}
 #sheet .drc.on:after{content:'✓';position:absolute;right:6px;top:4px;width:20px;height:20px;border-radius:50%;background:#FFC83D;font-size:12px;font-weight:900;display:grid;place-items:center}
-#sheet .drb{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex:none}
+#sheet .drb{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex:none;position:sticky;bottom:-14px;z-index:3;background:linear-gradient(rgba(255,243,199,0),#FFF3C7 10px);padding:12px 0 10px;margin-bottom:-10px} /* v0.51 保存ボタンが下に埋まらないように */
 #sheet .drb button{min-height:0;height:48px;padding:0;border-radius:16px;background:#FFFDF3;color:#173A2C;border:1px solid #E9E0C5;font-size:13.5px;font-weight:800}
 #sheet .drb button.y{background:#FFC83D;border-color:#FFC83D}#sheet .drb button.k{background:#173A2C;color:#fff;border-color:#173A2C}
 /* ===== v0.35 ガチャ（チャッピー chatgpt_gacha_spec.json）===== */
@@ -590,7 +590,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.50';
+var VERSION='v0.51';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -3709,7 +3709,7 @@ var TP={busy:false,lot:0,got:0},TPOP={till:'耕す',seed:'種をまく（10フ�
 function tpMine(no){return (S.tplots||[]).indexOf(no)>=0}
 function tpNext(p){var st=p.state||'荒地';if(st==='荒地'||st==='収穫済み'||st==='枯れた')return 'till';if(st==='耕した')return 'seed';if(st==='収穫できる')return 'harvest';if((st==='芽'||st==='育ち中')&&!p.water)return 'water';return ''}
 function tpSync(){if(!S.acct||TP.got||typeof fetch!=='function')return;TP.got=1;
-  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'plot',op:'mine'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.tplots=(j.plots||[]).map(function(p){return p.no});save();if(sheetOpen==='farm')farmOpen(TP.lot)}},function(){TP.got=0})}
+  fetch(MORI+'/api/join?w=live',{method:'POST',headers:MH(),body:JSON.stringify({mode:'plot',op:'mine'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){S.tplots=(j.plots||[]).map(function(p){return typeof p==='number'?p:+p.no}).filter(function(n){return n>0}); /* v0.51 サーバーは番号の数字で返す */save();if(sheetOpen==='farm')farmOpen(TP.lot)}},function(){TP.got=0})}
 function tpAct(op,no){if(TP.busy)return;if(!S.acct){juminOpen();return}
   var cost=op==='buy'?30:op==='seed'?10:0;if(cost&&S.coin<cost){toast('フカが足りない（'+cost+'フカ）');return}
   fuka(-cost,'farm');save();TP.busy=true;if(sheetOpen==='farm')farmOpen(TP.lot);
@@ -4066,7 +4066,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.50',APP_BUILD='1012-0100',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.51',APP_BUILD='1012-2230',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
