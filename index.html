@@ -516,7 +516,15 @@ body.kbc #sheet .ch>.chst,body.kbc #sheet .ch>.chset{display:none!important}
 .gx-bub.on{opacity:1;transform:none}
 .gx-bub:after{content:'';position:absolute;left:24px;bottom:-9px;border:9px solid transparent;border-top-color:#FFFDF3;border-bottom:0}
 </style>
-</head>
+<style>/* v0.52 左端の縦の列（チャッピー: 46px・クリーム・黄の縁・下にラベル）。板が開いたら上の帯へよける */
+body #stage #phb,body #stage #chb{left:8px!important;right:auto!important;width:46px;height:46px;padding:0;display:grid;place-items:center;overflow:visible;background:#FFF3C7;color:#173A2C;border:2px solid #FFC83D;box-shadow:0 3px 0 #B9A66E,0 4px 10px rgba(0,0,0,.22);font-size:0;transition:top .2s,left .2s}
+body #stage #phb{top:186px}body #stage #chb{top:256px}
+body #stage #phb svg,body #stage #chb svg{width:25px;height:25px;display:block}
+#phb .lb,#chb .lb{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;line-height:1;color:#FFF3C7;text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 4px rgba(0,0,0,.6);white-space:nowrap;pointer-events:none}
+body:has(#sheet:not([hidden])) #stage #phb,body:has(#ph.on) #stage #phb{top:6px;left:118px!important;width:42px;height:42px}
+body:has(#sheet:not([hidden])) #stage #chb,body:has(#ph.on) #stage #chb{top:6px;left:166px!important;width:42px;height:42px}
+body:has(#sheet:not([hidden])) #stage #phb .lb,body:has(#sheet:not([hidden])) #stage #chb .lb,body:has(#ph.on) #stage .lb{display:none}
+</style></head>
 <body>
 <div id="app">
   <header>
@@ -537,7 +545,7 @@ body.kbc #sheet .ch>.chst,body.kbc #sheet .ch>.chset{display:none!important}
     <button id="mapbtn" type="button">土地の地図</button>
     <button id="hunb" type="button" hidden aria-label="リュックとおなか">🍙 リュック <b id="hunv">90%</b></button>
     <button id="netb" type="button" hidden aria-label="ほかの旅人"></button>
-    <button id="phb" type="button" aria-label="スマホ">📱</button><button id="chb" type="button" aria-label="チャット">💬</button>
+    <button id="phb" type="button" aria-label="スマホ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="2" width="13" height="20" rx="3"/><path d="M9 5h6"/><rect x="7.5" y="7" width="9" height="10" rx="1.5"/><path d="M10 11.5a2 2 0 0 1 4 0c0 1.3-2 2.5-2 2.5s-2-1.2-2-2.5Z"/><circle cx="12" cy="19.3" r=".7" fill="currentColor" stroke="none"/></svg><span class="lb">スマホ</span></button><button id="chb" type="button" aria-label="みんなへ（公開チャット）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5Q3 3 4.5 3h15Q21 3 21 4.5v9Q21 15 19.5 15H13l-4 3v-3H4.5Q3 15 3 13.5Z"/><circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M5 20h14"/></svg><span class="lb">みんなへ</span></button>
     <div id="mmw">
       <button id="mm" type="button" aria-label="地図を開く"><canvas id="mmc" width="264" height="264"></canvas></button>
       <button id="mmf" type="button" aria-label="ミニマップをひらく" hidden>🗺</button>
@@ -590,7 +598,7 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1)e.preven
 <script>
 (function(){
 'use strict';
-var VERSION='v0.51';
+var VERSION='v0.52';
 var HUB_URL='https://futurex-jp.github.io/';
 var KEY='fukashi_mori_v01';
 var $=function(s){return document.querySelector(s)};
@@ -3838,7 +3846,7 @@ WM.f.addEventListener('pointerup',wmUp);WM.f.addEventListener('pointercancel',wm
 WM.f.addEventListener('wheel',function(e){e.preventDefault();var r=WM.f.getBoundingClientRect();wmZoom(WM.z*(e.deltaY<0?1.15:1/1.15),e.clientX-r.left,e.clientY-r.top)},{passive:false});
 window.addEventListener('resize',function(){if(!WM.el.hidden&&WM.tab==='map')wmLay()});
 
-$('#phb').addEventListener('click',function(){if(PH.on)phClose();else phoneOpen()});$('#chb').addEventListener('click',function(){if(sheetOpen==='net')close();else netOpen()});
+$('#phb').addEventListener('click',function(){if(PH.on)phClose();else phoneOpen()});$('#chb').addEventListener('click',function(){if(sheetOpen==='net'&&CH.pub)close();else if($('#chb').classList.contains('dot')){CH.pub=0;netOpen()}else{CH.pub=1;CH.th=null;CH.mk=null;CH.menu=0;netOpen();netFocus()}}); /* v0.52 ふだんは公開チャットへ（すぐ書ける）。個人・グループに未読がある時（赤い点）は前と同じ一覧へ */
 setTimeout(function tryB(){if(typeof scene!=='undefined'&&typeof height==='function'&&MDL&&Object.keys(MDL).length){try{buildBenches()}catch(e){logEv('bench:err')}}else setTimeout(tryB,500)},800);
 /* ===== v0.20 同じワールド（10/10 主「昨日ゆいと一緒にプレイしたけどゆいがワールドにいなかった」→「最初から同じワールドじゃだめなのか」） =====
    前: 住人・畑・役場だけがみんなで共通で、主人公の居場所はその端末の中だけ。同じ時間に遊んでも互いに見えなかった
@@ -3964,6 +3972,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.
    守り: 名前とひとことはサーバーと端末の両方でふるう。「字を見ない（ミュート）」は自分の画面だけ。「個人チャットを受け取らない」はサーバーで止める（相手には知らせない）
    画面: 一覧（みんな／個人／グループのタブ）→ 会話。会話の入力欄は前の「ひとこと」と同じ id（netin）なので、キーボードの扱いはそのまま */
 var CH={tab:'dm',th:null,menu:0,mk:null,pub:0,pend:{}};
+function netFocus(){var i=$('#netin');if(i&&S.net===1&&CH.pub){try{i.focus({preventScroll:true})}catch(e){i.focus()}}} /* v0.52 公開チャットはすぐ書ける */
 function netRef(){if(sheetOpen!=='net')return;if(!CH.pub&&(CH.th||CH.mk)){var i=$('#netin')||$('#chgn');if(i&&(i.value||document.activeElement===i))return}netOpen()}
 function chS(){if(!S.chat||typeof S.chat!=='object')S.chat={t:{},left:{},blk:{}};S.chat.t=S.chat.t||{};S.chat.left=S.chat.left||{};S.chat.blk=S.chat.blk||{};return S.chat}
 function chRid(n){var v='';for(var i=0;i<n;i++)v+='abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random()*36));return v}
@@ -4035,7 +4044,7 @@ function chGot(q){if(!q||typeof q!=='object')return;var id=String(q.i||'');if(!/
   var mu=S.netMute&&S.netMute[id],view=sheetOpen==='net'&&!CH.pub&&CH.th===key&&!CH.mk;if(!view&&k==='say'&&!mu)t.un=(t.un||0)+1;save();
   if(sheetOpen==='net'&&!CH.pub)chOpen();else{chDot();if(k==='say'&&!mu)toast('💬 '+(t.k==='g'?t.n+'・':'')+nm+'「'+text.slice(0,18)+(text.length>18?'…':'')+'」')}}
 function chAct(p){var c=chS(),a=p[0],t=CH.th&&c.t[CH.th];
-  if(a==='tab'){CH.menu=0;CH.th=null;CH.mk=null;if(p[1]==='all'){CH.pub=1;netOpen();return}CH.pub=0;CH.tab=p[1];chOpen();return}
+  if(a==='tab'){CH.menu=0;CH.th=null;CH.mk=null;if(p[1]==='all'){CH.pub=1;netOpen();netFocus();return}CH.pub=0;CH.tab=p[1];chOpen();return}
   if(a==='th'){CH.th=p.slice(1).join(':');CH.menu=0;chOpen();return}
   if(a==='dm'){var id=p[1],pp=NET.peers[id];if(!pp)return;var k='d:'+id;chT(k,{k:'d',id:id,nm:{},log:[],un:0,at:Date.now()}).nm[id]=pp.name;CH.th=k;CH.tab='dm';CH.menu=0;save();chOpen();return}
   if(a==='back'){CH.th=null;CH.menu=0;chOpen();return}
@@ -4066,7 +4075,7 @@ window.addEventListener('pagehide',function(){if(NET.st==='on'&&NET.ch)netPush('
    送り先: Claude の中で開いた時＝この森の保存場所（logs/端末-開いた時刻。1回開くごとに1件）／github.io に置いた時＝PK と同じ Supabase の log_error（エラーと手で送った物だけ）／
            それ以外（PCのファイルを直に開いた時）＝端末の中だけ
    送る物: 版・端末の種類・画面の大きさ・いる場所・直前の操作・エラー文・動きの重さ　送らない物: 名前・チャットに打った文・セーブの中身 */
-var APP_VER='mori-v0.51',APP_BUILD='1012-2230',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
+var APP_VER='mori-v0.52',APP_BUILD='1012-2300',LK='mori_err',SB={url:'https://dlohqycgfieuzzcumpdn.supabase.co',key:'sb_publishable_s6QftnXjccH_66GmrCjM_Q_e6dgoKka'};
 var LOG={list:[],trail:[],t0:Date.now(),sent:0,writes:0,sink:undefined,q:Promise.resolve(),fps:{acc:0,n:0,last:0,min:0,low:0,said:0},note:'',dirty:0,gl:''};
 try{LOG.list=JSON.parse(localStorage.getItem(LK)||'[]');if(!Array.isArray(LOG.list))LOG.list=[]}catch(e){LOG.list=[]}
 function logUuid(){return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g,function(){return (Math.random()*16|0).toString(16)})}
