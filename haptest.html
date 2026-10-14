@@ -1,0 +1,21 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>震えのテスト</title>
+<style>body{margin:0;padding:16px;background:#FFF3C7;font-family:system-ui,sans-serif;color:#173A2C}h1{font-size:20px}p{font-size:14px;line-height:1.6}
+.b{display:block;width:100%;margin:12px 0;padding:18px;border:0;border-radius:16px;background:#315C3A;color:#FFF3C7;font-size:18px;font-weight:800;position:relative;overflow:hidden}
+#ua{font-size:11px;color:#6b7f69;word-break:break-all}#log{font-size:13px}</style></head><body>
+<h1>フカシの森 震えのテスト</h1>
+<p>A〜Eを1回ずつ押して、<b>ブルっとしたボタンの字</b>を Claude に言ってね（例「C と D」）</p>
+<button class="b" id="A">A 押した瞬間（指が触れた時）</button>
+<button class="b" id="B">B 指を離した時</button>
+<button class="b" id="C">C ボタンに見えないスイッチを重ねる</button>
+<button class="b" id="D">D 押してから1秒あと</button>
+<button class="b" id="E">E 本物のスイッチ（見える）→ <input type="checkbox" switch style="transform:scale(1.4)"></button>
+<p id="log"></p><p id="ua"></p>
+<script>
+var log=function(t){document.getElementById('log').textContent=t};document.getElementById('ua').textContent=navigator.userAgent;
+function hapProg(){try{if(navigator.vibrate){navigator.vibrate(20);return 'vibrate'}}catch(e){}var l=document.createElement('label');l.style.cssText='position:fixed;left:-200px;top:-200px;opacity:0';var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');l.appendChild(i);document.body.appendChild(l);l.click();setTimeout(function(){l.remove()},300);return 'switch'}
+document.getElementById('A').addEventListener('pointerdown',function(){log('A '+hapProg())});
+document.getElementById('B').addEventListener('click',function(){log('B '+hapProg())});
+document.getElementById('D').addEventListener('click',function(){setTimeout(function(){log('D '+hapProg())},1000)});
+(function(el){var l=document.createElement('label');l.style.cssText='position:absolute;inset:0;opacity:.001';var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.style.cssText='position:absolute;left:-9999px;top:0';i.addEventListener('click',function(e){e.stopPropagation()});l.appendChild(i);el.appendChild(l);el.addEventListener('click',function(){log('C 重ねたスイッチ')})})(document.getElementById('C'));
+</script></body></html>
